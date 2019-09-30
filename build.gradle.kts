@@ -7,7 +7,6 @@ plugins {
     jacoco
     id("com.github.gradle-git-version-calculator") version "1.1.0"
     id("com.github.ben-manes.versions") version "0.22.0"
-    //`java-library`
 }
 
 repositories {
@@ -18,18 +17,16 @@ repositories {
     }
 }
 
-group = "org.github.otymko.phoenix"
+group = "org.github.otymko.phoenixbsl"
 version = "0.1"
 
 dependencies {
+
     compile("com.hynnet", "jacob", "1.18")
     compile("com.github.mmarquee:ui-automation:develop-SNAPSHOT")
-    //compile("com.github.1c-syntax:bsl-language-server:v0.10.2")
     compile("com.github.1c-syntax:bsl-language-server:0.10.2")
     testCompile("junit", "junit", "4.12")
-
     compile("lc.kra.system:system-hook:4.0.0");
-    //implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 }
 
@@ -45,7 +42,7 @@ tasks.withType<JavaCompile> {
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "org.github.otymko.phoenix.PhoenixLauncher"
+        attributes["Main-Class"] = "org.github.otymko.phoenixbsl.Launcher"
         attributes["Implementation-Version"] = archiveVersion.get()
     }
     configurations["compile"].forEach {
