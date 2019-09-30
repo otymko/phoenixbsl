@@ -1,23 +1,25 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.views;
 
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.github.otymko.phoenixbsl.entities.Issue;
+import org.github.otymko.phoenixbsl.App;
 
 import javax.swing.*;
 import java.util.List;
 
 public class IssuesForm extends JFrame {
 
-  private MainApp app;
+  private App app;
   private DefaultListModel<Issue> listModel = new DefaultListModel<>();
 
-  public IssuesForm(MainApp app, List<Diagnostic> list) {
+  public IssuesForm(App app, List<Diagnostic> list) {
     super("Issues");
 
     this.app = app;
 
-    this.setBounds(100,100,500,600);
+    setBounds(100,100,500,600);
     initList(list);
     JList<Issue> issuesList = new JList<>(listModel);
     issuesList.addListSelectionListener(e -> {
@@ -28,7 +30,12 @@ public class IssuesForm extends JFrame {
     });
     //issuesList.setCellRenderer(new IssueRenderer());
     add(new JScrollPane(issuesList));
+
+    toFront();
+    setVisible(true);
+    setAlwaysOnTop(true);
   }
+
 
 
   public void initList(List<Diagnostic> list) {

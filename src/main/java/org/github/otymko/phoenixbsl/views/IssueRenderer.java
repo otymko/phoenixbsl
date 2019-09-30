@@ -1,4 +1,6 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.views;
+
+import org.github.otymko.phoenixbsl.entities.Issue;
 
 import javax.swing.*;
 import java.awt.*;

@@ -7,6 +7,9 @@ public class LauncherTest {
 
   @Test
   public void test() throws AutomationException {
+
+    //Launcher.main(null);
+
   }
 
 }

@@ -9,10 +9,10 @@ public class Launcher {
 
   public static void main(String[] args) {
 
-    MainApp app = new MainApp();
+    App app = new App();
 
     try {
-      app.start();
+      app.run();
     } catch (RuntimeException ex) {
       log.error("Приложение упало. Причина " + ex.getStackTrace());
     }

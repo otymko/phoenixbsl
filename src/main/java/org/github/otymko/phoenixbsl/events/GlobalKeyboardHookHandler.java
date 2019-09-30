@@ -1,17 +1,18 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.events;
 
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
+import org.github.otymko.phoenixbsl.App;
 
 import java.util.Map;
 
 public class GlobalKeyboardHookHandler {
 
   private static boolean run = true;
-  private static MainApp app;
+  private static App app;
 
-  public GlobalKeyboardHookHandler(MainApp app) {
+  public GlobalKeyboardHookHandler(App app) {
 
     this.app = app;
 
@@ -37,7 +38,7 @@ public class GlobalKeyboardHookHandler {
           System.out.println(event);
           app.checkFocusForm();
           if (app.isFindForm()) {
-            app.formatingTextByBSL();
+            app.formattingTextByBSL();
           }
         }
       }
