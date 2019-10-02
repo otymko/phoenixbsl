@@ -12,14 +12,11 @@ import org.github._1c_syntax.bsl.languageserver.providers.DiagnosticProvider;
 import org.github._1c_syntax.bsl.languageserver.providers.FormatProvider;
 import org.github.otymko.phoenixbsl.events.GlobalKeyboardHookHandler;
 import org.github.otymko.phoenixbsl.views.IssuesForm;
+import org.github.otymko.phoenixbsl.views.Toolbar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +49,7 @@ public class App {
 
     automation = UIAutomation.getInstance();
     diagnosticProvider = new DiagnosticProvider(LanguageServerConfiguration.create());
+    Toolbar toolbar = new Toolbar();
     GlobalKeyboardHookHandler hookHandler = new GlobalKeyboardHookHandler(this);
     log.info("Приложение запущено");
 

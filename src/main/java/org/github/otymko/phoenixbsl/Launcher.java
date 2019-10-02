@@ -14,7 +14,7 @@ public class Launcher {
     try {
       app.run();
     } catch (RuntimeException ex) {
-      log.error("Приложение упало. Причина " + ex.getStackTrace());
+      log.error("Приложение упало. Причина " + ex.getMessage());
     }
   }
 
