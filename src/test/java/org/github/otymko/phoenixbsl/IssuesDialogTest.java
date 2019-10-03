@@ -8,9 +8,6 @@ public class IssuesDialogTest {
   @Test
   public void testForm() {
 
-    IssuesDialog dialog = new IssuesDialog();
-
-
   }
 
 }
