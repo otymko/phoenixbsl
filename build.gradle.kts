@@ -1,6 +1,8 @@
 
+import de.dynamicfiles.projects.gradle.plugins.javafx.JavaFXGradlePluginExtension
 import java.net.URI
 
+apply(plugin = "javafx-gradle-plugin")
 
 plugins {
     java
@@ -8,7 +10,7 @@ plugins {
     jacoco
     id("com.github.gradle-git-version-calculator") version "1.1.0"
     id("com.github.ben-manes.versions") version "0.22.0"
-    id("org.openjfx.javafxplugin") version "0.0.3"
+//    id("org.openjfx.javafxplugin") version "0.0.8"
 }
 
 repositories {
@@ -22,8 +24,18 @@ repositories {
 group = "org.github.otymko.phoenixbsl"
 version = "0.1"
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("de.dynamicfiles.projects.gradle.plugins:javafx-gradle-plugin:8.8.2")
+    }
+}
+
 dependencies {
 
+    compile("org.openjfx", "javafx", "11.0.1")
     compile("com.hynnet", "jacob", "1.18")
     compile("com.github.mmarquee:ui-automation:develop-SNAPSHOT")
     compile("com.github.1c-syntax:bsl-language-server:0.10.2")
@@ -57,6 +69,7 @@ tasks.withType<Jar> {
     }
 }
 
-javafx {
-    modules("javafx.controls", "javafx.fxml")
-}
+//javafx {
+//    modules("javafx.controls", "javafx.fxml")
+//    version = "11.0.2"
+//}
