@@ -59,4 +59,5 @@ tasks.withType<Jar> {
 
 javafx {
     modules("javafx.controls", "javafx.fxml")
+    version ='11.0.2'
 }
