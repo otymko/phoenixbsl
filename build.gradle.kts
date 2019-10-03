@@ -8,7 +8,7 @@ plugins {
     jacoco
     id("com.github.gradle-git-version-calculator") version "1.1.0"
     id("com.github.ben-manes.versions") version "0.22.0"
-    id("org.openjfx.javafxplugin") version "0.0.7"
+    id("org.openjfx.javafxplugin") version "0.0.3"
 }
 
 repositories {
