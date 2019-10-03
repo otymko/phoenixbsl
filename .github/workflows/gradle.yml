@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v1
@@ -16,9 +16,9 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
     - name: Copy file
-      run: cp ./build/libs/phoenix-0.1.jar ./.github/build/phoenix-0.1.jar
+      run: cp ./build/libs/phoenix-0.1.jar ./.github/phoenix-0.1.jar
     - uses: actions/upload-artifact@master
       with:
         name: phoenix-0.1
-        path: ./.github/build/phoenix-0.1.jar
+        path: ./.github/phoenix-0.1.jar
 
