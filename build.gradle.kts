@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
     maven { url = URI("https://jitpack.io") }
     flatDir {
-        dirs("/libs")
+        dirs("libs")
     }
 }
 
@@ -28,7 +28,7 @@ dependencies {
     compile("com.github.mmarquee:ui-automation:develop-SNAPSHOT")
     compile("com.github.1c-syntax:bsl-language-server:0.10.2")
     testCompile("junit", "junit", "4.12")
-    compile("lc.kra.system:system-hook:4.0.0");
+    compile("lc.kra.system:system-hook:3.5");
 
 }
 
