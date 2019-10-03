@@ -20,5 +20,4 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: phoenix-0.1
-        path: ./.github/phoenix-0.1.jar
-
+        path: ./.github/phoenix.jar
