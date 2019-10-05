@@ -4,7 +4,10 @@ import mmarquee.automation.AutomationException;
 import mmarquee.automation.Element;
 import mmarquee.automation.UIAutomation;
 import mmarquee.automation.controls.Window;
-import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.DocumentFormattingParams;
+import org.eclipse.lsp4j.FormattingOptions;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.eclipse.lsp4j.TextEdit;
 import org.github._1c_syntax.bsl.languageserver.configuration.LanguageServerConfiguration;
 import org.github._1c_syntax.bsl.languageserver.context.DocumentContext;
 import org.github._1c_syntax.bsl.languageserver.context.ServerContext;
@@ -24,7 +27,6 @@ import java.util.regex.Pattern;
 public class App {
 
   private static final App INSTANCE = new App();
-
   private static final Logger log = LoggerFactory.getLogger(App.class);
 
   private final String FAKE_PATH_FILE = "module.bsl";
@@ -43,6 +45,9 @@ public class App {
   private Element focusElement;
   private String tmpTextModule;
 
+
+  private IssuesForm issuesForm;
+
   public App() {
   }
 
@@ -54,23 +59,30 @@ public class App {
 
     automation = UIAutomation.getInstance();
     diagnosticProvider = new DiagnosticProvider(LanguageServerConfiguration.create());
-    Toolbar toolbar = new Toolbar();
+    var toolbar = new Toolbar();
+
+    // единая форма на все
+    issuesForm = new IssuesForm();
+
     GlobalKeyboardHookHandler hookHandler = new GlobalKeyboardHookHandler(this);
     log.info("Приложение запущено");
 
   }
 
   public void startCheckBSL() {
-    String moduleText = getModuleText();
+
+    var moduleText = getModuleText();
     if (moduleText == null ) {
       return;
     }
 
-    ServerContext bslServerContext = new ServerContext();
-    DocumentContext documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
-    List<Diagnostic> list = diagnosticProvider.computeDiagnostics(documentContext);
+    var bslServerContext = new ServerContext();
+    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
+    var list = diagnosticProvider.computeDiagnostics(documentContext);
 
-    IssuesForm form = new IssuesForm(this, list);
+
+    issuesForm.updateIssues(list);
+    issuesForm.onVisible();
   }
 
   public void checkFocusForm() {

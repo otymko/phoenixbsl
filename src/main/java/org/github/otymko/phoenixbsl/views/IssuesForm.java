@@ -3,40 +3,52 @@ package org.github.otymko.phoenixbsl.views;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import org.github.otymko.phoenixbsl.entities.Issue;
 import org.github.otymko.phoenixbsl.App;
+import org.github.otymko.phoenixbsl.entities.Issue;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class IssuesForm extends JFrame {
 
   private App app;
   private DefaultListModel<Issue> listModel = new DefaultListModel<>();
+  private JList<Issue> issuesList;
 
-  public IssuesForm(App app, List<Diagnostic> list) {
-    super("Issues");
-
-    this.app = app;
-
+  public IssuesForm() {
+    super("Замечания");
+    this.app = App.getInstance();
     setBounds(100,100,500,600);
-    initList(list);
-    JList<Issue> issuesList = new JList<>(listModel);
-    issuesList.addListSelectionListener(e -> {
+    issuesList = new JList<>(listModel);
+    issuesList.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent evt) {
+        JList list = (JList)evt.getSource();
+        if (evt.getClickCount() == 2) {
 
-      Issue issue = (Issue) ((JList) e.getSource()).getSelectedValue();
-      app.focusDocumentLine(issue.getStartLine());
+          Issue issue = (Issue) ((JList) evt.getSource()).getSelectedValue();
+          if (issue == null){
+            return;
+          }
+          app.focusDocumentLine(issue.getStartLine());
 
+        }
+      }
     });
-    //issuesList.setCellRenderer(new IssueRenderer());
     add(new JScrollPane(issuesList));
-
     toFront();
+  }
+
+  public void onVisible() {
     setVisible(true);
     setAlwaysOnTop(true);
   }
 
-
+  public void updateIssues(List<Diagnostic> list) {
+    initList(list);
+    issuesList.setModel(listModel);
+  }
 
   public void initList(List<Diagnostic> list) {
     listModel.clear();
@@ -54,13 +66,6 @@ public class IssuesForm extends JFrame {
       listModel.addElement(issue);
     }
   }
-
-  @Override
-  public void dispose() {
-    super.dispose();
-    System.exit(0);
-  }
-
 
   private String getHTMLText(String inValue) {
 
