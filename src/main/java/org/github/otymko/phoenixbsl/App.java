@@ -64,7 +64,7 @@ public class App {
     // единая форма на все
     issuesForm = new IssuesForm();
 
-    GlobalKeyboardHookHandler hookHandler = new GlobalKeyboardHookHandler(this);
+    GlobalKeyboardHookHandler hookHandler = new GlobalKeyboardHookHandler();
     log.info("Приложение запущено");
 
   }
