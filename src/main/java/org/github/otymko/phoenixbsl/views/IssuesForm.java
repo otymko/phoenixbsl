@@ -16,10 +16,9 @@ import java.util.List;
 public class IssuesForm extends JFrame {
 
   private App app;
+
   private DefaultListModel<Issue> listModel = new DefaultListModel<>();
   private JList<Issue> issuesList;
-
-//  private JTextField search = new JTextField();
 
   private JLabel labelError = new JLabel();
   private JLabel labelWarning = new JLabel();
@@ -30,7 +29,7 @@ public class IssuesForm extends JFrame {
   private int countInfo = 0;
 
   private static final String DEFAULT_TITLE = "Замечания";
-  private static Color color = new java.awt.Color(68,68,68);
+  private static final Color colorBG = new java.awt.Color(68,68,68);
 
   public IssuesForm() {
     super(DEFAULT_TITLE);
@@ -38,7 +37,7 @@ public class IssuesForm extends JFrame {
 
     toFront();
     setSize(500, 600);
-//    setUndecorated(true);
+    setBackground(colorBG);
     initComponents();
     updateSummary();
 
@@ -49,13 +48,6 @@ public class IssuesForm extends JFrame {
     var container = getContentPane();
     var boxLayout = new BoxLayout(container, BoxLayout.Y_AXIS);
     container.setLayout(boxLayout);
-
-//    var containerSearch = new Container();
-//    containerSearch.setSize(500, 100);
-//    containerSearch.setLayout(new BoxLayout(containerSearch, BoxLayout.X_AXIS));
-//    containerSearch.add(search);
-//    container.add(containerSearch);
-
 
     issuesList = new JList<>(listModel);
     issuesList.addMouseListener(new MouseAdapter() {
