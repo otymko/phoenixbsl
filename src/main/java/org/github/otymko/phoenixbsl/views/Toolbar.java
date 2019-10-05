@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
 public class Toolbar {
 
   private static final Logger log = LoggerFactory.getLogger(Toolbar.class);
-  private static final String PATH_TO_ICON = "src/main/resources/phoenix.jpg";
+  private static final String PATH_TO_ICON = "/phoenix.jpg";
   private static final String APP_NAME = "PhoenixBSL для 1С";
 
   private static final String ITEM_NAME_SETTING = "Настройки";
@@ -39,8 +39,7 @@ public class Toolbar {
     popup.add(exitItem);
 
     var systemTray = SystemTray.getSystemTray();
-
-    var icon = new ImageIcon(PATH_TO_ICON);
+    var icon = new ImageIcon(getClass().getResource(PATH_TO_ICON));
     var image = icon.getImage();
 
     var trayIcon = new TrayIcon(image, APP_NAME, popup);
