@@ -38,11 +38,11 @@ public class CustomRobot {
 
     // поместить в буфер обмена
     Toolkit.getDefaultToolkit()
-        .getSystemClipboard()
-        .setContents(
-            new StringSelection(newText),
-            null
-        );
+      .getSystemClipboard()
+      .setContents(
+        new StringSelection(newText),
+        null
+      );
 
     // вставить в текущую активную форму
     robot.keyPress(KeyEvent.VK_CONTROL);
@@ -58,7 +58,7 @@ public class CustomRobot {
       return;
     }
 
-    List<Integer> listNumber = getListKeyEventByNumber(numberLine);
+    var listNumber = getListKeyEventByNumber(numberLine);
 
     // Перейти к строке
     robot.keyPress(KeyEvent.VK_CONTROL);
@@ -79,8 +79,7 @@ public class CustomRobot {
 
   private List<Integer> getListKeyEventByNumber(int inValue) {
     List<Integer> list = new ArrayList<>();
-
-    String str = String.valueOf(inValue);
+    var str = String.valueOf(inValue);
     for (char symbol : str.toCharArray()) {
       int key;
       switch (String.valueOf(symbol)){
