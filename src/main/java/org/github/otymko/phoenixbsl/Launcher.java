@@ -9,7 +9,7 @@ public class Launcher {
 
   public static void main(String[] args) {
 
-    App app = new App();
+    App app = App.getInstance();
 
     try {
       app.run();

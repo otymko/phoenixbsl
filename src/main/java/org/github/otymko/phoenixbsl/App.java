@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 
 public class App {
 
+  private static final App INSTANCE = new App();
+
   private static final Logger log = LoggerFactory.getLogger(App.class);
 
   private final String FAKE_PATH_FILE = "module.bsl";
@@ -36,13 +38,16 @@ public class App {
   private UIAutomation automation;
   private DiagnosticProvider diagnosticProvider;
 
-  private int thisIdProcess;
+  private int thisIdProcess = 0;
   private Window thisForm;
   private Element focusElement;
   private String tmpTextModule;
 
   public App() {
-    thisIdProcess = 0;
+  }
+
+  public static App getInstance() {
+    return INSTANCE;
   }
 
   public void run() {
