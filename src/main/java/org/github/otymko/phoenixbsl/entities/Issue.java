@@ -2,16 +2,16 @@ package org.github.otymko.phoenixbsl.entities;
 
 public class Issue {
 
-  private String discription = "";
+  private String description = "";
   private String location = "";
   private int startLine = 0;
 
-  public String getDiscription() {
-    return discription;
+  public String getDescription() {
+    return description;
   }
 
-  public void setDiscription(String discription) {
-    this.discription = discription;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public void setLocation(String location) {
@@ -24,7 +24,7 @@ public class Issue {
 
   @Override
   public String toString() {
-    return this.discription + " " + this.location;
+    return this.description + " " + this.location;
   }
 
   public int getStartLine() {
