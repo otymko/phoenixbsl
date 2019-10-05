@@ -1,6 +1,8 @@
 package org.github.otymko.phoenixbsl.views;
 
 import javafx.application.Application;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,11 +11,18 @@ import java.awt.event.ActionListener;
 
 public class Toolbar {
 
+  private static final Logger log = LoggerFactory.getLogger(Toolbar.class);
+  private static final String PATH_TO_ICON = "src/main/resources/phoenix.jpg";
+  private static final String APP_NAME = "PhoenixBSL для 1С";
+
+  private static final String ITEM_NAME_SETTING = "Настройки";
+  private static final String ITEM_NAME_EXIT = "Закрыть";
+
   public Toolbar() {
 
-    PopupMenu popup = new PopupMenu();
+    var popup = new PopupMenu();
 
-    MenuItem settingItem = new MenuItem("Настройки");
+    var settingItem = new MenuItem(ITEM_NAME_SETTING);
     settingItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Application.launch(SettingsFormApplication.class, "");
@@ -21,7 +30,7 @@ public class Toolbar {
     });
     popup.add(settingItem);
 
-    MenuItem exitItem = new MenuItem("Закрыть");
+    var exitItem = new MenuItem(ITEM_NAME_EXIT);
     exitItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         System.exit(0);
@@ -29,17 +38,17 @@ public class Toolbar {
     });
     popup.add(exitItem);
 
-    SystemTray systemTray = SystemTray.getSystemTray();
+    var systemTray = SystemTray.getSystemTray();
 
-    ImageIcon icon = new ImageIcon("src/main/resources/phoenix.jpg");
-    Image image = icon.getImage();
+    var icon = new ImageIcon(PATH_TO_ICON);
+    var image = icon.getImage();
 
-    TrayIcon trayIcon = new TrayIcon(image, "PhoenixBSL для 1С", popup);
+    var trayIcon = new TrayIcon(image, APP_NAME, popup);
     trayIcon.setImageAutoSize(true);
     try {
       systemTray.add(trayIcon);
     } catch (AWTException e) {
-      e.printStackTrace();
+      log.error(e.getMessage());
     }
 
   }
