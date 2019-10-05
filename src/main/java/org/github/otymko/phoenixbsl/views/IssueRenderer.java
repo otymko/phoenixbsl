@@ -16,7 +16,7 @@ public class IssueRenderer extends JLabel implements ListCellRenderer<Issue> {
                                                 int index, boolean isSelected, boolean cellHasFocus) {
 
     this.setIcon(UIManager.getIcon("OptionPane.errorIcon"));
-    this.setText(value.getDiscription());
+    this.setText(value.getDescription());
     return this;
   }
 }

@@ -104,7 +104,7 @@ public class IssuesForm extends JFrame {
       String message = getHTMLText(diagnostic.getMessage());
 
       Issue issue = new Issue();
-      issue.setDiscription(message);
+      issue.setDescription(message);
       Range range = diagnostic.getRange();
       Position position = range.getStart();
       String location = String.format("[%s, %s]", position.getLine() + 1, position.getCharacter() + 1);
@@ -120,6 +120,7 @@ public class IssuesForm extends JFrame {
         countInfo++;
       }
     }
+
   }
 
   private void clearFormData() {
