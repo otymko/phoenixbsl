@@ -16,7 +16,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
     - name: Copy file
-      run: cp ./build/libs/phoenix-0.1.jar ./.github/phoenix.jar
+      run: cp ./build/libs/phoenix-0.2.jar ./.github/phoenix.jar
     - uses: actions/upload-artifact@master
       with:
         name: phoenix-0.1
