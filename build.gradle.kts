@@ -1,7 +1,6 @@
 
 import java.net.URI
 
-
 plugins {
     java
     maven
@@ -20,7 +19,7 @@ repositories {
 }
 
 group = "org.github.otymko.phoenixbsl"
-version = "0.1"
+version = "0.2"
 
 dependencies {
 
@@ -33,7 +32,7 @@ dependencies {
 }
 
 configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_1_10
 }
 
 tasks.withType<JavaCompile> {

@@ -1,66 +1,134 @@
 package org.github.otymko.phoenixbsl.views;
 
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import org.github.otymko.phoenixbsl.entities.Issue;
 import org.github.otymko.phoenixbsl.App;
+import org.github.otymko.phoenixbsl.entities.Issue;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class IssuesForm extends JFrame {
 
   private App app;
+
   private DefaultListModel<Issue> listModel = new DefaultListModel<>();
+  private JList<Issue> issuesList;
 
-  public IssuesForm(App app, List<Diagnostic> list) {
-    super("Issues");
+  private JLabel labelError = new JLabel();
+  private JLabel labelWarning = new JLabel();
+  private JLabel labelInfo = new JLabel();
 
-    this.app = app;
+  private int countError = 0;
+  private int countWarning = 0;
+  private int countInfo = 0;
 
-    setBounds(100,100,500,600);
-    initList(list);
-    JList<Issue> issuesList = new JList<>(listModel);
-    issuesList.addListSelectionListener(e -> {
+  private static final String DEFAULT_TITLE = "Замечания";
+  private static final Color colorBG = new java.awt.Color(68,68,68);
 
-      Issue issue = (Issue) ((JList) e.getSource()).getSelectedValue();
-      app.focusDocumentLine(issue.getStartLine());
-
-    });
-    //issuesList.setCellRenderer(new IssueRenderer());
-    add(new JScrollPane(issuesList));
+  public IssuesForm() {
+    super(DEFAULT_TITLE);
+    this.app = App.getInstance();
 
     toFront();
+    setSize(500, 600);
+    setBackground(colorBG);
+    initComponents();
+    updateSummary();
+
+  }
+
+  private void initComponents() {
+
+    var container = getContentPane();
+    var boxLayout = new BoxLayout(container, BoxLayout.Y_AXIS);
+    container.setLayout(boxLayout);
+
+    issuesList = new JList<>(listModel);
+    issuesList.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent evt) {
+        var list = (JList)evt.getSource();
+        if (evt.getClickCount() == 2) {
+          var issue = (Issue) ((JList) evt.getSource()).getSelectedValue();
+          if (issue == null){
+            return;
+          }
+          app.focusDocumentLine(issue.getStartLine());
+        }
+      }
+    });
+    issuesList.setSize(500, 500);
+    var pane = new JScrollPane(issuesList);
+    pane.setSize(500, 500);
+    container.add(pane);
+
+    var containerLabel = new Container();
+    containerLabel.setSize(500, 100);
+    containerLabel.setLayout(new BoxLayout(containerLabel, BoxLayout.X_AXIS));
+    containerLabel.add(labelError);
+    containerLabel.add(labelWarning);
+    containerLabel.add(labelInfo);
+    container.add(containerLabel);
+
+  }
+
+  public void updateSummary() {
+    labelError.setText(String.format("Ошибки: %s ", countError));
+    labelWarning.setText(String.format("Предупреждений: %s ", countWarning));
+    labelInfo.setText(String.format("Информации: %s ", countInfo));
+  }
+
+  public void onVisible() {
     setVisible(true);
     setAlwaysOnTop(true);
   }
 
+  public void updateIssues(List<Diagnostic> list) {
+    initList(list);
+    issuesList.setModel(listModel);
 
+    updateSummary();
+  }
 
   public void initList(List<Diagnostic> list) {
-    listModel.clear();
+
+    clearFormData();
+
     for (Diagnostic diagnostic : list) {
 
       String message = getHTMLText(diagnostic.getMessage());
 
       Issue issue = new Issue();
-      issue.setDiscription(message);
+      issue.setDescription(message);
       Range range = diagnostic.getRange();
       Position position = range.getStart();
       String location = String.format("[%s, %s]", position.getLine() + 1, position.getCharacter() + 1);
       issue.setLocation(location);
       issue.setStartLine(position.getLine() + 1);
       listModel.addElement(issue);
+
+      if (diagnostic.getSeverity() == DiagnosticSeverity.Error) {
+        countError++;
+      } else if (diagnostic.getSeverity() == DiagnosticSeverity.Warning) {
+        countWarning++;
+      } else {
+        countInfo++;
+      }
     }
+
   }
 
-  @Override
-  public void dispose() {
-    super.dispose();
-    System.exit(0);
+  private void clearFormData() {
+    listModel.clear();
+    countError = 0;
+    countInfo = 0;
+    countWarning = 0;
   }
-
 
   private String getHTMLText(String inValue) {
 

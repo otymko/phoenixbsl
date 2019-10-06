@@ -4,9 +4,10 @@ import mmarquee.automation.AutomationException;
 import mmarquee.automation.Element;
 import mmarquee.automation.UIAutomation;
 import mmarquee.automation.controls.Window;
-import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.DocumentFormattingParams;
+import org.eclipse.lsp4j.FormattingOptions;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.github._1c_syntax.bsl.languageserver.configuration.LanguageServerConfiguration;
-import org.github._1c_syntax.bsl.languageserver.context.DocumentContext;
 import org.github._1c_syntax.bsl.languageserver.context.ServerContext;
 import org.github._1c_syntax.bsl.languageserver.providers.DiagnosticProvider;
 import org.github._1c_syntax.bsl.languageserver.providers.FormatProvider;
@@ -17,12 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class App {
 
+  private static final App INSTANCE = new App();
   private static final Logger log = LoggerFactory.getLogger(App.class);
 
   private final String FAKE_PATH_FILE = "module.bsl";
@@ -36,36 +36,55 @@ public class App {
   private UIAutomation automation;
   private DiagnosticProvider diagnosticProvider;
 
-  private int thisIdProcess;
+  private int thisIdProcess = 0;
   private Window thisForm;
   private Element focusElement;
   private String tmpTextModule;
 
+
+  private IssuesForm issuesForm;
+
   public App() {
-    thisIdProcess = 0;
+  }
+
+  public static App getInstance() {
+    return INSTANCE;
   }
 
   public void run() {
 
+    // инициализация UIAutomation
     automation = UIAutomation.getInstance();
+
+    // инициализация для BSL LS
     diagnosticProvider = new DiagnosticProvider(LanguageServerConfiguration.create());
-    Toolbar toolbar = new Toolbar();
-    GlobalKeyboardHookHandler hookHandler = new GlobalKeyboardHookHandler(this);
+
+    // меню в системный трей
+    var toolbar = new Toolbar();
+
+    // единая форма на все
+    issuesForm = new IssuesForm();
+
+    // хук на нажатия кнопок
+    var hookHandler = new GlobalKeyboardHookHandler();
+
     log.info("Приложение запущено");
 
   }
 
   public void startCheckBSL() {
-    String moduleText = getModuleText();
+
+    var moduleText = getModuleText();
     if (moduleText == null ) {
       return;
     }
 
-    ServerContext bslServerContext = new ServerContext();
-    DocumentContext documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
-    List<Diagnostic> list = diagnosticProvider.computeDiagnostics(documentContext);
+    var bslServerContext = new ServerContext();
+    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
+    var list = diagnosticProvider.computeDiagnostics(documentContext);
 
-    IssuesForm form = new IssuesForm(this, list);
+    issuesForm.updateIssues(list);
+    issuesForm.onVisible();
   }
 
   public void checkFocusForm() {
@@ -75,12 +94,14 @@ public class App {
       focusElement = automation.getFocusedElement();
     } catch (AutomationException e) {
       log.error(e.getStackTrace().toString());
+      return;
     }
+
+    var idProcess = 0;
 
     if (focusElement == null) {
       clearFocusCurrentForm();
     } else {
-      int idProcess = 0;
       try {
         idProcess = focusElement.getProcessId().intValue();
         if (focusElement.getControlType() == UIA_CONTROL_DOCUMENT) {
@@ -94,7 +115,7 @@ public class App {
       }
 
       try {
-        int finalIdProcess = idProcess;
+        var finalIdProcess = idProcess;
         automation.getDesktopWindows().forEach(window -> {
           try {
             if (window.getProcessId().toString().equals(String.valueOf(finalIdProcess))) {
@@ -109,8 +130,8 @@ public class App {
       }
 
       try {
-        String txt = thisForm.getName();
-        Matcher matcher = pattern.matcher(txt);
+        var txt = thisForm.getName();
+        var matcher = pattern.matcher(txt);
         if (matcher.find()) {
           thisIdProcess = idProcess;
         } else {
@@ -128,28 +149,28 @@ public class App {
 
   public void formattingTextByBSL() {
 
-    String moduleText = getModuleText();
+    var moduleText = getModuleText();
     if (moduleText == null ) {
       return;
     }
 
-    ServerContext bslServerContext = new ServerContext();
-    DocumentFormattingParams params = new DocumentFormattingParams();
+    var bslServerContext = new ServerContext();
+    var params = new DocumentFormattingParams();
     params.setTextDocument(getTextDocumentIdentifier(fakeFile));
     params.setOptions(new FormattingOptions(4, true));
 
-    DocumentContext documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
-    List<TextEdit> textEdits = FormatProvider.getFormatting(params, documentContext);
+    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
+    var textEdits = FormatProvider.getFormatting(params, documentContext);
 
-    String newModuleText = textEdits.get(0).getNewText();
+    var newModuleText = textEdits.get(0).getNewText();
 
-    CustomRobot customRobot = new CustomRobot();
+    var customRobot = new CustomRobot();
     customRobot.updateTextOnForm(newModuleText);
 
   }
 
   private TextDocumentIdentifier getTextDocumentIdentifier(File file) {
-    String uri = file.toURI().toString();
+    var uri = file.toURI().toString();
     return new TextDocumentIdentifier(uri);
   }
 
@@ -165,7 +186,7 @@ public class App {
 
   private String getTextDocument() throws AutomationException {
 
-    String module = "";
+    var module = "";
     if (tmpTextModule != null) {
       module = tmpTextModule;
     } else {
@@ -183,7 +204,7 @@ public class App {
 
     log.info("Line: " + line);
     focusElement.setFocus();
-    CustomRobot customRobot = new CustomRobot();
+    var customRobot = new CustomRobot();
     customRobot.goToLineOnForm(line);
 
   }
