@@ -17,7 +17,9 @@ import org.github.otymko.phoenixbsl.views.Toolbar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class App {
@@ -70,6 +72,23 @@ public class App {
 
     log.info("Приложение запущено");
 
+  }
+
+  public void abort() {
+    log.error("Приложение уже запущено");
+    JOptionPane.showMessageDialog(new JFrame(), "Приложение уже запущено. Повторный запуск невозможен. ");
+    System.exit(0);
+  }
+
+  public boolean appIsRunning() {
+    AtomicBoolean isRunning = new AtomicBoolean(false);
+    ProcessHandle.allProcesses()
+        .filter(
+            ph -> ph.info().command().isPresent() && ph.info().command().get().contains("phoenixbsl"))
+        .forEach((process) -> {
+          isRunning.set(true);
+        });
+    return isRunning.get();
   }
 
   public void startCheckBSL() {
