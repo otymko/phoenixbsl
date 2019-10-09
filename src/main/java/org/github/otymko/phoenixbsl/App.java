@@ -200,7 +200,7 @@ public class App {
     var bslServerContext = new ServerContext();
     var params = new DocumentFormattingParams();
     params.setTextDocument(getTextDocumentIdentifier(fakeFile));
-    params.setOptions(new FormattingOptions(4, true));
+    params.setOptions(new FormattingOptions(4, false));
 
     var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), textForCheck);
     var textEdits = FormatProvider.getFormatting(params, documentContext);
