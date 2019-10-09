@@ -43,6 +43,8 @@ public class App {
   private Element focusElement;
   private String tmpTextModule;
 
+  private String tmpTextSelectedModule;
+
 
   private IssuesForm issuesForm;
 
@@ -98,8 +100,13 @@ public class App {
       return;
     }
 
+    var textForCheck = moduleText;
+    if (tmpTextSelectedModule.length() > 0) {
+      textForCheck = tmpTextSelectedModule;
+    }
+
     var bslServerContext = new ServerContext();
-    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
+    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), textForCheck);
     var list = diagnosticProvider.computeDiagnostics(documentContext);
 
     issuesForm.updateIssues(list);
@@ -109,6 +116,7 @@ public class App {
   public void checkFocusForm() {
 
     focusElement = null;
+    tmpTextSelectedModule = "";
     try {
       focusElement = automation.getFocusedElement();
     } catch (AutomationException e) {
@@ -131,6 +139,15 @@ public class App {
         }
       } catch (AutomationException e) {
         log.error(e.getStackTrace().toString());
+      }
+
+      if (tmpTextModule != null && tmpTextModule.length() > 0) {
+        var robot = new CustomRobot();
+        tmpTextSelectedModule = robot.getSelectedText();
+        String[] arrStr = tmpTextSelectedModule.split("\n");
+        if (arrStr.length < 2) {
+          tmpTextSelectedModule = "";
+        }
       }
 
       try {
@@ -173,18 +190,25 @@ public class App {
       return;
     }
 
+    var textForCheck = moduleText;
+    var onlySelected = false;
+    if (tmpTextSelectedModule.length() > 0) {
+      textForCheck = tmpTextSelectedModule;
+      onlySelected = true;
+    }
+
     var bslServerContext = new ServerContext();
     var params = new DocumentFormattingParams();
     params.setTextDocument(getTextDocumentIdentifier(fakeFile));
     params.setOptions(new FormattingOptions(4, true));
 
-    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
+    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), textForCheck);
     var textEdits = FormatProvider.getFormatting(params, documentContext);
 
     var newModuleText = textEdits.get(0).getNewText();
 
     var customRobot = new CustomRobot();
-    customRobot.updateTextOnForm(newModuleText);
+    customRobot.updateTextOnForm(newModuleText, onlySelected);
 
   }
 

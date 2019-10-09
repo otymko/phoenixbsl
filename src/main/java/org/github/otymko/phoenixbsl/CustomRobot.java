@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,18 +26,50 @@ public class CustomRobot {
     }
   }
 
-  public void updateTextOnForm(String newText) {
+  public String getSelectedText() {
+    var result = "";
+
+    if (robot == null) {
+      log.error("Robot не инициализирован. Выполнение команды getSelectedText невозможно.");
+      return result;
+    }
+
+    // очистить буфер обмена
+    StringSelection stringSelection = new StringSelection("");
+    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+
+    robot.keyPress(KeyEvent.VK_CONTROL);
+    robot.keyPress(KeyEvent.VK_C);
+    robot.delay(100);
+    robot.keyRelease(KeyEvent.VK_CONTROL);
+
+    // получим из буфера
+    try {
+      result = (String) Toolkit.getDefaultToolkit()
+        .getSystemClipboard().getData(DataFlavor.stringFlavor);
+    } catch (UnsupportedFlavorException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return result;
+  }
+
+  public void updateTextOnForm(String newText, boolean onlySelected) {
 
     if (robot == null) {
       log.error("Robot не инициализирован. Выполнение команды updateTextOnForm невозможно.");
       return;
     }
 
-    // выделить все
-    robot.keyPress(KeyEvent.VK_CONTROL);
-    robot.keyPress(KeyEvent.VK_A);
-    robot.delay(100);
-    robot.keyRelease(KeyEvent.VK_CONTROL);
+    if (!onlySelected) {
+      // выделить все
+      robot.keyPress(KeyEvent.VK_CONTROL);
+      robot.keyPress(KeyEvent.VK_A);
+      robot.delay(100);
+      robot.keyRelease(KeyEvent.VK_CONTROL);
+    }
 
     // поместить в буфер обмена
     Toolkit.getDefaultToolkit()
