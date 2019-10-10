@@ -19,10 +19,11 @@ repositories {
 }
 
 group = "org.github.otymko.phoenixbsl"
-version = "0.2"
+version = "0.2.1"
 
 dependencies {
 
+    implementation("net.java.dev.jna:jna-platform:5.4.0")
     compile("com.hynnet", "jacob", "1.18")
     compile("com.github.mmarquee:ui-automation:develop-SNAPSHOT")
     compile("com.github.1c-syntax:bsl-language-server:0.10.2")

@@ -22,143 +22,33 @@ public class CustomRobot {
       robot = new Robot();
     } catch (AWTException e) {
       robot = null;
-      log.error("Не удалось инициализировать Robot AWT");
+      log.error("Не удалось инициализировать Robot");
     }
   }
 
-  public String getSelectedText() {
-    var result = "";
-
-    if (robot == null) {
-      log.error("Robot не инициализирован. Выполнение команды getSelectedText невозможно.");
-      return result;
-    }
-
-    // очистить буфер обмена
-    StringSelection stringSelection = new StringSelection("");
-    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
-
-    robot.keyPress(KeyEvent.VK_CONTROL);
-    robot.keyPress(KeyEvent.VK_C);
-    robot.delay(100);
-    robot.keyRelease(KeyEvent.VK_CONTROL);
-
-    // получим из буфера
-    try {
-      result = (String) Toolkit.getDefaultToolkit()
-        .getSystemClipboard().getData(DataFlavor.stringFlavor);
-    } catch (UnsupportedFlavorException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return result;
-  }
-
-  public void updateTextOnForm(String newText, boolean onlySelected) {
-
-    if (robot == null) {
-      log.error("Robot не инициализирован. Выполнение команды updateTextOnForm невозможно.");
-      return;
-    }
-
-    if (!onlySelected) {
-      // выделить все
-      robot.keyPress(KeyEvent.VK_CONTROL);
-      robot.keyPress(KeyEvent.VK_A);
-      robot.delay(100);
-      robot.keyRelease(KeyEvent.VK_CONTROL);
-    }
-
-    // поместить в буфер обмена
-    Toolkit.getDefaultToolkit()
-      .getSystemClipboard()
-      .setContents(
-        new StringSelection(newText),
-        null
-      );
-
-    // вставить в текущую активную форму
-    robot.keyPress(KeyEvent.VK_CONTROL);
-    robot.keyPress(KeyEvent.VK_V);
-    robot.delay(100);
-    robot.keyRelease(KeyEvent.VK_CONTROL);
-  }
-
-  public void goToLineOnForm(int numberLine) {
-
-    if (robot == null) {
-      log.error("Robot не инициализирован. Выполнение команды updateTextOnForm невозможно.");
-      return;
-    }
-
-    var listNumber = getListKeyEventByNumber(numberLine);
-
-    // Перейти к строке
-    robot.keyPress(KeyEvent.VK_CONTROL);
-    robot.keyPress(KeyEvent.VK_G);
-    robot.delay(100);
-    robot.keyRelease(KeyEvent.VK_CONTROL);
-
-    // Ввести номер строки
-    for(int number : listNumber) {
+  public void pressKeyList(List<Integer> list) {
+    for(int number : list) {
       robot.keyPress(number);
       robot.delay(70);
     }
-
-    // Выполнить переход
-    robot.keyPress(KeyEvent.VK_ENTER);
-
   }
 
-  private List<Integer> getListKeyEventByNumber(int inValue) {
-    List<Integer> list = new ArrayList<>();
-    var str = String.valueOf(inValue);
-    for (char symbol : str.toCharArray()) {
-      int key;
-      switch (String.valueOf(symbol)){
-        case ("0"):
-          key = KeyEvent.VK_0;
-          break;
-        case ("1"):
-          key = KeyEvent.VK_1;
-          break;
-        case ("2"):
-          key = KeyEvent.VK_2;
-          break;
-        case ("3"):
-          key = KeyEvent.VK_3;
-          break;
-        case ("4"):
-          key = KeyEvent.VK_4;
-          break;
-        case ("5"):
-          key = KeyEvent.VK_5;
-          break;
-        case ("6"):
-          key = KeyEvent.VK_6;
-          break;
-        case ("7"):
-          key = KeyEvent.VK_7;
-          break;
-        case ("8"):
-          key = KeyEvent.VK_8;
-          break;
-        case ("9"):
-          key = KeyEvent.VK_9;
-          break;
-        default:
-          key = 0;
-          break;
-      }
+  public void pressKey(int key) {
+    robot.keyPress(key);
+  }
 
-      if (key != 0){
-        list.add((Integer) key);
-      }
-    }
+  public void Ctrl(int Key) {
+    robot.keyPress(KeyEvent.VK_CONTROL);
+    robot.keyPress(Key);
+    robot.delay(100);
+    robot.keyRelease(KeyEvent.VK_CONTROL);
+  }
 
-    return list;
+  public void Alt(int Key) {
+    robot.keyPress(KeyEvent.VK_ALT);
+    robot.keyPress(Key);
+    robot.delay(30);
+    robot.keyRelease(KeyEvent.VK_ALT);
   }
 
 }

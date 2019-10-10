@@ -28,6 +28,8 @@ public class IssuesForm extends JFrame {
   private int countWarning = 0;
   private int countInfo = 0;
 
+  private int lineOfset = 0;
+
   private static final String DEFAULT_TITLE = "Замечания";
   private static final Color colorBG = new java.awt.Color(68,68,68);
 
@@ -58,7 +60,7 @@ public class IssuesForm extends JFrame {
           if (issue == null){
             return;
           }
-          app.focusDocumentLine(issue.getStartLine());
+          app.gotoLineModule(issue.getStartLine() + lineOfset);
         }
       }
     });
@@ -128,6 +130,10 @@ public class IssuesForm extends JFrame {
     countError = 0;
     countInfo = 0;
     countWarning = 0;
+  }
+
+  public void setLineOfset(int lineOfset) {
+    this.lineOfset = lineOfset;
   }
 
   private String getHTMLText(String inValue) {
