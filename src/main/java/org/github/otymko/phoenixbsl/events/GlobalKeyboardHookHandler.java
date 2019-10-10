@@ -4,6 +4,7 @@ import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
 import org.github.otymko.phoenixbsl.App;
+import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,16 +34,19 @@ public class GlobalKeyboardHookHandler {
       public void keyPressed(GlobalKeyEvent event) {
         if (event.getVirtualKeyCode() == GlobalKeyEvent.VK_I && event.isControlPressed()) {
           log.info(event.toString());
-          app.checkFocusForm();
-          if (app.isFindForm()) {
-            app.startCheckBSL();
+          if (PhoenixAPI.isWindowsForm1S()) {
+            app.updateFocusForm();
+            app.runCheckBSL();
+          }
+          else {
+            log.info("Это не форма 1С");
           }
         }
         if (event.getVirtualKeyCode() == GlobalKeyEvent.VK_K && event.isControlPressed()) {
           log.info(event.toString());
-          app.checkFocusForm();
-          if (app.isFindForm()) {
-            app.formattingTextByBSL();
+          if (PhoenixAPI.isWindowsForm1S()) {
+            app.updateFocusForm();
+            app.runFormattingBSL();
           }
         }
       }
@@ -51,7 +55,7 @@ public class GlobalKeyboardHookHandler {
 
     try {
       while(run) {
-        Thread.sleep(128);
+        Thread.sleep(200);
       }
     } catch(InterruptedException e) {
       //Do nothing
