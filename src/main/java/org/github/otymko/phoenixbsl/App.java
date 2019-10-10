@@ -69,10 +69,13 @@ public class App {
   }
 
   public boolean appIsRunning() {
+    var thisPid = ProcessHandle.current().pid();
     AtomicBoolean isRunning = new AtomicBoolean(false);
     ProcessHandle.allProcesses()
         .filter(
-            ph -> ph.info().command().isPresent() && ph.info().command().get().contains("phoenixbsl"))
+            ph -> ph.info().command().isPresent()
+                && ph.info().command().get().contains("phoenixbsl")
+                && ph.pid() != thisPid)
         .forEach((process) -> {
           isRunning.set(true);
         });
