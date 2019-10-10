@@ -1,6 +1,5 @@
 package org.github.otymko.phoenixbsl.views;
 
-import javafx.application.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,6 @@ public class Toolbar {
     var settingItem = new MenuItem(ITEM_NAME_SETTING);
     settingItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Application.launch(SettingsFormApplication.class, "");
       }
     });
     popup.add(settingItem);
