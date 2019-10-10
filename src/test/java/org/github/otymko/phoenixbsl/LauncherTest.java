@@ -7,7 +7,7 @@ public class LauncherTest {
   @Test
   public void test() {
 
-    // Launcher.main(null);
+//    Launcher.main(null);
 
   }
 
