@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.Format;
 import java.util.List;
 
 public class IssuesForm extends JFrame {
@@ -103,15 +104,15 @@ public class IssuesForm extends JFrame {
 
     for (Diagnostic diagnostic : list) {
 
-      String message = getHTMLText(diagnostic.getMessage());
+      var range = diagnostic.getRange();
+      var position = range.getStart();
+      var startLine = position.getLine() + 1;
+      var message = String.format("[%s]: %s", startLine, diagnostic.getMessage());
 
       Issue issue = new Issue();
-      issue.setDescription(message);
-      Range range = diagnostic.getRange();
-      Position position = range.getStart();
-      String location = String.format("[%s, %s]", position.getLine() + 1, position.getCharacter() + 1);
-      issue.setLocation(location);
-      issue.setStartLine(position.getLine() + 1);
+      issue.setDescription(getHTMLText(message));
+      issue.setStartLine(startLine);
+
       listModel.addElement(issue);
 
       if (diagnostic.getSeverity() == DiagnosticSeverity.Error) {
@@ -121,6 +122,7 @@ public class IssuesForm extends JFrame {
       } else {
         countInfo++;
       }
+
     }
 
   }
