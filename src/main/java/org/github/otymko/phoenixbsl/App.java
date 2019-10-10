@@ -1,13 +1,13 @@
 package org.github.otymko.phoenixbsl;
 
+import com.github._1c_syntax.bsl.languageserver.configuration.LanguageServerConfiguration;
+import com.github._1c_syntax.bsl.languageserver.context.ServerContext;
+import com.github._1c_syntax.bsl.languageserver.providers.DiagnosticProvider;
+import com.github._1c_syntax.bsl.languageserver.providers.FormatProvider;
 import com.sun.jna.platform.win32.WinDef;
 import org.eclipse.lsp4j.DocumentFormattingParams;
 import org.eclipse.lsp4j.FormattingOptions;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
-import org.github._1c_syntax.bsl.languageserver.configuration.LanguageServerConfiguration;
-import org.github._1c_syntax.bsl.languageserver.context.ServerContext;
-import org.github._1c_syntax.bsl.languageserver.providers.DiagnosticProvider;
-import org.github._1c_syntax.bsl.languageserver.providers.FormatProvider;
 import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.github.otymko.phoenixbsl.core.PhoenixUser32;
 import org.github.otymko.phoenixbsl.events.GlobalKeyboardHookHandler;

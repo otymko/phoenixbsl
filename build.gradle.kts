@@ -26,9 +26,9 @@ dependencies {
     implementation("net.java.dev.jna:jna-platform:5.4.0")
     compile("com.hynnet", "jacob", "1.18")
     compile("com.github.mmarquee:ui-automation:develop-SNAPSHOT")
-    compile("com.github.1c-syntax:bsl-language-server:0.10.2")
+    compile("com.github.1c-syntax:bsl-language-server:8290c1e302d08025104377df4ae54c778ab81772")
     testCompile("junit", "junit", "4.12")
-    compile("lc.kra.system:system-hook:3.5");
+    compile("lc.kra.system:system-hook:3.5")
 
 }
 
