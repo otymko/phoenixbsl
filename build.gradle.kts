@@ -7,7 +7,6 @@ plugins {
     jacoco
     id("com.github.gradle-git-version-calculator") version "1.1.0"
     id("com.github.ben-manes.versions") version "0.22.0"
-    id("org.openjfx.javafxplugin") version "0.0.8"
 }
 
 repositories {
@@ -19,15 +18,16 @@ repositories {
 }
 
 group = "org.github.otymko.phoenixbsl"
-version = "0.2"
+version = "0.2.1"
 
 dependencies {
 
+    implementation("net.java.dev.jna:jna-platform:5.4.0")
+    compile("net.java.dev.jna:jna-platform:5.4.0")
     compile("com.hynnet", "jacob", "1.18")
-    compile("com.github.mmarquee:ui-automation:develop-SNAPSHOT")
-    compile("com.github.1c-syntax:bsl-language-server:0.10.2")
+    compile("com.github.1c-syntax:bsl-language-server:8290c1e302d08025104377df4ae54c778ab81772")
     testCompile("junit", "junit", "4.12")
-    compile("lc.kra.system:system-hook:3.5");
+    compile("lc.kra.system:system-hook:3.5")
 
 }
 
@@ -54,8 +54,4 @@ tasks.withType<Jar> {
             exclude("META-INF/*.RSA")
         }
     }
-}
-
-javafx {
-    modules("javafx.controls", "javafx.fxml")
 }

@@ -10,7 +10,9 @@ public class Launcher {
   public static void main(String[] args) {
 
     App app = App.getInstance();
-
+    if (app.appIsRunning()) {
+      app.abort();
+    }
     try {
       app.run();
     } catch (RuntimeException ex) {

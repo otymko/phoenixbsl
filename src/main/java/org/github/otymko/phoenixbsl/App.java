@@ -1,23 +1,24 @@
 package org.github.otymko.phoenixbsl;
 
-import mmarquee.automation.AutomationException;
-import mmarquee.automation.Element;
-import mmarquee.automation.UIAutomation;
-import mmarquee.automation.controls.Window;
+import com.github._1c_syntax.bsl.languageserver.configuration.LanguageServerConfiguration;
+import com.github._1c_syntax.bsl.languageserver.context.ServerContext;
+import com.github._1c_syntax.bsl.languageserver.providers.DiagnosticProvider;
+import com.github._1c_syntax.bsl.languageserver.providers.FormatProvider;
+import com.sun.jna.platform.win32.WinDef;
 import org.eclipse.lsp4j.DocumentFormattingParams;
 import org.eclipse.lsp4j.FormattingOptions;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
-import org.github._1c_syntax.bsl.languageserver.configuration.LanguageServerConfiguration;
-import org.github._1c_syntax.bsl.languageserver.context.ServerContext;
-import org.github._1c_syntax.bsl.languageserver.providers.DiagnosticProvider;
-import org.github._1c_syntax.bsl.languageserver.providers.FormatProvider;
+import org.github.otymko.phoenixbsl.core.PhoenixAPI;
+import org.github.otymko.phoenixbsl.core.PhoenixUser32;
 import org.github.otymko.phoenixbsl.events.GlobalKeyboardHookHandler;
 import org.github.otymko.phoenixbsl.views.IssuesForm;
 import org.github.otymko.phoenixbsl.views.Toolbar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class App {
@@ -32,17 +33,9 @@ public class App {
 
   private final File fakeFile = new File(FAKE_PATH_FILE);
   private Pattern pattern = Pattern.compile(REGEX_FORM_TITLE, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-
-  private UIAutomation automation;
   private DiagnosticProvider diagnosticProvider;
-
-  private int thisIdProcess = 0;
-  private Window thisForm;
-  private Element focusElement;
-  private String tmpTextModule;
-
-
   private IssuesForm issuesForm;
+  private WinDef.HWND focusForm;
 
   public App() {
   }
@@ -52,9 +45,6 @@ public class App {
   }
 
   public void run() {
-
-    // инициализация UIAutomation
-    automation = UIAutomation.getInstance();
 
     // инициализация для BSL LS
     diagnosticProvider = new DiagnosticProvider(LanguageServerConfiguration.create());
@@ -72,145 +62,86 @@ public class App {
 
   }
 
-  public void startCheckBSL() {
+  public void abort() {
+    log.error("Приложение уже запущено");
+    JOptionPane.showMessageDialog(new JFrame(), "Приложение уже запущено. Повторный запуск невозможен. ");
+    System.exit(0);
+  }
 
-    var moduleText = getModuleText();
-    if (moduleText == null ) {
-      return;
+  public boolean appIsRunning() {
+    var thisPid = ProcessHandle.current().pid();
+    AtomicBoolean isRunning = new AtomicBoolean(false);
+    ProcessHandle.allProcesses()
+        .filter(
+            ph -> ph.info().command().isPresent()
+                && ph.info().command().get().contains("phoenixbsl")
+                && ph.pid() != thisPid)
+        .forEach((process) -> {
+          isRunning.set(true);
+        });
+    return isRunning.get();
+  }
+
+  public void runCheckBSL() {
+
+    var lineOfset = 0;
+    var textForCheck = "";
+    var textModuleSelected = PhoenixAPI.getTextSelected();
+    if (textModuleSelected.length() > 0) {
+      // получем номер строки
+      textForCheck = textModuleSelected;
+      lineOfset = PhoenixAPI.getCurrentLineNumber();
     }
-
+    else {
+      textForCheck = PhoenixAPI.getTextAll();
+    }
     var bslServerContext = new ServerContext();
-    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
+    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), textForCheck);
     var list = diagnosticProvider.computeDiagnostics(documentContext);
 
+    issuesForm.setLineOfset(lineOfset);
     issuesForm.updateIssues(list);
     issuesForm.onVisible();
+
   }
 
-  public void checkFocusForm() {
+  public void runFormattingBSL() {
 
-    focusElement = null;
-    try {
-      focusElement = automation.getFocusedElement();
-    } catch (AutomationException e) {
-      log.error(e.getStackTrace().toString());
-      return;
+    var textForFormatting = "";
+    var isSelected = false;
+    var textModuleSelected = PhoenixAPI.getTextSelected();
+    if (textModuleSelected.length() > 0) {
+      textForFormatting = textModuleSelected;
+      isSelected = true;
     }
-
-    var idProcess = 0;
-
-    if (focusElement == null) {
-      clearFocusCurrentForm();
-    } else {
-      try {
-        idProcess = focusElement.getProcessId().intValue();
-        if (focusElement.getControlType() == UIA_CONTROL_DOCUMENT) {
-          tmpTextModule = focusElement.getPropertyValue(UIA_PROPERTY_VALUE).toString();
-        }
-        else {
-          tmpTextModule = null;
-        }
-      } catch (AutomationException e) {
-        log.error(e.getStackTrace().toString());
-      }
-
-      try {
-        var finalIdProcess = idProcess;
-        automation.getDesktopWindows().forEach(window -> {
-          try {
-            if (window.getProcessId().toString().equals(String.valueOf(finalIdProcess))) {
-              thisForm = window;
-            }
-          } catch (AutomationException e) {
-            log.error(e.getStackTrace().toString());
-          }
-        });
-      } catch (AutomationException e) {
-        log.error(e.getStackTrace().toString());
-      }
-
-      try {
-        var txt = thisForm.getName();
-        var matcher = pattern.matcher(txt);
-        if (matcher.find()) {
-          thisIdProcess = idProcess;
-        } else {
-          clearFocusCurrentForm();
-        }
-      } catch (AutomationException e) {
-        clearFocusCurrentForm();
-        log.error(e.getStackTrace().toString());
-      }
-    }
-
-    log.info("This form: " + focusElement);
-    log.info("This id process " + thisIdProcess);
-  }
-
-  public void formattingTextByBSL() {
-
-    var moduleText = getModuleText();
-    if (moduleText == null ) {
-      return;
+    else {
+      textForFormatting = PhoenixAPI.getTextAll();;
     }
 
     var bslServerContext = new ServerContext();
     var params = new DocumentFormattingParams();
     params.setTextDocument(getTextDocumentIdentifier(fakeFile));
-    params.setOptions(new FormattingOptions(4, true));
+    params.setOptions(new FormattingOptions(4, false));
 
-    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), moduleText);
-    var textEdits = FormatProvider.getFormatting(params, documentContext);
+    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), textForFormatting);
+    var newText = FormatProvider.getFormatting(params, documentContext);
 
-    var newModuleText = textEdits.get(0).getNewText();
+    PhoenixAPI.insetTextOnForm(newText.get(0).getNewText(), isSelected);
+  }
 
-    var customRobot = new CustomRobot();
-    customRobot.updateTextOnForm(newModuleText);
+  public void gotoLineModule(int line) {
+    log.info("Line: " + line);
+    PhoenixUser32.setFocusWindows(focusForm);
+    PhoenixAPI.goToLineOnForm(line);
+  }
 
+  public void updateFocusForm() {
+    focusForm = PhoenixUser32.getHWNDFocusForm();
   }
 
   private TextDocumentIdentifier getTextDocumentIdentifier(File file) {
     var uri = file.toURI().toString();
     return new TextDocumentIdentifier(uri);
-  }
-
-  private String getModuleText() {
-    String moduleText = null;
-    try {
-      moduleText = getTextDocument();
-    } catch (AutomationException e) {
-      log.error(e.getStackTrace().toString());
-    }
-    return moduleText;
-  }
-
-  private String getTextDocument() throws AutomationException {
-
-    var module = "";
-    if (tmpTextModule != null) {
-      module = tmpTextModule;
-    } else {
-      module = thisForm.getDocument(0).getElement().getPropertyValue(30045).toString();
-    }
-    return module;
-  }
-
-  private void clearFocusCurrentForm() {
-    thisForm = null;
-    thisIdProcess = 0;
-  }
-
-  public void focusDocumentLine(int line) {
-
-    log.info("Line: " + line);
-    focusElement.setFocus();
-    var customRobot = new CustomRobot();
-    customRobot.goToLineOnForm(line);
-
-  }
-
-  public boolean isFindForm() {
-    return thisIdProcess != 0;
   }
 
 }
