@@ -185,8 +185,6 @@ public class PhoenixAPI {
 
   public void getFocusForm() {
 
-
-
   }
 
 }

@@ -17,6 +17,8 @@ public class Toolbar {
   private static final String ITEM_NAME_SETTING = "Настройки";
   private static final String ITEM_NAME_EXIT = "Закрыть";
 
+  private static TrayIcon trayIcon;
+
   public Toolbar() {
 
     var popup = new PopupMenu();
@@ -40,7 +42,7 @@ public class Toolbar {
     var icon = new ImageIcon(getClass().getResource(PATH_TO_ICON));
     var image = icon.getImage();
 
-    var trayIcon = new TrayIcon(image, APP_NAME, popup);
+    trayIcon = new TrayIcon(image, APP_NAME, popup);
     trayIcon.setImageAutoSize(true);
     try {
       systemTray.add(trayIcon);
@@ -48,6 +50,13 @@ public class Toolbar {
       log.error(e.getMessage());
     }
 
+  }
+
+  public void notifyInTray(String caption, String text) {
+    trayIcon.displayMessage(
+        caption,
+        text,
+        TrayIcon.MessageType.INFO);
   }
 
 }
