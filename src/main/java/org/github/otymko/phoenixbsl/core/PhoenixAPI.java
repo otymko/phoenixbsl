@@ -12,13 +12,13 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PhoenixAPI {
 
   private static final Logger log = LoggerFactory.getLogger(PhoenixAPI.class);
-
-  public static CustomRobot robot = new CustomRobot();
+  private static CustomRobot robot = new CustomRobot();
 
   public static String getTextAll() {
     var result = "";
@@ -60,27 +60,42 @@ public class PhoenixAPI {
     robot.Ctrl(KeyEvent.VK_V);
   }
 
-  public static void clearClipboard() {
+  private static void clearClipboard() {
     StringSelection stringSelection = new StringSelection("");
     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
     log.debug("clearClipboard");
   }
 
-  public static String getFromClipboard() {
+  private static String getFromClipboard() {
     var result = "";
     try {
-      result = (String) Toolkit.getDefaultToolkit()
-          .getSystemClipboard().getData(DataFlavor.stringFlavor);
+      result = getDataClipboard();
     } catch (UnsupportedFlavorException e) {
-      e.printStackTrace();
+      log.error(Arrays.toString(e.getStackTrace()));
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error(Arrays.toString(e.getStackTrace()));
+    } catch (IllegalAccessException e) {
+      log.error(Arrays.toString(e.getStackTrace()));
     }
-    log.debug("getFromClipboard:" + result);
+    log.debug("getFromClipboard:", result);
     return result;
   }
 
-  public static void setTextInClipboard(String text) {
+  private static String getDataClipboard() throws IllegalAccessException, IOException, UnsupportedFlavorException {
+
+    try {
+      Thread.sleep(20);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    String result = (String) Toolkit.getDefaultToolkit()
+        .getSystemClipboard().getData(DataFlavor.stringFlavor);
+
+    return result;
+  }
+
+  private static void setTextInClipboard(String text) {
     Toolkit.getDefaultToolkit()
         .getSystemClipboard()
         .setContents(
@@ -104,12 +119,12 @@ public class PhoenixAPI {
         break;
       }
     }
+    log.info("Current line ofset: " + line);
     return line;
   }
 
-
   // взаимодействия с формами
-  public static boolean isWindowsForm1S(String classNameForm) {
+  private static boolean isWindowsForm1S(String classNameForm) {
     boolean result = true;
     result = classNameForm.contains("V8") || classNameForm.contains("SWT_Window");
     return result;
@@ -119,7 +134,7 @@ public class PhoenixAPI {
     return isWindowsForm1S(PhoenixUser32.getForegroundWindowClass());
   }
 
-  public static java.util.List<Integer> getListKeyEventByNumber(int inValue) {
+  private static java.util.List<Integer> getListKeyEventByNumber(int inValue) {
     List<Integer> list = new ArrayList<>();
     var str = String.valueOf(inValue);
     for (char symbol : str.toCharArray()) {
