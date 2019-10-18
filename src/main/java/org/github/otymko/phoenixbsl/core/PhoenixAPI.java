@@ -26,7 +26,6 @@ public class PhoenixAPI {
     robot.Ctrl(KeyEvent.VK_A);
     robot.Ctrl(KeyEvent.VK_C);
     result = getFromClipboard();
-    robot.Ctrl(KeyEvent.VK_Z);
     log.debug("getTextAll:" + result);
     return result;
   }
