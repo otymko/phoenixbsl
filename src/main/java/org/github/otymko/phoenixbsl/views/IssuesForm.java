@@ -61,7 +61,7 @@ public class IssuesForm extends JFrame {
           if (issue == null){
             return;
           }
-          app.gotoLineModule(issue.getStartLine() + lineOfset);
+          app.gotoLineModule(issue.getStartLine());
         }
       }
     });
@@ -106,7 +106,7 @@ public class IssuesForm extends JFrame {
 
       var range = diagnostic.getRange();
       var position = range.getStart();
-      var startLine = position.getLine() + 1;
+      var startLine = position.getLine() + 1 + lineOfset;
       var message = String.format("[%s]: %s", startLine, diagnostic.getMessage());
 
       Issue issue = new Issue();
