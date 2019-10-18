@@ -35,6 +35,10 @@ public class GlobalKeyboardHookHandler {
         if (event.getVirtualKeyCode() == GlobalKeyEvent.VK_I && event.isControlPressed()) {
           log.info(event.toString());
           if (PhoenixAPI.isWindowsForm1S()) {
+            if (event.isMenuPressed()) {
+              notifyAboutAlt();
+              return;
+            }
             app.updateFocusForm();
             app.runCheckBSL();
           }
@@ -45,6 +49,10 @@ public class GlobalKeyboardHookHandler {
         if (event.getVirtualKeyCode() == GlobalKeyEvent.VK_K && event.isControlPressed()) {
           log.info(event.toString());
           if (PhoenixAPI.isWindowsForm1S()) {
+            if (event.isMenuPressed()) {
+              notifyAboutAlt();
+              return;
+            }
             app.updateFocusForm();
             app.runFormattingBSL();
           }
@@ -65,4 +73,9 @@ public class GlobalKeyboardHookHandler {
 
   }
 
+  private void notifyAboutAlt() {
+    app.notifyUser(
+        "Использование горячих клавиш",
+        "Не используйте при нажатии горячих клавиш Alt");
+  }
 }

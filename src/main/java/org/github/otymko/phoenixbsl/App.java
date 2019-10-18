@@ -26,6 +26,9 @@ public class App {
   private static final App INSTANCE = new App();
   private static final Logger log = LoggerFactory.getLogger(App.class);
 
+  private Toolbar toolbar;
+  private GlobalKeyboardHookHandler hookHandler;
+
   private final String FAKE_PATH_FILE = "module.bsl";
   private final String REGEX_FORM_TITLE = "Конфигуратор|Designer";
   private final int UIA_CONTROL_DOCUMENT = 50030;
@@ -50,13 +53,13 @@ public class App {
     diagnosticProvider = new DiagnosticProvider(LanguageServerConfiguration.create());
 
     // меню в системный трей
-    var toolbar = new Toolbar();
+    toolbar = new Toolbar();
 
     // единая форма на все
     issuesForm = new IssuesForm();
 
     // хук на нажатия кнопок
-    var hookHandler = new GlobalKeyboardHookHandler();
+    hookHandler = new GlobalKeyboardHookHandler();
 
     log.info("Приложение запущено");
 
@@ -103,6 +106,10 @@ public class App {
     issuesForm.updateIssues(list);
     issuesForm.onVisible();
 
+  }
+
+  public void notifyUser(String caption, String text) {
+    toolbar.notifyInTray(caption, text);
   }
 
   public void runFormattingBSL() {
