@@ -18,21 +18,22 @@ repositories {
 }
 
 group = "org.github.otymko.phoenixbsl"
-version = "0.2.1"
+version = "0.2.2"
 
 dependencies {
 
     implementation("net.java.dev.jna:jna-platform:5.4.0")
     compile("net.java.dev.jna:jna-platform:5.4.0")
     compile("com.hynnet", "jacob", "1.18")
-    compile("com.github.1c-syntax:bsl-language-server:8290c1e302d08025104377df4ae54c778ab81772")
+    compile("com.github.1c-syntax:bsl-language-server:ccad9e68b611d012b6523970cebdbe3b7a801770")
     testCompile("junit", "junit", "4.12")
     compile("lc.kra.system:system-hook:3.5")
 
 }
 
 configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_10
+    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_11
 }
 
 tasks.withType<JavaCompile> {

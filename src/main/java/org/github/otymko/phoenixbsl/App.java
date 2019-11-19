@@ -50,7 +50,7 @@ public class App {
   public void run() {
 
     // инициализация для BSL LS
-    diagnosticProvider = new DiagnosticProvider(LanguageServerConfiguration.create());
+    diagnosticProvider = new DiagnosticProvider();
 
     // меню в системный трей
     toolbar = new Toolbar();
