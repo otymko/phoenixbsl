@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.core;
 
 import com.github._1c_syntax.bsl.languageserver.context.ServerContext;
 import com.github._1c_syntax.bsl.languageserver.providers.DiagnosticProvider;
@@ -7,6 +7,9 @@ import com.sun.jna.platform.win32.WinDef;
 import org.eclipse.lsp4j.DocumentFormattingParams;
 import org.eclipse.lsp4j.FormattingOptions;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.github.otymko.phoenixbsl.views.IssuesForm;
+import org.github.otymko.phoenixbsl.events.EventListener;
+import org.github.otymko.phoenixbsl.events.EventManager;
 
 import javax.swing.*;
 import java.awt.*;

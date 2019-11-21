@@ -1,5 +1,6 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.threads;
 
+import org.github.otymko.phoenixbsl.core.GlobalKeyListener;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 

@@ -1,5 +1,9 @@
 package org.github.otymko.phoenixbsl;
 
+import org.github.otymko.phoenixbsl.core.PhoenixApp;
+import org.github.otymko.phoenixbsl.threads.GlobalKeyListenerThread;
+import org.github.otymko.phoenixbsl.threads.MainApplicationThread;
+
 public class Launcher {
 
   public static void main(String[] args) {

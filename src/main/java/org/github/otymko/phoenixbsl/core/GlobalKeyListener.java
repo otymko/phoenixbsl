@@ -1,5 +1,7 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.core;
 
+import org.github.otymko.phoenixbsl.core.PhoenixApp;
+import org.github.otymko.phoenixbsl.events.EventManager;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 

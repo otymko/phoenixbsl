@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.events;
 
 public interface EventListener {
   default void formatting() {

@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.core;
 
 //import java.awt.*;
 

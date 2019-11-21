@@ -1,7 +1,9 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.views;
 
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.github.otymko.phoenixbsl.core.PhoenixApp;
+import org.github.otymko.phoenixbsl.entities.Issue;
 
 import javax.swing.*;
 import java.awt.*;
