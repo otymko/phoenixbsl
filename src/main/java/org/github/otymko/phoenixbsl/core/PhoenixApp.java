@@ -1,15 +1,11 @@
 package org.github.otymko.phoenixbsl.core;
 
-import com.github._1c_syntax.bsl.languageserver.context.ServerContext;
-import com.github._1c_syntax.bsl.languageserver.providers.DiagnosticProvider;
-import com.github._1c_syntax.bsl.languageserver.providers.FormatProvider;
 import com.sun.jna.platform.win32.WinDef;
-import org.eclipse.lsp4j.DocumentFormattingParams;
-import org.eclipse.lsp4j.FormattingOptions;
-import org.eclipse.lsp4j.TextDocumentIdentifier;
-import org.github.otymko.phoenixbsl.views.IssuesForm;
+import org.eclipse.lsp4j.*;
+import org.github.otymko.phoenixbsl.BSLLanguageLauncher;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
+import org.github.otymko.phoenixbsl.views.IssuesForm;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,8 +17,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 //import java.awt.*;
@@ -35,19 +35,20 @@ public class PhoenixApp implements EventListener {
   private static CustomRobot robot = new CustomRobot();
   private EventManager events;
 
-  private final String FAKE_PATH_FILE = "module.bsl";
+  public static final String FAKE_PATH_FILE = "F:/BSL/fake.bsl";
   private final File fakeFile = new File(FAKE_PATH_FILE);
 
-  private DiagnosticProvider diagnosticProvider;
   private IssuesForm issuesForm;
   private WinDef.HWND focusForm;
+
+
+  public BSLLanguageLauncher bslLanguageLauncher = null;
 
   public PhoenixApp() {
     events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING);
     events.subscribe(EventManager.EVENT_INSPECTION, this);
     events.subscribe(EventManager.EVENT_FORMATTING, this);
 
-    diagnosticProvider = new DiagnosticProvider();
     issuesForm = new IssuesForm();
   }
 
@@ -69,6 +70,7 @@ public class PhoenixApp implements EventListener {
 
   @Override
   public void formatting() {
+
     System.out.println("Need formatting!");
 
     var textForFormatting = "";
@@ -77,25 +79,35 @@ public class PhoenixApp implements EventListener {
     if (textModuleSelected.length() > 0) {
       textForFormatting = textModuleSelected;
       isSelected = true;
+    } else {
+      textForFormatting = getTextAll();
+      ;
     }
-    else {
-      textForFormatting = getTextAll();;
+
+    // DidChange
+    textDocumentDidChange(textForFormatting);
+
+    // Formatting
+    var listEdits = textDocumentFormatting();
+
+    try {
+      insetTextOnForm(listEdits.get().get(0).getNewText(), isSelected);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      e.printStackTrace();
     }
 
-    var bslServerContext = new ServerContext();
-    var params = new DocumentFormattingParams();
-    params.setTextDocument(getTextDocumentIdentifier(fakeFile));
-    params.setOptions(new FormattingOptions(4, false));
-
-    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), textForFormatting);
-    var newText = FormatProvider.getFormatting(params, documentContext);
-
-    insetTextOnForm(newText.get(0).getNewText(), isSelected);
   }
 
-  private TextDocumentIdentifier getTextDocumentIdentifier(File file) {
-    var uri = file.toURI().toString();
-    return new TextDocumentIdentifier(uri);
+  private CompletableFuture<List<? extends TextEdit>> textDocumentFormatting() {
+    var paramsFormatting = new DocumentFormattingParams();
+    var identifier = new TextDocumentIdentifier();
+    identifier.setUri(fakeFile.toPath().toAbsolutePath().toUri().toString());
+    paramsFormatting.setTextDocument(identifier);
+    var options = new FormattingOptions(4, false);
+    paramsFormatting.setOptions(options);
+    return bslLanguageLauncher.sendFormatting(paramsFormatting);
   }
 
   public static void insetTextOnForm(String text, boolean isSelected) {
@@ -108,11 +120,11 @@ public class PhoenixApp implements EventListener {
 
   private static void setTextInClipboard(String text) {
     Toolkit.getDefaultToolkit()
-        .getSystemClipboard()
-        .setContents(
-            new StringSelection(text),
-            null
-        );
+      .getSystemClipboard()
+      .setContents(
+        new StringSelection(text),
+        null
+      );
   }
 
   @Override
@@ -121,6 +133,10 @@ public class PhoenixApp implements EventListener {
     if (isWindowsForm1S()) {
       updateFocusForm();
     } else {
+      return;
+    }
+
+    if (bslLanguageLauncher == null) {
       return;
     }
 
@@ -133,21 +149,26 @@ public class PhoenixApp implements EventListener {
       // получем номер строки
       textForCheck = textModuleSelected;
       lineOfset = getCurrentLineNumber();
-    }
-    else {
+    } else {
       textForCheck = getTextAll();
     }
-    var bslServerContext = new ServerContext();
-    var documentContext = bslServerContext.addDocument(fakeFile.toURI().toString(), textForCheck);
-    var list = diagnosticProvider.computeDiagnostics(documentContext);
 
     issuesForm.setLineOfset(lineOfset);
-    issuesForm.updateIssues(list);
-    issuesForm.onVisible();
+
+    textDocumentDidChange(textForCheck);
+    textDocumentDidSave();
 
   }
 
-  public static void initToolbar() {
+  private void textDocumentDidSave() {
+    var paramsSave = new DidSaveTextDocumentParams();
+    TextDocumentIdentifier textDocumentIdentifier = new TextDocumentIdentifier();
+    textDocumentIdentifier.setUri(fakeFile.toPath().toAbsolutePath().toUri().toString());
+    paramsSave.setTextDocument(textDocumentIdentifier);
+    bslLanguageLauncher.sendTextDocumentDidSave(paramsSave);
+  }
+
+  public void initToolbar() {
     var popup = new PopupMenu();
 
     var settingItem = new MenuItem("Настройки");
@@ -200,7 +221,7 @@ public class PhoenixApp implements EventListener {
     robot.Ctrl(KeyEvent.VK_Z);
     String[] arrStr = textAll.split("\n");
     var count = 0;
-    for (var element: arrStr) {
+    for (var element : arrStr) {
       count++;
       if (element.contains("☻")) { // 9787
         line = count - 1;
@@ -245,7 +266,7 @@ public class PhoenixApp implements EventListener {
     }
 
     String result = (String) Toolkit.getDefaultToolkit()
-        .getSystemClipboard().getData(DataFlavor.stringFlavor);
+      .getSystemClipboard().getData(DataFlavor.stringFlavor);
 
     return result;
   }
@@ -319,13 +340,13 @@ public class PhoenixApp implements EventListener {
     var thisPid = ProcessHandle.current().pid();
     AtomicBoolean isRunning = new AtomicBoolean(false);
     ProcessHandle.allProcesses()
-        .filter(
-            ph -> ph.info().command().isPresent()
-                && ph.info().command().get().contains("phoenixbsl")
-                && ph.pid() != thisPid)
-        .forEach((process) -> {
-          isRunning.set(true);
-        });
+      .filter(
+        ph -> ph.info().command().isPresent()
+          && ph.info().command().get().contains("phoenixbsl")
+          && ph.pid() != thisPid)
+      .forEach((process) -> {
+        isRunning.set(true);
+      });
     return isRunning.get();
   }
 
@@ -333,6 +354,49 @@ public class PhoenixApp implements EventListener {
     //log.error("Приложение уже запущено");
     JOptionPane.showMessageDialog(new JFrame(), "Приложение уже запущено. Повторный запуск невозможен.");
     System.exit(0);
+  }
+
+  public IssuesForm getIssuesForm() {
+    return this.issuesForm;
+  }
+
+
+  public void textDocumentDidOpen() {
+    // откроем фейковый документ
+    DidOpenTextDocumentParams params = new DidOpenTextDocumentParams();
+    TextDocumentItem item = new TextDocumentItem();
+    item.setLanguageId("bsl");
+    item.setUri(new File("F:/BSL/fake.bsl").toPath().toAbsolutePath().toUri().toString());
+    item.setText("");
+    params.setTextDocument(item);
+    bslLanguageLauncher.sendTextDocumentDidOpen(params);
+  }
+
+  public void textDocumentDidChange(String textForCheck) {
+    var params = new DidChangeTextDocumentParams();
+    VersionedTextDocumentIdentifier versionedTextDocumentIdentifier = new VersionedTextDocumentIdentifier();
+    versionedTextDocumentIdentifier.setUri(fakeFile.toPath().toAbsolutePath().toUri().toString());
+    versionedTextDocumentIdentifier.setVersion(1);
+    params.setTextDocument(versionedTextDocumentIdentifier);
+    var textDocument = new TextDocumentContentChangeEvent();
+    textDocument.setText(textForCheck);
+    List<TextDocumentContentChangeEvent> list = new ArrayList<>();
+    list.add(textDocument);
+    params.setContentChanges(list);
+    bslLanguageLauncher.sendTextDocumentDidChange(params);
+  }
+
+  public Process startProcessBSLLS() {
+    Process processBSL = null;
+    Path path = Paths.get(".", "src/main/resources/bsl-language-server.jar");
+    String[] arguments = new String[]{
+      "java", "-jar", path.toAbsolutePath().toString()};
+    try {
+      processBSL = new ProcessBuilder(arguments).start();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return processBSL;
   }
 
 }

@@ -21,7 +21,7 @@ dependencies {
     implementation("net.java.dev.jna:jna-platform:5.4.0")
     compile("net.java.dev.jna:jna-platform:5.4.0")
     compile("com.1stleg:jnativehook:2.1.0")
-    compile("com.github.1c-syntax:bsl-language-server:ccad9e68b611d012b6523970cebdbe3b7a801770")
+    compile("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.8.1")
 }
 
 configure<JavaPluginConvention> {
@@ -37,7 +37,7 @@ tasks.withType<JavaCompile> {
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "org.github.otymko.phoenixbsl.Launcher"
+        attributes["Main-Class"] = "org.github.otymko.phoenixbsl.LauncherApp"
         attributes["Implementation-Version"] = "0.3.0"
     }
     configurations["compile"].forEach {

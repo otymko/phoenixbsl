@@ -20,7 +20,7 @@ public class GlobalKeyListenerThread extends Thread {
     }
     GlobalScreen.addNativeKeyListener(new GlobalKeyListener());
     Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-    logger.setLevel(Level.WARNING);
+    logger.setLevel(Level.OFF);
   }
 
 }
