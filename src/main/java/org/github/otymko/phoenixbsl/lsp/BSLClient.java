@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.lsp;
 
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -7,7 +7,7 @@ import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class BSLLanguageClient implements LanguageClient {
+public class BSLClient implements LanguageClient {
 
   @Override
   public CompletableFuture<ApplyWorkspaceEditResponse> applyEdit(ApplyWorkspaceEditParams params) {
@@ -33,10 +33,6 @@ public class BSLLanguageClient implements LanguageClient {
   public void publishDiagnostics(PublishDiagnosticsParams publishDiagnosticsParams) {
 
     List<Diagnostic> list = publishDiagnosticsParams.getDiagnostics();
-    if (list == null) {
-      return;
-    }
-
     if (list.isEmpty()) {
       return;
     }

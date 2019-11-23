@@ -1,6 +1,8 @@
 package org.github.otymko.phoenixbsl;
 
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
+import org.github.otymko.phoenixbsl.lsp.BSLClient;
+import org.github.otymko.phoenixbsl.lsp.BSLServer;
 import org.github.otymko.phoenixbsl.threads.GlobalKeyListenerThread;
 import org.github.otymko.phoenixbsl.threads.MainApplicationThread;
 
@@ -33,9 +35,9 @@ public class LauncherApp {
         System.out.println("BSL не запустился");
         return;
       }
-      BSLLanguageClient client = new BSLLanguageClient();
-      BSLLanguageLauncher bslLanguageLauncher = new BSLLanguageLauncher(client, processBSL.getInputStream(), processBSL.getOutputStream());
-      bslLanguageLauncher.startInThread();
+      BSLClient client = new BSLClient();
+      BSLServer bslServer = new BSLServer(client, processBSL.getInputStream(), processBSL.getOutputStream());
+      bslServer.startInThread();
 
       try {
         Thread.currentThread().sleep(2000);
@@ -43,10 +45,10 @@ public class LauncherApp {
         e.printStackTrace();
       }
 
-      app.bslLanguageLauncher = bslLanguageLauncher;
+      app.bslServer = bslServer;
 
       // инициализация
-      bslLanguageLauncher.sendInitialize(bslLanguageLauncher.createInitializeParams());
+      bslServer.initialize(bslServer.createInitializeParams());
 
       // откроем фейковый документ
       app.textDocumentDidOpen();

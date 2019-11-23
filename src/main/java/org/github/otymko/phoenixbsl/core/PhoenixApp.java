@@ -2,9 +2,9 @@ package org.github.otymko.phoenixbsl.core;
 
 import com.sun.jna.platform.win32.WinDef;
 import org.eclipse.lsp4j.*;
-import org.github.otymko.phoenixbsl.BSLLanguageLauncher;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
+import org.github.otymko.phoenixbsl.lsp.BSLServer;
 import org.github.otymko.phoenixbsl.views.IssuesForm;
 
 import javax.swing.*;
@@ -42,7 +42,7 @@ public class PhoenixApp implements EventListener {
   private WinDef.HWND focusForm;
 
 
-  public BSLLanguageLauncher bslLanguageLauncher = null;
+  public BSLServer bslServer = null;
 
   public PhoenixApp() {
     events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING);
@@ -107,7 +107,7 @@ public class PhoenixApp implements EventListener {
     paramsFormatting.setTextDocument(identifier);
     var options = new FormattingOptions(4, false);
     paramsFormatting.setOptions(options);
-    return bslLanguageLauncher.sendFormatting(paramsFormatting);
+    return bslServer.formatting(paramsFormatting);
   }
 
   public static void insetTextOnForm(String text, boolean isSelected) {
@@ -136,7 +136,7 @@ public class PhoenixApp implements EventListener {
       return;
     }
 
-    if (bslLanguageLauncher == null) {
+    if (bslServer == null) {
       return;
     }
 
@@ -165,7 +165,7 @@ public class PhoenixApp implements EventListener {
     TextDocumentIdentifier textDocumentIdentifier = new TextDocumentIdentifier();
     textDocumentIdentifier.setUri(fakeFile.toPath().toAbsolutePath().toUri().toString());
     paramsSave.setTextDocument(textDocumentIdentifier);
-    bslLanguageLauncher.sendTextDocumentDidSave(paramsSave);
+    bslServer.didSave(paramsSave);
   }
 
   public void initToolbar() {
@@ -369,7 +369,7 @@ public class PhoenixApp implements EventListener {
     item.setUri(new File("F:/BSL/fake.bsl").toPath().toAbsolutePath().toUri().toString());
     item.setText("");
     params.setTextDocument(item);
-    bslLanguageLauncher.sendTextDocumentDidOpen(params);
+    bslServer.didOpen(params);
   }
 
   public void textDocumentDidChange(String textForCheck) {
@@ -383,12 +383,12 @@ public class PhoenixApp implements EventListener {
     List<TextDocumentContentChangeEvent> list = new ArrayList<>();
     list.add(textDocument);
     params.setContentChanges(list);
-    bslLanguageLauncher.sendTextDocumentDidChange(params);
+    bslServer.didChange(params);
   }
 
   public Process startProcessBSLLS() {
     Process processBSL = null;
-    Path path = Paths.get(".", "src/main/resources/bsl-language-server.jar");
+    Path path = Paths.get(".", "languageserver/bsl-language-server.jar");
     String[] arguments = new String[]{
       "java", "-jar", path.toAbsolutePath().toString()};
     try {

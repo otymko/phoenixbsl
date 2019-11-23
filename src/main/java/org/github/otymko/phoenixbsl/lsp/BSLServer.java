@@ -1,5 +1,6 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.lsp;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
@@ -13,15 +14,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class BSLLanguageLauncher {
+public class BSLServer {
 
-  private BSLLanguageClient client;
+  private BSLClient client;
   private InputStream in;
   private OutputStream out;
 
   public Launcher<LanguageServer> launcher;
+  private LanguageServer server;
 
-  public BSLLanguageLauncher(BSLLanguageClient client, InputStream in, OutputStream out) {
+  public BSLServer(BSLClient client, InputStream in, OutputStream out) {
     this.client = client;
     this.in = in;
     this.out = out;
@@ -34,10 +36,13 @@ public class BSLLanguageLauncher {
     thread.start();
   }
 
-  public void start() {
+  @VisibleForTesting
+  private void start() {
 
     launcher = LSPLauncher.createClientLauncher(client, in, out);
     Future<?> future = launcher.startListening();
+
+    server = launcher.getRemoteProxy();
 
     while (true) {
       try {
@@ -52,30 +57,33 @@ public class BSLLanguageLauncher {
 
   }
 
-  public void sendInitialize(InitializeParams params) {
-    launcher.getRemoteProxy().initialize(params);
+  // TextDocumentService
+
+  public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
+    return server.initialize(params);
   }
 
-  public CompletableFuture<List<? extends TextEdit>> sendFormatting(DocumentFormattingParams params) {
-    return launcher.getRemoteProxy().getTextDocumentService().formatting(params);
+  public CompletableFuture<Object> shutdown() {
+    return server.shutdown();
   }
 
-  public void sendTextDocumentDidOpen(DidOpenTextDocumentParams params) {
+  public void didOpen(DidOpenTextDocumentParams params) {
     launcher.getRemoteProxy().getTextDocumentService().didOpen(params);
   }
 
-  public void sendTextDocumentDidChange(DidChangeTextDocumentParams params) {
+  public void didChange(DidChangeTextDocumentParams params) {
     launcher.getRemoteProxy().getTextDocumentService().didChange(params);
   }
 
-  public void sendTextDocumentDidSave(DidSaveTextDocumentParams params) {
+  public void didSave(DidSaveTextDocumentParams params) {
     launcher.getRemoteProxy().getTextDocumentService().didSave(params);
   }
 
-  public void sendShutdown() {
-    launcher.getRemoteProxy().shutdown();
+  public CompletableFuture<List<? extends TextEdit>> formatting(DocumentFormattingParams params) {
+    return launcher.getRemoteProxy().getTextDocumentService().formatting(params);
   }
 
+  // TODO: перенести в другое место?
   public InitializeParams createInitializeParams() {
 
     var params = new InitializeParams();
