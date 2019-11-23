@@ -4,7 +4,8 @@ import com.sun.jna.platform.win32.WinDef;
 import org.eclipse.lsp4j.*;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
-import org.github.otymko.phoenixbsl.lsp.BSLServer;
+import org.github.otymko.phoenixbsl.lsp.BSLHelper;
+import org.github.otymko.phoenixbsl.lsp.BSLLanguageServer;
 import org.github.otymko.phoenixbsl.views.IssuesForm;
 
 import javax.swing.*;
@@ -25,8 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-//import java.awt.*;
-
 public class PhoenixApp implements EventListener {
 
   private static final String PATH_TO_ICON = "/phoenix.jpg";
@@ -42,7 +41,7 @@ public class PhoenixApp implements EventListener {
   private WinDef.HWND focusForm;
 
 
-  public BSLServer bslServer = null;
+  public BSLLanguageServer bslLanguageServer = null;
 
   public PhoenixApp() {
     events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING);
@@ -85,7 +84,7 @@ public class PhoenixApp implements EventListener {
     }
 
     // DidChange
-    textDocumentDidChange(textForFormatting);
+    BSLHelper.textDocumentDidChange(bslLanguageServer, textForFormatting);
 
     // Formatting
     var listEdits = textDocumentFormatting();
@@ -107,7 +106,7 @@ public class PhoenixApp implements EventListener {
     paramsFormatting.setTextDocument(identifier);
     var options = new FormattingOptions(4, false);
     paramsFormatting.setOptions(options);
-    return bslServer.formatting(paramsFormatting);
+    return bslLanguageServer.getTextDocumentService().formatting(paramsFormatting);
   }
 
   public static void insetTextOnForm(String text, boolean isSelected) {
@@ -136,7 +135,7 @@ public class PhoenixApp implements EventListener {
       return;
     }
 
-    if (bslServer == null) {
+    if (bslLanguageServer == null) {
       return;
     }
 
@@ -155,17 +154,9 @@ public class PhoenixApp implements EventListener {
 
     issuesForm.setLineOfset(lineOfset);
 
-    textDocumentDidChange(textForCheck);
-    textDocumentDidSave();
+    BSLHelper.textDocumentDidChange(bslLanguageServer, textForCheck);
+    BSLHelper.textDocumentDidSave(bslLanguageServer);
 
-  }
-
-  private void textDocumentDidSave() {
-    var paramsSave = new DidSaveTextDocumentParams();
-    TextDocumentIdentifier textDocumentIdentifier = new TextDocumentIdentifier();
-    textDocumentIdentifier.setUri(fakeFile.toPath().toAbsolutePath().toUri().toString());
-    paramsSave.setTextDocument(textDocumentIdentifier);
-    bslServer.didSave(paramsSave);
   }
 
   public void initToolbar() {
@@ -358,32 +349,6 @@ public class PhoenixApp implements EventListener {
 
   public IssuesForm getIssuesForm() {
     return this.issuesForm;
-  }
-
-
-  public void textDocumentDidOpen() {
-    // откроем фейковый документ
-    DidOpenTextDocumentParams params = new DidOpenTextDocumentParams();
-    TextDocumentItem item = new TextDocumentItem();
-    item.setLanguageId("bsl");
-    item.setUri(new File("F:/BSL/fake.bsl").toPath().toAbsolutePath().toUri().toString());
-    item.setText("");
-    params.setTextDocument(item);
-    bslServer.didOpen(params);
-  }
-
-  public void textDocumentDidChange(String textForCheck) {
-    var params = new DidChangeTextDocumentParams();
-    VersionedTextDocumentIdentifier versionedTextDocumentIdentifier = new VersionedTextDocumentIdentifier();
-    versionedTextDocumentIdentifier.setUri(fakeFile.toPath().toAbsolutePath().toUri().toString());
-    versionedTextDocumentIdentifier.setVersion(1);
-    params.setTextDocument(versionedTextDocumentIdentifier);
-    var textDocument = new TextDocumentContentChangeEvent();
-    textDocument.setText(textForCheck);
-    List<TextDocumentContentChangeEvent> list = new ArrayList<>();
-    list.add(textDocument);
-    params.setContentChanges(list);
-    bslServer.didChange(params);
   }
 
   public Process startProcessBSLLS() {

@@ -1,8 +1,9 @@
 package org.github.otymko.phoenixbsl;
 
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
-import org.github.otymko.phoenixbsl.lsp.BSLClient;
-import org.github.otymko.phoenixbsl.lsp.BSLServer;
+import org.github.otymko.phoenixbsl.lsp.BSLHelper;
+import org.github.otymko.phoenixbsl.lsp.BSLLanguageClient;
+import org.github.otymko.phoenixbsl.lsp.BSLLanguageServer;
 import org.github.otymko.phoenixbsl.threads.GlobalKeyListenerThread;
 import org.github.otymko.phoenixbsl.threads.MainApplicationThread;
 
@@ -35,9 +36,9 @@ public class LauncherApp {
         System.out.println("BSL не запустился");
         return;
       }
-      BSLClient client = new BSLClient();
-      BSLServer bslServer = new BSLServer(client, processBSL.getInputStream(), processBSL.getOutputStream());
-      bslServer.startInThread();
+      BSLLanguageClient client = new BSLLanguageClient();
+      BSLLanguageServer bslLanguageServer = new BSLLanguageServer(client, processBSL.getInputStream(), processBSL.getOutputStream());
+      bslLanguageServer.startInThread();
 
       try {
         Thread.currentThread().sleep(2000);
@@ -45,13 +46,13 @@ public class LauncherApp {
         e.printStackTrace();
       }
 
-      app.bslServer = bslServer;
+      app.bslLanguageServer = bslLanguageServer;
 
       // инициализация
-      bslServer.initialize(bslServer.createInitializeParams());
+      bslLanguageServer.initialize(BSLHelper.createInitializeParams());
 
       // откроем фейковый документ
-      app.textDocumentDidOpen();
+      BSLHelper.textDocumentDidOpen(bslLanguageServer);
 
     } catch (RuntimeException ex) {
       System.out.println("Приложение упало. Причина " + ex.getMessage().toString());

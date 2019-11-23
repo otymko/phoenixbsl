@@ -7,7 +7,7 @@ import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class BSLClient implements LanguageClient {
+public class BSLLanguageClient implements LanguageClient {
 
   @Override
   public CompletableFuture<ApplyWorkspaceEditResponse> applyEdit(ApplyWorkspaceEditParams params) {
