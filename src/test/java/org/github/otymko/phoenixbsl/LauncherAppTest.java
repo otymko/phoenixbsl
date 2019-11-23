@@ -2,12 +2,10 @@ package org.github.otymko.phoenixbsl;
 
 import org.junit.Test;
 
-public class LauncherTest {
+public class LauncherAppTest {
 
   @Test
   public void test() {
-
-//    Launcher.main(null);
 
   }
 

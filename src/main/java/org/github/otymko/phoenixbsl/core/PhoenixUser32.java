@@ -1,8 +1,8 @@
 package org.github.otymko.phoenixbsl.core;
 
 import com.sun.jna.Native;
-import com.sun.jna.platform.win32.*;
-import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
 
 public class PhoenixUser32 {
 

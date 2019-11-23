@@ -1,34 +1,30 @@
-
 import java.net.URI
 
 plugins {
     java
     maven
     jacoco
-    id("com.github.gradle-git-version-calculator") version "1.1.0"
-    id("com.github.ben-manes.versions") version "0.22.0"
+    id("org.openjfx.javafxplugin") version "0.0.8"
 }
 
 repositories {
     mavenCentral()
     maven { url = URI("https://jitpack.io") }
-    flatDir {
-        dirs("libs")
-    }
 }
 
 group = "org.github.otymko.phoenixbsl"
-version = "0.2.2"
+version = "0.3.0"
 
 dependencies {
-
+    compile("com.hynnet", "jacob", "1.18")
+    testCompile("junit", "junit", "4.12")
     implementation("net.java.dev.jna:jna-platform:5.4.0")
     compile("net.java.dev.jna:jna-platform:5.4.0")
-    compile("com.hynnet", "jacob", "1.18")
-    compile("com.github.1c-syntax:bsl-language-server:ccad9e68b611d012b6523970cebdbe3b7a801770")
-    testCompile("junit", "junit", "4.12")
-    compile("lc.kra.system:system-hook:3.5")
+    compile("com.1stleg:jnativehook:2.1.0")
+    compile("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.8.1")
 
+    compile("org.slf4j", "slf4j-api", "1.8.0-beta4")
+    compile("org.slf4j", "slf4j-simple", "1.8.0-beta4")
 }
 
 configure<JavaPluginConvention> {
@@ -44,8 +40,8 @@ tasks.withType<JavaCompile> {
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "org.github.otymko.phoenixbsl.Launcher"
-        attributes["Implementation-Version"] = archiveVersion.get()
+        attributes["Main-Class"] = "org.github.otymko.phoenixbsl.LauncherApp"
+        attributes["Implementation-Version"] = "0.3.0"
     }
     configurations["compile"].forEach {
         from(zipTree(it.absoluteFile)) {
@@ -55,4 +51,9 @@ tasks.withType<Jar> {
             exclude("META-INF/*.RSA")
         }
     }
+}
+
+javafx {
+    version = "11"
+    modules("javafx.controls")
 }
