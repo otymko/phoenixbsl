@@ -1,8 +1,9 @@
 package org.github.otymko.phoenixbsl.events;
 
-import org.github.otymko.phoenixbsl.events.EventListener;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class EventManager {
 
@@ -11,7 +12,7 @@ public class EventManager {
 
   Map<Integer, List<org.github.otymko.phoenixbsl.events.EventListener>> listeners = new HashMap<>();
 
-  public EventManager(int ... operations) {
+  public EventManager(int... operations) {
     for (int operation : operations) {
       this.listeners.put(operation, new ArrayList<>());
     }

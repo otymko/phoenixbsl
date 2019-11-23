@@ -2,6 +2,7 @@ package org.github.otymko.phoenixbsl.views;
 
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.entities.Issue;
 
@@ -11,13 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-//import java.awt.*;
-
-//import java.awt.*;
-
 public class IssuesForm extends JFrame {
-
-  //private PhoenixApp app;
 
   private DefaultListModel<Issue> listModel = new DefaultListModel<>();
   private JList<Issue> issuesList;
@@ -33,11 +28,10 @@ public class IssuesForm extends JFrame {
   private int lineOfset = 0;
 
   private static final String DEFAULT_TITLE = "Замечания";
-  private static final Color colorBG = new java.awt.Color(68,68,68);
+  private static final Color colorBG = new java.awt.Color(68, 68, 68);
 
   public IssuesForm() {
     super(DEFAULT_TITLE);
-    //this.app = PhoenixApp.getInstance();
 
     toFront();
     setSize(500, 600);
@@ -56,13 +50,13 @@ public class IssuesForm extends JFrame {
     issuesList = new JList<>(listModel);
     issuesList.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent evt) {
-        var list = (JList)evt.getSource();
+        var list = (JList) evt.getSource();
         if (evt.getClickCount() == 2) {
           var issue = (Issue) ((JList) evt.getSource()).getSelectedValue();
-          if (issue == null){
+          if (issue == null) {
             return;
           }
-          PhoenixApp.getInstance().gotoLineModule(issue.getStartLine());
+          PhoenixAPI.gotoLineModule(issue.getStartLine(), PhoenixApp.getInstance().getFocusForm());
         }
       }
     });
@@ -152,9 +146,9 @@ public class IssuesForm extends JFrame {
 
     StringBuilder sb = new StringBuilder();
     int charCount = 0;
-    for(String word : input.split("\\s")) {
-      if(charCount > 0) {
-        if(charCount + word.length() + 1 > maxWidth) {
+    for (String word : input.split("\\s")) {
+      if (charCount > 0) {
+        if (charCount + word.length() + 1 > maxWidth) {
           charCount = 0;
           sb.append("<br>");
         } else {

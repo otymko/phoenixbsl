@@ -1,5 +1,6 @@
 package org.github.otymko.phoenixbsl;
 
+import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.lsp.BSLHelper;
 import org.github.otymko.phoenixbsl.lsp.BSLLanguageClient;
@@ -31,28 +32,31 @@ public class LauncherApp {
       globalKeyListenerThread.start();
 
       // запуск bsl ls
-      Process processBSL = app.startProcessBSLLS();
-      if (processBSL == null) {
-        System.out.println("BSL не запустился");
-        return;
+      app.initProcessBSL();
+
+      if (app.processBSLIsRunning()) {
+        BSLLanguageClient client = new BSLLanguageClient();
+        BSLLanguageServer bslLanguageServer = new BSLLanguageServer(
+          client,
+          app.getProcessBSL().getInputStream(),
+          app.getProcessBSL().getOutputStream());
+        bslLanguageServer.startInThread();
+
+        try {
+          Thread.currentThread().sleep(2000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+
+        app.bslLanguageServer = bslLanguageServer;
+
+        // инициализация
+        bslLanguageServer.initialize(BSLHelper.createInitializeParams());
+
+        // откроем фейковый документ
+        BSLHelper.textDocumentDidOpen(bslLanguageServer);
       }
-      BSLLanguageClient client = new BSLLanguageClient();
-      BSLLanguageServer bslLanguageServer = new BSLLanguageServer(client, processBSL.getInputStream(), processBSL.getOutputStream());
-      bslLanguageServer.startInThread();
 
-      try {
-        Thread.currentThread().sleep(2000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-
-      app.bslLanguageServer = bslLanguageServer;
-
-      // инициализация
-      bslLanguageServer.initialize(BSLHelper.createInitializeParams());
-
-      // откроем фейковый документ
-      BSLHelper.textDocumentDidOpen(bslLanguageServer);
 
     } catch (RuntimeException ex) {
       System.out.println("Приложение упало. Причина " + ex.getMessage().toString());

@@ -9,7 +9,6 @@ public class MainApplication extends Application {
   public void start(Stage primaryStage) throws Exception {
 
     primaryStage.setTitle("Phoenix BSL");
-//    primaryStage.show();
 
   }
 

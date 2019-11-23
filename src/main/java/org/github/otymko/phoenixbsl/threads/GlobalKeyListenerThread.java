@@ -13,8 +13,7 @@ public class GlobalKeyListenerThread extends Thread {
   public void run() {
     try {
       GlobalScreen.registerNativeHook();
-    }
-    catch (NativeHookException ex) {
+    } catch (NativeHookException ex) {
       System.err.println("There was a problem registering the native hook.");
       System.err.println(ex.getMessage());
     }

@@ -7,6 +7,7 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class BSLHelper {
 
@@ -44,6 +45,16 @@ public class BSLHelper {
     textDocumentIdentifier.setUri(fakeFile.toPath().toAbsolutePath().toUri().toString());
     paramsSave.setTextDocument(textDocumentIdentifier);
     server.getTextDocumentService().didSave(paramsSave);
+  }
+
+  public static CompletableFuture<List<? extends TextEdit>> textDocumentFormatting(LanguageServer server) {
+    var paramsFormatting = new DocumentFormattingParams();
+    var identifier = new TextDocumentIdentifier();
+    identifier.setUri(fakeFile.toPath().toAbsolutePath().toUri().toString());
+    paramsFormatting.setTextDocument(identifier);
+    var options = new FormattingOptions(4, false);
+    paramsFormatting.setOptions(options);
+    return server.getTextDocumentService().formatting(paramsFormatting);
   }
 
   public static InitializeParams createInitializeParams() {
