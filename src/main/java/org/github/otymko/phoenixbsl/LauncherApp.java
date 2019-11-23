@@ -35,12 +35,12 @@ public class LauncherApp {
       app.initProcessBSL();
 
       if (app.processBSLIsRunning()) {
-        BSLLanguageClient client = new BSLLanguageClient();
-        BSLLanguageServer bslLanguageServer = new BSLLanguageServer(
-          client,
+        BSLLanguageClient bslClient = new BSLLanguageClient();
+        BSLLanguageServer bslServer = new BSLLanguageServer(
+          bslClient,
           app.getProcessBSL().getInputStream(),
           app.getProcessBSL().getOutputStream());
-        bslLanguageServer.startInThread();
+        bslServer.startInThread();
 
         try {
           Thread.currentThread().sleep(2000);
@@ -48,13 +48,13 @@ public class LauncherApp {
           e.printStackTrace();
         }
 
-        app.bslLanguageServer = bslLanguageServer;
+        app.setLanguageServer(bslServer);
 
         // инициализация
-        bslLanguageServer.initialize(BSLHelper.createInitializeParams());
+        bslServer.initialize(BSLHelper.createInitializeParams());
 
         // откроем фейковый документ
-        BSLHelper.textDocumentDidOpen(bslLanguageServer);
+        BSLHelper.textDocumentDidOpen(bslServer);
       }
 
 

@@ -6,31 +6,27 @@ import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLHelper;
 import org.github.otymko.phoenixbsl.lsp.BSLLanguageServer;
 import org.github.otymko.phoenixbsl.views.IssuesForm;
+import org.github.otymko.phoenixbsl.views.Toolbar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PhoenixApp implements EventListener {
 
-  private static final String PATH_TO_ICON = "/phoenix.jpg";
+  private static final Logger LOGGER = LoggerFactory.getLogger(PhoenixApp.class.getSimpleName());
   private static final PhoenixApp INSTANCE = new PhoenixApp();
+
   private EventManager events;
-  private PopupMenu toolbar;
   private IssuesForm issuesForm;
   private WinDef.HWND focusForm;
   private Process processBSL;
-  public BSLLanguageServer bslLanguageServer;
+  private BSLLanguageServer languageServer = null;
 
   private PhoenixApp() {
-
-    bslLanguageServer = null;
 
     events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING);
     events.subscribe(EventManager.EVENT_INSPECTION, this);
@@ -45,46 +41,23 @@ public class PhoenixApp implements EventListener {
 
   public void initProcessBSL() {
     processBSL = null;
-    Path path = Paths.get(".", "languageserver/bsl-language-server.jar");
-    String[] arguments = new String[]{
+    var path = Paths.get(".", "languageserver/bsl-language-server.jar");
+    var arguments = new String[]{
       "java", "-jar", path.toAbsolutePath().toString()};
     try {
       processBSL = new ProcessBuilder(arguments).start();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getMessage().toString());
     }
   }
 
   public void initToolbar() {
-    toolbar = new PopupMenu();
-
-    var settingItem = new MenuItem("Настройки");
-    toolbar.add(settingItem);
-
-    var exitItem = new MenuItem("Закрыть");
-    exitItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        System.exit(0);
-      }
-    });
-    toolbar.add(exitItem);
-
-    var systemTray = SystemTray.getSystemTray();
-    var icon = new ImageIcon(PhoenixApp.class.getResource(PATH_TO_ICON));
-    var image = icon.getImage();
-
-    TrayIcon trayIcon = new TrayIcon(image, "Phoenix BSL", toolbar);
-    trayIcon.setImageAutoSize(true);
-    try {
-      systemTray.add(trayIcon);
-    } catch (AWTException e) {
-      System.out.println(e.getMessage());
-    }
+    var toolbar = new Toolbar();
   }
 
   public boolean appIsRunning() {
     var thisPid = ProcessHandle.current().pid();
-    AtomicBoolean isRunning = new AtomicBoolean(false);
+    var isRunning = new AtomicBoolean(false);
     ProcessHandle.allProcesses()
       .filter(
         ph -> ph.info().command().isPresent()
@@ -97,8 +70,8 @@ public class PhoenixApp implements EventListener {
   }
 
   public void abort() {
-    //log.error("Приложение уже запущено");
-    JOptionPane.showMessageDialog(new JFrame(), "Приложение уже запущено. Повторный запуск невозможен.");
+    LOGGER.error("Приложение уже запущено");
+    PhoenixAPI.showMessageDialog("Приложение уже запущено. Повторный запуск невозможен.");
     System.exit(0);
   }
 
@@ -110,6 +83,10 @@ public class PhoenixApp implements EventListener {
     return processBSL;
   }
 
+  public void setLanguageServer(BSLLanguageServer languageServer) {
+    this.languageServer = languageServer;
+  }
+
   public EventManager getEventManager() {
     return events;
   }
@@ -117,13 +94,15 @@ public class PhoenixApp implements EventListener {
   @Override
   public void inspection() {
 
+    LOGGER.debug("Event: inspection");
+
     if (processBSLIsRunning() && PhoenixAPI.isWindowsForm1S()) {
       updateFocusForm();
     } else {
       return;
     }
 
-    if (bslLanguageServer == null) {
+    if (languageServer == null) {
       return;
     }
 
@@ -140,13 +119,15 @@ public class PhoenixApp implements EventListener {
 
     issuesForm.setLineOfset(lineOfset);
 
-    BSLHelper.textDocumentDidChange(bslLanguageServer, textForCheck);
-    BSLHelper.textDocumentDidSave(bslLanguageServer);
+    BSLHelper.textDocumentDidChange(languageServer, textForCheck);
+    BSLHelper.textDocumentDidSave(languageServer);
 
   }
 
   @Override
   public void formatting() {
+
+    LOGGER.debug("Event: formatting");
 
     if (!(processBSLIsRunning() && PhoenixAPI.isWindowsForm1S())) {
       return;
@@ -163,17 +144,17 @@ public class PhoenixApp implements EventListener {
     }
 
     // DidChange
-    BSLHelper.textDocumentDidChange(bslLanguageServer, textForFormatting);
+    BSLHelper.textDocumentDidChange(languageServer, textForFormatting);
 
     // Formatting
-    var listEdits = BSLHelper.textDocumentFormatting(bslLanguageServer);
+    var result = BSLHelper.textDocumentFormatting(languageServer);
 
     try {
-      PhoenixAPI.insetTextOnForm(listEdits.get().get(0).getNewText(), isSelected);
+      PhoenixAPI.insetTextOnForm(result.get().get(0).getNewText(), isSelected);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getMessage().toString());
     } catch (ExecutionException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getMessage().toString());
     }
 
   }

@@ -1,7 +1,10 @@
 package org.github.otymko.phoenixbsl.core;
 
 import com.sun.jna.platform.win32.WinDef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -11,6 +14,9 @@ import java.io.IOException;
 
 public class PhoenixAPI {
 
+  private static final String FUN_SYMBOL = "☻"; // 9787
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(PhoenixAPI.class.getSimpleName());
   private static final CustomRobot robot = new CustomRobot();
 
   private static boolean isWindowsForm1SByClassName(String classNameForm) {
@@ -29,7 +35,7 @@ public class PhoenixAPI {
     if (result.length() > 0) {
       robot.Ctrl(KeyEvent.VK_Z);
     }
-    //log.debug("getTextSelected:" + result);
+    LOGGER.debug("getTextSelected:" + result);
     return result;
   }
 
@@ -66,12 +72,12 @@ public class PhoenixAPI {
     var count = 0;
     for (var element : arrStr) {
       count++;
-      if (element.contains("☻")) { // 9787
+      if (element.contains(FUN_SYMBOL)) {
         line = count - 1;
         break;
       }
     }
-    //log.info("Current line ofset: " + line);
+    LOGGER.debug("Current line ofset: " + line);
     return line;
   }
 
@@ -81,7 +87,7 @@ public class PhoenixAPI {
     robot.Ctrl(KeyEvent.VK_A);
     robot.Ctrl(KeyEvent.VK_C);
     result = getFromClipboard();
-    //log.debug("getTextAll:" + result);
+    LOGGER.debug("getTextAll:" + result);
     return result;
   }
 
@@ -97,19 +103,17 @@ public class PhoenixAPI {
   }
 
   private static void clearClipboard() {
-    StringSelection stringSelection = new StringSelection("");
+    LOGGER.debug("clearClipboard");
+    var stringSelection = new StringSelection("");
     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
-    //log.debug("clearClipboard");
   }
 
   private static String getFromClipboard() {
     var result = "";
     try {
       result = getDataClipboard();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (UnsupportedFlavorException e) {
-      e.printStackTrace();
+    } catch (IOException | UnsupportedFlavorException e) {
+      LOGGER.error(e.getMessage());
     }
     return result;
   }
@@ -119,13 +123,14 @@ public class PhoenixAPI {
     try {
       Thread.sleep(20);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getMessage());
     }
 
-    String result = (String) Toolkit.getDefaultToolkit()
+    return (String) Toolkit.getDefaultToolkit()
       .getSystemClipboard().getData(DataFlavor.stringFlavor);
-
-    return result;
   }
 
+  public static void showMessageDialog(String message) {
+    JOptionPane.showMessageDialog(new JFrame(), message);
+  }
 }
