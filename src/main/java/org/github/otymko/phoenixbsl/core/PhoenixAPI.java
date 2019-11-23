@@ -11,6 +11,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 
 public class PhoenixAPI {
 
@@ -128,6 +129,13 @@ public class PhoenixAPI {
 
     return (String) Toolkit.getDefaultToolkit()
       .getSystemClipboard().getData(DataFlavor.stringFlavor);
+  }
+
+  public static int getProcessId() {
+    var bean = ManagementFactory.getRuntimeMXBean();
+    var jvmName = bean.getName();
+    var pid = Long.valueOf(jvmName.split("@")[0]);
+    return pid.intValue();
   }
 
   public static void showMessageDialog(String message) {

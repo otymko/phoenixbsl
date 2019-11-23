@@ -1,10 +1,8 @@
 package org.github.otymko.phoenixbsl;
 
-import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
-import org.github.otymko.phoenixbsl.lsp.BSLHelper;
+import org.github.otymko.phoenixbsl.lsp.BSLBinding;
 import org.github.otymko.phoenixbsl.lsp.BSLLanguageClient;
-import org.github.otymko.phoenixbsl.lsp.BSLLanguageServer;
 import org.github.otymko.phoenixbsl.threads.GlobalKeyListenerThread;
 import org.github.otymko.phoenixbsl.threads.MainApplicationThread;
 
@@ -36,11 +34,11 @@ public class LauncherApp {
 
       if (app.processBSLIsRunning()) {
         BSLLanguageClient bslClient = new BSLLanguageClient();
-        BSLLanguageServer bslServer = new BSLLanguageServer(
+        BSLBinding bslBinding = new BSLBinding(
           bslClient,
           app.getProcessBSL().getInputStream(),
           app.getProcessBSL().getOutputStream());
-        bslServer.startInThread();
+        bslBinding.startInThread();
 
         try {
           Thread.currentThread().sleep(2000);
@@ -48,13 +46,14 @@ public class LauncherApp {
           e.printStackTrace();
         }
 
-        app.setLanguageServer(bslServer);
+        app.setBslBinding(bslBinding);
 
         // инициализация
-        bslServer.initialize(BSLHelper.createInitializeParams());
+        bslBinding.initialize();
 
         // откроем фейковый документ
-        BSLHelper.textDocumentDidOpen(bslServer);
+        bslBinding.textDocumentDidOpen(app.getFakeUri(), "");
+
       }
 
 

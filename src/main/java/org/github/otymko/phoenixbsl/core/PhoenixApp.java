@@ -3,14 +3,15 @@ package org.github.otymko.phoenixbsl.core;
 import com.sun.jna.platform.win32.WinDef;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
-import org.github.otymko.phoenixbsl.lsp.BSLHelper;
-import org.github.otymko.phoenixbsl.lsp.BSLLanguageServer;
+import org.github.otymko.phoenixbsl.lsp.BSLBinding;
 import org.github.otymko.phoenixbsl.views.IssuesForm;
 import org.github.otymko.phoenixbsl.views.Toolbar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,11 +21,13 @@ public class PhoenixApp implements EventListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(PhoenixApp.class.getSimpleName());
   private static final PhoenixApp INSTANCE = new PhoenixApp();
 
+  public static final URI fakeUri = new File("F:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
+
   private EventManager events;
   private IssuesForm issuesForm;
   private WinDef.HWND focusForm;
   private Process processBSL;
-  private BSLLanguageServer languageServer = null;
+  private BSLBinding bslBinding = null;
 
   private PhoenixApp() {
 
@@ -83,8 +86,8 @@ public class PhoenixApp implements EventListener {
     return processBSL;
   }
 
-  public void setLanguageServer(BSLLanguageServer languageServer) {
-    this.languageServer = languageServer;
+  public void setBslBinding(BSLBinding bslBinding) {
+    this.bslBinding = bslBinding;
   }
 
   public EventManager getEventManager() {
@@ -102,7 +105,7 @@ public class PhoenixApp implements EventListener {
       return;
     }
 
-    if (languageServer == null) {
+    if (bslBinding == null) {
       return;
     }
 
@@ -119,8 +122,8 @@ public class PhoenixApp implements EventListener {
 
     issuesForm.setLineOfset(lineOfset);
 
-    BSLHelper.textDocumentDidChange(languageServer, textForCheck);
-    BSLHelper.textDocumentDidSave(languageServer);
+    bslBinding.textDocumentDidChange(fakeUri, textForCheck);
+    bslBinding.textDocumentDidSave(fakeUri);
 
   }
 
@@ -144,10 +147,10 @@ public class PhoenixApp implements EventListener {
     }
 
     // DidChange
-    BSLHelper.textDocumentDidChange(languageServer, textForFormatting);
+    bslBinding.textDocumentDidChange(fakeUri, textForFormatting);
 
     // Formatting
-    var result = BSLHelper.textDocumentFormatting(languageServer);
+    var result = bslBinding.textDocumentFormatting(fakeUri);
 
     try {
       PhoenixAPI.insetTextOnForm(result.get().get(0).getNewText(), isSelected);
@@ -171,4 +174,7 @@ public class PhoenixApp implements EventListener {
     return focusForm;
   }
 
+  public URI getFakeUri() {
+    return fakeUri;
+  }
 }
