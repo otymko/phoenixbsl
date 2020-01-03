@@ -47,7 +47,6 @@ public class IssuesApp extends Application {
 
     ObservableList<CustomIssue> issues = FXCollections.observableArrayList();
 
-
     final TreeItem<CustomIssue> root = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
     tree.setRoot(root);
     tree.setShowRoot(false);
@@ -110,6 +109,10 @@ public class IssuesApp extends Application {
     primaryStage.setScene(scene);
     primaryStage.setResizable(false);
     primaryStage.show();
+
+  }
+
+  public void updateIssue() {
 
   }
 

@@ -1,9 +1,16 @@
 package org.github.otymko.phoenixbsl.events;
 
+import org.eclipse.lsp4j.Diagnostic;
+
+import java.util.List;
+
 public interface EventListener {
   default void formatting() {
   }
 
   default void inspection() {
+  }
+
+  default void updateIssues(List<Diagnostic> diagnostics) {
   }
 }

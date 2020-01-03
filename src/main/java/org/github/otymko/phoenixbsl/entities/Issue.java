@@ -1,6 +1,8 @@
 package org.github.otymko.phoenixbsl.entities;
 
-public class Issue {
+import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+
+public class Issue extends RecursiveTreeObject<Issue> {
 
   private String description = "";
   private String location = "";

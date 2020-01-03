@@ -1,5 +1,7 @@
 package org.github.otymko.phoenixbsl.events;
 
+import org.eclipse.lsp4j.Diagnostic;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +11,7 @@ public class EventManager {
 
   public static final int EVENT_INSPECTION = 1;
   public static final int EVENT_FORMATTING = 2;
+  public static final int EVENT_UPDATE_ISSUES = 3;
 
   Map<Integer, List<org.github.otymko.phoenixbsl.events.EventListener>> listeners = new HashMap<>();
 
@@ -35,6 +38,15 @@ public class EventManager {
         listener.inspection();
       } else if (eventType == EVENT_FORMATTING) {
         listener.formatting();
+      }
+    }
+  }
+
+  public void notify(int eventType, List<Diagnostic> diagnostics) {
+    List<EventListener> users = listeners.get(eventType);
+    for (EventListener listener : users) {
+      if (eventType == EVENT_UPDATE_ISSUES) {
+        listener.updateIssues(diagnostics);
       }
     }
   }
