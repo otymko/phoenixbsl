@@ -6,10 +6,6 @@ public class LauncherAppTest {
 
   @Test
   public void test() {
-    String[] args = {};
-    LauncherApp.main(args);
-//    IssuesApp.main(args);
-
   }
 
 }

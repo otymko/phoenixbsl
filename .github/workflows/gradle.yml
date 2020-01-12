@@ -15,9 +15,26 @@ jobs:
         java-version: 11
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Copy file
-      run: cp ./build/libs/phoenix-0.2.1.jar ./.github/phoenix.jar
+    - name: Processor file jar
+      run: |
+        import os
+        import re
+        import ntpath
+        
+        def get_bslls_jar(dir):
+            names = os.listdir(dir)
+            for name in names:
+                fullname = os.path.join(dir, name)
+                if os.path.isfile(fullname) and re.search(pattern, fullname):
+                    return ntpath.basename(fullname)
+                return None
+        
+        pattern = r"phoenix.+\.jar"
+        dirName = os.getcwd() + "/build/libs"
+        fullname = get_bslls_jar(dirName)
+        os.rename(dirName + "/"+ fullname, dirName + "/phoenix.jar")
+      shell: python
     - uses: actions/upload-artifact@master
       with:
-        name: phoenix-0.1
-        path: ./.github/phoenix.jar
+        name: phoenix
+        path: ./build/libs/phoenix.jar
