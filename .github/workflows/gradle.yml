@@ -15,11 +15,22 @@ jobs:
         java-version: 11
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Renamr file jar
-      uses: jacobtomlinson/gha-find-replace@master
-      with:
-        find: /^phoenix.*\.jar/gm
-        replace: phoenix.jar
+    - name: Processor file jar
+      run: |
+        |import sys
+        |pattern = r"phoenix.+\.jar"
+        |dirName = os.getcwd() + "/build/libs"
+        |fullname = get_bslls_jar(dirName)
+        |os.rename(fullname, dirName + "/phoenix.jar")
+        |
+        |def get_bslls_jar(dir):
+        |  names = os.listdir(dir)
+        |  for name in names:
+        |    fullname = os.path.join(dir, name)
+        |    if os.path.isfile(fullname) and re.search(pattern, fullname):
+        |      return ntpath.basename(fullname)
+        |    return None
+      shell: python
     - uses: actions/upload-artifact@master
       with:
         name: phoenix
