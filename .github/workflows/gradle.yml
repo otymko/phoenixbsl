@@ -17,19 +17,22 @@ jobs:
       run: ./gradlew build
     - name: Processor file jar
       run: |
-        |import sys
+        |import os
+        |import re
+        |import ntpath
+        |
+        |def get_bslls_jar(dir):
+        |    names = os.listdir(dir)
+        |    for name in names:
+        |        fullname = os.path.join(dir, name)
+        |        if os.path.isfile(fullname) and re.search(pattern, fullname):
+        |            return ntpath.basename(fullname)
+        |        return None
+        |
         |pattern = r"phoenix.+\.jar"
         |dirName = os.getcwd() + "/build/libs"
         |fullname = get_bslls_jar(dirName)
-        |os.rename(fullname, dirName + "/phoenix.jar")
-        |
-        |def get_bslls_jar(dir):
-        |  names = os.listdir(dir)
-        |  for name in names:
-        |    fullname = os.path.join(dir, name)
-        |    if os.path.isfile(fullname) and re.search(pattern, fullname):
-        |      return ntpath.basename(fullname)
-        |    return None
+        |os.rename(dirName + "/"+ fullname, dirName + "/phoenix.jar")
       shell: python
     - uses: actions/upload-artifact@master
       with:
