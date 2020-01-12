@@ -1,5 +1,6 @@
 package org.github.otymko.phoenixbsl.views;
 
+import javafx.application.Platform;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 
 import javax.swing.*;
@@ -26,6 +27,8 @@ public class Toolbar {
     var exitItem = new MenuItem("Закрыть");
     exitItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        Platform.exit();
+        PhoenixApp.getInstance().stopBSL();
         System.exit(0);
       }
     });

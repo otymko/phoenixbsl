@@ -20,7 +20,7 @@ public class PhoenixApp implements EventListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(PhoenixApp.class.getSimpleName());
   private static final PhoenixApp INSTANCE = new PhoenixApp();
 
-  public static final URI fakeUri = new File("F:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
+  public static final URI fakeUri = new File("C:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
 
   private EventManager events;
   private WinDef.HWND focusForm;
@@ -158,6 +158,11 @@ public class PhoenixApp implements EventListener {
       LOGGER.error(e.getMessage());
     }
 
+  }
+
+  public void stopBSL() {
+    bslBinding.shutdown();
+    processBSL.destroy();
   }
 
   private void updateFocusForm() {
