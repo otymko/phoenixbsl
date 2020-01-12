@@ -11,8 +11,12 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeTableCell;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
@@ -20,11 +24,15 @@ import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.entities.Issue;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 public class IssuesStage extends Stage {
 
-  public JFXTreeTableView<Issue> tree = new JFXTreeTableView<>();
+  private Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
+
+  private JFXTreeTableView<Issue> tree = new JFXTreeTableView<>();
 
   public int lineOffset = 0;
 
@@ -40,12 +48,23 @@ public class IssuesStage extends Stage {
 
     // займемся ui
     setTitle("Phoenix");
+    getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.jpg")));
 
-    JFXTreeTableColumn<Issue, String> descriptionColumn = new JFXTreeTableColumn<>("Description");
+    tree.setPlaceholder(new Label("Замечаний нет"));
+
+    JFXTreeTableColumn<Issue, String> descriptionColumn = new JFXTreeTableColumn<>("Описание");
     descriptionColumn.setPrefWidth(300);
+    descriptionColumn.setCellFactory(param -> {
+      TreeTableCell<Issue, String> cell = new TreeTableCell<>();
+      Text text = new Text();
+      cell.setGraphic(text);
+      cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+      text.textProperty().bind(cell.itemProperty());
+      text.wrappingWidthProperty().bind(descriptionColumn.widthProperty());
+      return cell;
+    });
     descriptionColumn.setCellValueFactory(
       param -> new SimpleStringProperty(param.getValue().getValue().getDescription()));
-    descriptionColumn.setReorderable(false);
 
     JFXTreeTableColumn<Issue, String> positionColumn = new JFXTreeTableColumn<>("стр.");
     positionColumn.setPrefWidth(50);
@@ -54,7 +73,7 @@ public class IssuesStage extends Stage {
 
     JFXTreeTableColumn<Issue, String> typeColumn = new JFXTreeTableColumn<>("Тип");
     typeColumn.setPrefWidth(90);
-    typeColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().getSeverity().toString()));
+    typeColumn.setCellValueFactory(param -> new SimpleStringProperty(severityToStringMap.get(param.getValue().getValue().getSeverity())));
     typeColumn.setReorderable(false);
 
     ObservableList<Issue> issues = FXCollections.observableArrayList();
@@ -188,6 +207,15 @@ public class IssuesStage extends Stage {
     labelWarning.setText("Предупреждения: " + countWarning);
     labelInfo.setText("Инфо: " + countInfo);
 
+  }
+
+  private Map<DiagnosticSeverity, String> createSeverityToStringMap() {
+    Map<DiagnosticSeverity, String> map = new EnumMap<>(DiagnosticSeverity.class);
+    map.put(DiagnosticSeverity.Error, "Ошибка");
+    map.put(DiagnosticSeverity.Information, "Информация");
+    map.put(DiagnosticSeverity.Hint, "Подсказка");
+    map.put(DiagnosticSeverity.Warning, "Предупреждение");
+    return map;
   }
 
 }
