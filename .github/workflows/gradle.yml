@@ -15,9 +15,12 @@ jobs:
         java-version: 11
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Copy file
-      run: cp ./build/libs/phoenix-0.2.1.jar ./.github/phoenix.jar
+    - name: Renamr file jar
+      uses: jacobtomlinson/gha-find-replace@master
+      with:
+        find: /^phoenix.*\.jar/gm
+        replace: phoenix.jar
     - uses: actions/upload-artifact@master
       with:
-        name: phoenix-0.1
-        path: ./.github/phoenix.jar
+        name: phoenix
+        path: ./build/libs/phoenix.jar
