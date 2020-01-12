@@ -4,7 +4,6 @@ import com.sun.jna.platform.win32.WinDef;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLBinding;
-import org.github.otymko.phoenixbsl.views.IssuesForm;
 import org.github.otymko.phoenixbsl.views.Toolbar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,21 +20,22 @@ public class PhoenixApp implements EventListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(PhoenixApp.class.getSimpleName());
   private static final PhoenixApp INSTANCE = new PhoenixApp();
 
-  public static final URI fakeUri = new File("F:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
+  public static final URI fakeUri = new File("C:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
 
   private EventManager events;
-  private IssuesForm issuesForm;
   private WinDef.HWND focusForm;
   private Process processBSL;
   private BSLBinding bslBinding = null;
 
+
+  public int currentOffset = 0;
+
   private PhoenixApp() {
 
-    events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING);
+    events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING, EventManager.EVENT_UPDATE_ISSUES);
     events.subscribe(EventManager.EVENT_INSPECTION, this);
     events.subscribe(EventManager.EVENT_FORMATTING, this);
 
-    issuesForm = new IssuesForm();
   }
 
   public static PhoenixApp getInstance() {
@@ -109,18 +109,16 @@ public class PhoenixApp implements EventListener {
       return;
     }
 
-    var lineOfset = 0;
+    currentOffset = 0;
     var textForCheck = "";
     var textModuleSelected = PhoenixAPI.getTextSelected();
     if (textModuleSelected.length() > 0) {
       // получем номер строки
       textForCheck = textModuleSelected;
-      lineOfset = PhoenixAPI.getCurrentLineNumber();
+      currentOffset = PhoenixAPI.getCurrentLineNumber();
     } else {
       textForCheck = PhoenixAPI.getTextAll();
     }
-
-    issuesForm.setLineOfset(lineOfset);
 
     bslBinding.textDocumentDidChange(fakeUri, textForCheck);
     bslBinding.textDocumentDidSave(fakeUri);
@@ -155,15 +153,16 @@ public class PhoenixApp implements EventListener {
     try {
       PhoenixAPI.insetTextOnForm(result.get().get(0).getNewText(), isSelected);
     } catch (InterruptedException e) {
-      LOGGER.error(e.getMessage().toString());
+      LOGGER.error(e.getMessage());
     } catch (ExecutionException e) {
-      LOGGER.error(e.getMessage().toString());
+      LOGGER.error(e.getMessage());
     }
 
   }
 
-  public IssuesForm getIssuesForm() {
-    return this.issuesForm;
+  public void stopBSL() {
+    bslBinding.shutdown();
+    processBSL.destroy();
   }
 
   private void updateFocusForm() {

@@ -11,6 +11,17 @@ public class GlobalKeyListenerThread extends Thread {
 
   @Override
   public void run() {
+
+    try {
+      runHook();
+    }
+    catch (Exception e) {
+      run();
+    }
+
+  }
+
+  public void runHook() {
     try {
       GlobalScreen.registerNativeHook();
     } catch (NativeHookException ex) {

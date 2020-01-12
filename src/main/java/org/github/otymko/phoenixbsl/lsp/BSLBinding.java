@@ -27,6 +27,7 @@ public class BSLBinding {
   private InputStream in;
   private OutputStream out;
   private Launcher<LanguageServer> launcher;
+  private Thread thread = new Thread(this::start);
 
   public BSLBinding(BSLLanguageClient client, InputStream in, OutputStream out) {
     this.client = client;
@@ -36,7 +37,6 @@ public class BSLBinding {
 
   public void startInThread() {
     LOGGER.info("Подключение к серверу LSP");
-    Thread thread = new Thread(this::start);
     thread.setDaemon(true);
     thread.setName("BSLLanguageLauncher");
     thread.start();
