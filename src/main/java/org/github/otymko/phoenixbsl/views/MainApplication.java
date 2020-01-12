@@ -31,6 +31,7 @@ public class MainApplication extends Application implements EventListener {
 
   @Override
   public void updateIssues(List<Diagnostic> diagnostics) {
+    issuesStage.lineOffset = PhoenixApp.getInstance().currentOffset;
     Platform.runLater(() -> issuesStage.updateIssues(diagnostics));
   }
 

@@ -4,8 +4,6 @@ import com.sun.jna.platform.win32.WinDef;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLBinding;
-import org.github.otymko.phoenixbsl.threads.MainApplicationThread;
-import org.github.otymko.phoenixbsl.views.IssuesForm;
 import org.github.otymko.phoenixbsl.views.Toolbar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +22,13 @@ public class PhoenixApp implements EventListener {
 
   public static final URI fakeUri = new File("F:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
 
-
-  public MainApplicationThread mainApplicationThread;
-
   private EventManager events;
-  private IssuesForm issuesForm;
   private WinDef.HWND focusForm;
   private Process processBSL;
   private BSLBinding bslBinding = null;
+
+
+  public int currentOffset = 0;
 
   private PhoenixApp() {
 
@@ -39,7 +36,6 @@ public class PhoenixApp implements EventListener {
     events.subscribe(EventManager.EVENT_INSPECTION, this);
     events.subscribe(EventManager.EVENT_FORMATTING, this);
 
-    issuesForm = new IssuesForm();
   }
 
   public static PhoenixApp getInstance() {
@@ -113,18 +109,16 @@ public class PhoenixApp implements EventListener {
       return;
     }
 
-    var lineOfset = 0;
+    currentOffset = 0;
     var textForCheck = "";
     var textModuleSelected = PhoenixAPI.getTextSelected();
     if (textModuleSelected.length() > 0) {
       // получем номер строки
       textForCheck = textModuleSelected;
-      lineOfset = PhoenixAPI.getCurrentLineNumber();
+      currentOffset = PhoenixAPI.getCurrentLineNumber();
     } else {
       textForCheck = PhoenixAPI.getTextAll();
     }
-
-    issuesForm.setLineOfset(lineOfset);
 
     bslBinding.textDocumentDidChange(fakeUri, textForCheck);
     bslBinding.textDocumentDidSave(fakeUri);
@@ -159,15 +153,11 @@ public class PhoenixApp implements EventListener {
     try {
       PhoenixAPI.insetTextOnForm(result.get().get(0).getNewText(), isSelected);
     } catch (InterruptedException e) {
-      LOGGER.error(e.getMessage().toString());
+      LOGGER.error(e.getMessage());
     } catch (ExecutionException e) {
-      LOGGER.error(e.getMessage().toString());
+      LOGGER.error(e.getMessage());
     }
 
-  }
-
-  public IssuesForm getIssuesForm() {
-    return this.issuesForm;
   }
 
   private void updateFocusForm() {

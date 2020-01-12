@@ -18,7 +18,7 @@ public class GlobalKeyListenerThread extends Thread {
     catch (Exception e) {
       run();
     }
-    
+
   }
 
   public void runHook() {

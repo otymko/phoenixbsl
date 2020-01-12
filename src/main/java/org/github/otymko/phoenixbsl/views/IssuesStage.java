@@ -26,7 +26,7 @@ public class IssuesStage extends Stage {
 
   public JFXTreeTableView<Issue> tree = new JFXTreeTableView<>();
 
-  private int lineOffset = 0;
+  public int lineOffset = 0;
 
   private int countError = 0;
   private int countWarning = 0;
