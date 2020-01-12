@@ -162,7 +162,7 @@ public class PhoenixApp implements EventListener {
 
   public void stopBSL() {
     bslBinding.shutdown();
-    processBSL.destroy();
+    bslBinding.exit();
   }
 
   private void updateFocusForm() {
