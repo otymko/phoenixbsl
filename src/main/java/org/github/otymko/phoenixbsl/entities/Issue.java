@@ -1,12 +1,14 @@
 package org.github.otymko.phoenixbsl.entities;
 
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 
 public class Issue extends RecursiveTreeObject<Issue> {
 
   private String description = "";
   private String location = "";
   private int startLine = 0;
+  private DiagnosticSeverity severity = DiagnosticSeverity.Hint;
 
   public String getDescription() {
     return description;
@@ -22,6 +24,14 @@ public class Issue extends RecursiveTreeObject<Issue> {
 
   public String getLocation() {
     return location;
+  }
+
+  public void setSeverity(DiagnosticSeverity severity) {
+    this.severity = severity;
+  }
+
+  public DiagnosticSeverity getSeverity() {
+    return severity;
   }
 
   @Override

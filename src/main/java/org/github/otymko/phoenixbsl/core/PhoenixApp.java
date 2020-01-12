@@ -4,6 +4,7 @@ import com.sun.jna.platform.win32.WinDef;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLBinding;
+import org.github.otymko.phoenixbsl.threads.MainApplicationThread;
 import org.github.otymko.phoenixbsl.views.IssuesForm;
 import org.github.otymko.phoenixbsl.views.Toolbar;
 import org.slf4j.Logger;
@@ -23,6 +24,9 @@ public class PhoenixApp implements EventListener {
 
   public static final URI fakeUri = new File("F:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
 
+
+  public MainApplicationThread mainApplicationThread;
+
   private EventManager events;
   private IssuesForm issuesForm;
   private WinDef.HWND focusForm;
@@ -31,7 +35,7 @@ public class PhoenixApp implements EventListener {
 
   private PhoenixApp() {
 
-    events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING);
+    events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING, EventManager.EVENT_UPDATE_ISSUES);
     events.subscribe(EventManager.EVENT_INSPECTION, this);
     events.subscribe(EventManager.EVENT_FORMATTING, this);
 
