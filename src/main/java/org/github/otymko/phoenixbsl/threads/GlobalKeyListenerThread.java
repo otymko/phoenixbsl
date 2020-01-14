@@ -1,11 +1,12 @@
 package org.github.otymko.phoenixbsl.threads;
 
-import org.github.otymko.phoenixbsl.core.GlobalKeyListener;
-import org.jnativehook.GlobalScreen;
-import org.jnativehook.NativeHookException;
+import lc.kra.system.keyboard.GlobalKeyboardHook;
+import lc.kra.system.keyboard.event.GlobalKeyAdapter;
+import lc.kra.system.keyboard.event.GlobalKeyEvent;
+import org.github.otymko.phoenixbsl.core.PhoenixApp;
+import org.github.otymko.phoenixbsl.events.EventManager;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
 
 public class GlobalKeyListenerThread extends Thread {
 
@@ -22,15 +23,33 @@ public class GlobalKeyListenerThread extends Thread {
   }
 
   public void runHook() {
-    try {
-      GlobalScreen.registerNativeHook();
-    } catch (NativeHookException ex) {
-      System.err.println("There was a problem registering the native hook.");
-      System.err.println(ex.getMessage());
+
+    GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(true);
+    System.out.println("Global keyboard hook successfully started. Connected keyboards:");
+
+    for (Map.Entry<Long, String> keyboard : GlobalKeyboardHook.listKeyboards().entrySet()) {
+      System.out.format("%d: %s\n", keyboard.getKey(), keyboard.getValue());
     }
-    GlobalScreen.addNativeKeyListener(new GlobalKeyListener());
-    Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-    logger.setLevel(Level.OFF);
+
+    keyboardHook.addKeyListener(new GlobalKeyAdapter() {
+
+      @Override
+      public void keyPressed(GlobalKeyEvent event) {
+        if (event.isControlPressed()) {
+          if (event.getVirtualKeyCode() == GlobalKeyEvent.VK_I) {
+            PhoenixApp.getInstance().getEventManager().notify(EventManager.EVENT_INSPECTION);
+          }
+          if (event.getVirtualKeyCode() == GlobalKeyEvent.VK_K) {
+            PhoenixApp.getInstance().getEventManager().notify(EventManager.EVENT_FORMATTING);
+          }
+        }
+      }
+
+      @Override
+      public void keyReleased(GlobalKeyEvent event) {
+      }
+    });
+
   }
 
 }
