@@ -1,6 +1,5 @@
 package org.github.otymko.phoenixbsl.views;
 
-import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -105,21 +104,21 @@ public class IssuesStage extends Stage {
 
     Label searchLabel = new Label("Поиск:");
 
-    JFXTextField filterField = new JFXTextField();
-    filterField.setPadding(new Insets(0, 0, 0, 10));
-    filterField.setPrefWidth(420);
-    filterField.textProperty().addListener((o, oldVal, newVal) -> {
-      tree.setPredicate(userProp -> {
-        final Issue issue = userProp.getValue();
-        return issue.getDescription().toLowerCase().contains(newVal.toLowerCase())
-          || issue.getSeverity().toString().toLowerCase().contains(newVal.toLowerCase())
-          || issue.getLocation().toLowerCase().contains(newVal.toLowerCase());
-      });
-    });
+//    JFXTextField filterField = new JFXTextField();
+//    filterField.setPadding(new Insets(0, 0, 0, 10));
+//    filterField.setPrefWidth(420);
+//    filterField.textProperty().addListener((o, oldVal, newVal) -> {
+//      tree.setPredicate(userProp -> {
+//        final Issue issue = userProp.getValue();
+//        return issue.getDescription().toLowerCase().contains(newVal.toLowerCase())
+//          || issue.getSeverity().toString().toLowerCase().contains(newVal.toLowerCase())
+//          || issue.getLocation().toLowerCase().contains(newVal.toLowerCase());
+//      });
+//    });
 
     GridPane searchPanel = new GridPane();
     searchPanel.add(searchLabel, 0, 0);
-    searchPanel.add(filterField, 1, 0);
+//    searchPanel.add(filterField, 1, 0);
 
     main.add(searchPanel, 0, 0);
     main.add(tree, 0, 1);

@@ -43,9 +43,10 @@ public class PhoenixApp implements EventListener {
   }
 
   public void initProcessBSL() {
+
     processBSL = null;
     String[] arguments;
-    var pathApp = Path.of(".", "languageserver/bsl-language-server/bsl-language-server.exe");
+    var pathApp = Path.of(".", "app/bsl-language-server/bsl-language-server.exe");
     if (pathApp.toFile().exists()) {
       LOGGER.info("BLS LS app image is exist");
       arguments = new String[]{pathApp.toAbsolutePath().toString()};
@@ -167,6 +168,9 @@ public class PhoenixApp implements EventListener {
   }
 
   public void stopBSL() {
+    if (bslBinding == null) {
+      return;
+    }
     bslBinding.shutdown();
     bslBinding.exit();
   }
