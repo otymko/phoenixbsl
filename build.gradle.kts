@@ -5,9 +5,13 @@ plugins {
     maven
     jacoco
     id("org.openjfx.javafxplugin") version "0.0.8"
+    id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
 repositories {
+    flatDir {
+        dirs("libs")
+    }
     mavenCentral()
     maven { url = URI("https://jitpack.io") }
 }
@@ -16,18 +20,14 @@ group = "org.github.otymko.phoenixbsl"
 version = "0.3.0"
 
 dependencies {
-    compile("com.hynnet", "jacob", "1.18")
-    testCompile("junit", "junit", "4.12")
+    implementation("com.hynnet", "jacob", "1.18")
+    implementation("junit", "junit", "4.12")
     implementation("net.java.dev.jna:jna-platform:5.4.0")
-    compile("net.java.dev.jna:jna-platform:5.4.0")
-    compile("com.1stleg:jnativehook:2.1.0")
-    compile("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.8.1")
-
-    compile("org.slf4j", "slf4j-api", "1.8.0-beta4")
-    compile("org.slf4j", "slf4j-simple", "1.8.0-beta4")
-
-    compile("com.jfoenix","jfoenix", "9.0.9")
-
+    implementation("com.1stleg:jnativehook:2.1.0")
+    implementation("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.8.1")
+    implementation("org.slf4j", "slf4j-api", "1.8.0-beta4")
+    implementation("org.slf4j", "slf4j-simple", "1.8.0-beta4")
+    implementation("com.jfoenix","jfoenix", "9.0.9")
 }
 
 configure<JavaPluginConvention> {
@@ -41,19 +41,19 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Xlint:deprecation")
 }
 
-tasks.withType<Jar> {
+tasks.jar {
     manifest {
         attributes["Main-Class"] = "org.github.otymko.phoenixbsl.LauncherApp"
         attributes["Implementation-Version"] = "0.3.0"
     }
-    configurations["compile"].forEach {
-        from(zipTree(it.absoluteFile)) {
-            exclude("META-INF/MANIFEST.MF")
-            exclude("META-INF/*.SF")
-            exclude("META-INF/*.DSA")
-            exclude("META-INF/*.RSA")
-        }
-    }
+    enabled = false
+    dependsOn(tasks.shadowJar)
+}
+
+tasks.shadowJar {
+    project.configurations.implementation.get().isCanBeResolved = true
+    configurations = listOf(project.configurations["implementation"])
+    archiveClassifier.set("")
 }
 
 javafx {
