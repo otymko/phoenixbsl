@@ -95,6 +95,6 @@ jobs:
         name: phoenix
         path: ./build/libs/phoenix.jar
     - uses: actions/upload-artifact@master
-        with:
-          name: phoenixbsl
-          path: ./phoenixbsl.msi
+      with:
+        name: phoenixbsl
+        path: ./phoenixbsl.msi
