@@ -67,9 +67,21 @@ jobs:
     - name: Build jpackage msi
       run: |
           import os
+          import zipfile
+          import shutil
+          from urllib.request import urlretrieve
 
-          jpackage = os.getcwd() + "\\" + "${{ matrix.jdk14Path }}" + '\\bin\\jpackage.exe'
-          dirName = os.getcwd() + "\\build\\libs"
+          jpackage = os.path.join(os.getcwd(), "${{ matrix.jdk14Path }}", "bin", "jpackage.exe")
+          bsl_name = "bsl-language-server"
+          dirName = os.path.join(os.getcwd(), "build", "libs")
+          
+          url = "https://github.com/1c-syntax/bsl-language-server/releases/download/v0.13.0-RC1/bsl-language-server_win.zip"
+          tmpfile, headers = urlretrieve(url)
+          zip = zipfile.ZipFile(tmpfile)
+          zip.extractall()
+          zip.close()
+
+          shutil.move(os.path.join(os.getcwd(), bsl_name), os.path.join(dirName, bsl_name))
           
           cmdArgs = [jpackage]
           cmdArgs.append('--name')
