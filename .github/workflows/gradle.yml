@@ -95,5 +95,5 @@ jobs:
       shell: python
     - uses: actions/upload-artifact@master
       with:
-        name: phoenixbsl
-        path: ./phoenixbsl.msi
+        name: phoenix
+        path: ./phoenix.msi
