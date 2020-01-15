@@ -24,7 +24,7 @@ public class GlobalKeyListenerThread extends Thread {
 
   public void runHook() {
 
-    GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(true);
+    GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(false);
     System.out.println("Global keyboard hook successfully started. Connected keyboards:");
 
     for (Map.Entry<Long, String> keyboard : GlobalKeyboardHook.listKeyboards().entrySet()) {
