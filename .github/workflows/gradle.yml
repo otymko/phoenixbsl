@@ -26,7 +26,7 @@ jobs:
       run: ./gradlew build
     - name: Download jpackage
         # We need to download jpackage from https://jdk.java.net/jpackage/
-        run: |
+      run: |
           import tarfile
           import zipfile
           import sys
@@ -44,7 +44,7 @@ jobs:
             zip = zipfile.ZipFile(tmpfile)
             zip.extractall()
             zip.close()
-        shell: python
+      shell: python
     - name: Processor file jar
       run: |
         import os
@@ -65,7 +65,7 @@ jobs:
         os.rename(dirName + "/"+ fullname, dirName + "/phoenix.jar")
       shell: python
     - name: Build jpackage msi
-        run: |
+      run: |
           import os
 
           jpackage = os.getcwd() + "\\" + "${{ matrix.jdk14Path }}" + '\\bin\\jpackage.exe'
@@ -90,7 +90,7 @@ jobs:
 
           os.system(cmd)
 
-        shell: python
+      shell: python
     - uses: actions/upload-artifact@master
       with:
         name: phoenix
