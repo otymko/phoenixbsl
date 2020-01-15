@@ -71,7 +71,7 @@ jobs:
           import shutil
           from urllib.request import urlretrieve
 
-          jpackage = os.path.join(os.getcwd(), "${{ matrix.jdk14Path }}", "bin", "jpackage.exe")
+          jpackage = os.path.join(os.getcwd() + "${{ matrix.jdk14Path }}", "bin", "jpackage.exe")
           bsl_name = "bsl-language-server"
           dirName = os.path.join(os.getcwd(), "build", "libs")
           
