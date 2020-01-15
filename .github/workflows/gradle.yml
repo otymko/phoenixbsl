@@ -70,30 +70,29 @@ jobs:
 
           jpackage = os.getcwd() + "\\" + "${{ matrix.jdk14Path }}" + '\\bin\\jpackage.exe'
           dirName = os.getcwd() + "\\build\\libs"
-          fullname = dirName + "\\" + "phoenix.jar"
+          # fullname = dirName + "\\" + "phoenix.jar"
 
+          # jpackage.exe --name phoenixbsl --package-type msi --input build\libs --main-jar phoenix-0.2.jar --win-dir-chooser --win-menu --app-version 0.2
+          
           cmdArgs = [jpackage]
           cmdArgs.append('--name')
-          cmdArgs.append('phoenixbsl')
-          cmdArgs.append('--input')
-          cmdArgs.append('build/libs')
-          cmdArgs.append('--main-jar')
-          cmdArgs.append(fullname)
-          cmdArgs.append('--win-dir-chooser')
-          cmdArgs.append('--win-menu')
+          cmdArgs.append('phoenixbsl')        
           cmdArgs.append('--type')
-          cmdArgs.append('msi')
-          cmdArgs.append('--java-options')
-          cmdArgs.append('-Xmx1g')
+          cmdArgs.append('msi')       
+          cmdArgs.append('--input')
+          cmdArgs.append('build/libs')        
+          cmdArgs.append('--main-jar')
+          cmdArgs.append('phoenix.jar')
+          cmdArgs.append('--win-dir-chooser')    
+          cmdArgs.append('--win-menu')
+          cmdArgs.append('--app-version')
+          cmdArgs.append('0.3.1')
+
           cmd = ' '.join(cmdArgs)
 
           os.system(cmd)
 
       shell: python
-    - uses: actions/upload-artifact@master
-      with:
-        name: phoenix
-        path: ./build/libs/phoenix.jar
     - uses: actions/upload-artifact@master
       with:
         name: phoenixbsl
