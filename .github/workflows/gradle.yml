@@ -70,9 +70,6 @@ jobs:
 
           jpackage = os.getcwd() + "\\" + "${{ matrix.jdk14Path }}" + '\\bin\\jpackage.exe'
           dirName = os.getcwd() + "\\build\\libs"
-          # fullname = dirName + "\\" + "phoenix.jar"
-
-          # jpackage.exe --name phoenixbsl --package-type msi --input build\libs --main-jar phoenix-0.2.jar --win-dir-chooser --win-menu --app-version 0.2
           
           cmdArgs = [jpackage]
           cmdArgs.append('--name')
@@ -96,5 +93,5 @@ jobs:
       shell: python
     - uses: actions/upload-artifact@master
       with:
-        name: phoenix
-        path: ./phoenix.msi
+        name: phoenixbsl.msi
+        path: ./phoenixbsl-0.3.1.msi
