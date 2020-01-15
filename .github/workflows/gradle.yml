@@ -72,7 +72,6 @@ jobs:
           dirName = os.getcwd() + "\\build\\libs"
           fullname = dirName + "\\" + "phoenix.jar"
 
-#          D:\openjdk-14-jpackage+1-49_windows-x64_bin\jdk-14\bin\jpackage.exe --name phoenixbsl --package-type msi --input build\libs --main-jar phoenix-0.2.jar --win-dir-chooser --win-menu --app-version 0.2
           cmdArgs = [jpackage]
           cmdArgs.append('--name')
           cmdArgs.append('phoenixbsl')
