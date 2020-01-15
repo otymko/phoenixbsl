@@ -1,6 +1,5 @@
 package org.github.otymko.phoenixbsl.views;
 
-import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
@@ -13,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
@@ -104,15 +104,17 @@ public class IssuesStage extends Stage {
     main.setVgap(20);
 
     Label searchLabel = new Label("Поиск:");
+    searchLabel.setPrefWidth(100);
+    searchLabel.setPadding(new Insets(5, 0, 5, 10));
 
-    JFXTextField filterField = new JFXTextField();
-    filterField.setPadding(new Insets(0, 0, 0, 10));
+    TextField filterField = new TextField();
     filterField.setPrefWidth(420);
+    filterField.setPadding(new Insets(5, 0, 5, 10));
     filterField.textProperty().addListener((o, oldVal, newVal) -> {
       tree.setPredicate(userProp -> {
         final Issue issue = userProp.getValue();
         return issue.getDescription().toLowerCase().contains(newVal.toLowerCase())
-          || issue.getSeverity().toString().toLowerCase().contains(newVal.toLowerCase())
+          || severityToStringMap.get(issue.getSeverity()).toLowerCase().contains(newVal.toLowerCase())
           || issue.getLocation().toLowerCase().contains(newVal.toLowerCase());
       });
     });
@@ -153,7 +155,6 @@ public class IssuesStage extends Stage {
 
     setScene(scene);
     setResizable(false);
-    setAlwaysOnTop(true);
 
   }
 

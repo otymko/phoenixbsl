@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,14 +43,21 @@ public class PhoenixApp implements EventListener {
   }
 
   public void initProcessBSL() {
+
     processBSL = null;
-    var path = Paths.get(".", "languageserver/bsl-language-server.jar");
-    var arguments = new String[]{
-      "java", "-jar", path.toAbsolutePath().toString()};
+    String[] arguments;
+    var pathApp = Path.of(".", "app/bsl-language-server/bsl-language-server.exe");
+    if (pathApp.toFile().exists()) {
+      LOGGER.info("BLS LS app image is exist");
+      arguments = new String[]{pathApp.toAbsolutePath().toString()};
+    } else {
+      LOGGER.error("Not find bsl ls");
+      return;
+    }
     try {
       processBSL = new ProcessBuilder(arguments).start();
     } catch (IOException e) {
-      LOGGER.error(e.getMessage().toString());
+      LOGGER.error(e.getMessage());
     }
   }
 
@@ -161,6 +168,9 @@ public class PhoenixApp implements EventListener {
   }
 
   public void stopBSL() {
+    if (bslBinding == null) {
+      return;
+    }
     bslBinding.shutdown();
     bslBinding.exit();
   }
