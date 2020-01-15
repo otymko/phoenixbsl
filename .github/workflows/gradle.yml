@@ -87,7 +87,8 @@ jobs:
           cmdArgs.append('--win-menu')
           cmdArgs.append('--app-version')
           cmdArgs.append('0.3.1')
-
+          cmdArgs.append('--verbose')
+          
           cmd = ' '.join(cmdArgs)
 
           os.system(cmd)
