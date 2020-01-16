@@ -4,8 +4,17 @@ on: [push]
 
 jobs:
   build:
-
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest]
+        include:
+          - os: windows-latest
+            displayName: Windows
+            prefix: win
+            jpackageDownload: https://download.java.net/java/early_access/jdk14/27/GPL/openjdk-14-ea+27_windows-x64_bin.zip
+            jdk14Path: /jdk-14
+    runs-on: ${{ matrix.os }}
+    name: Create app image
 
     steps:
     - uses: actions/checkout@v1
@@ -15,6 +24,27 @@ jobs:
         java-version: 11
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Download jpackage
+        # We need to download jpackage from https://jdk.java.net/jpackage/
+      run: |
+          import tarfile
+          import zipfile
+          import sys
+          if sys.version_info[0] >= 3:
+            from urllib.request import urlretrieve
+          else:
+            from urllib import urlretrieve
+          url = "${{ matrix.jpackageDownload }}"
+          tmpfile, headers = urlretrieve(url)
+          if (url.endswith("tar.gz")):
+            tar = tarfile.open(tmpfile)
+            tar.extractall()
+            tar.close()
+          elif (url.endswith("zip")):
+            zip = zipfile.ZipFile(tmpfile)
+            zip.extractall()
+            zip.close()
+      shell: python
     - name: Processor file jar
       run: |
         import os
@@ -34,7 +64,46 @@ jobs:
         fullname = get_bslls_jar(dirName)
         os.rename(dirName + "/"+ fullname, dirName + "/phoenix.jar")
       shell: python
+    - name: Build jpackage msi
+      run: |
+          import os
+          import zipfile
+          import shutil
+          from urllib.request import urlretrieve
+
+          jpackage = os.path.join(os.getcwd() + "${{ matrix.jdk14Path }}", "bin", "jpackage.exe")
+          bsl_name = "bsl-language-server"
+          dirName = os.path.join(os.getcwd(), "build", "libs")
+          
+          url = "https://github.com/1c-syntax/bsl-language-server/releases/download/v0.13.0-RC1/bsl-language-server_win.zip"
+          tmpfile, headers = urlretrieve(url)
+          zip = zipfile.ZipFile(tmpfile)
+          zip.extractall()
+          zip.close()
+
+          shutil.move(os.path.join(os.getcwd(), bsl_name), os.path.join(dirName, bsl_name))
+          
+          cmdArgs = [jpackage]
+          cmdArgs.append('--name')
+          cmdArgs.append('phoenixbsl')        
+          cmdArgs.append('--type')
+          cmdArgs.append('msi')       
+          cmdArgs.append('--input')
+          cmdArgs.append('build/libs')        
+          cmdArgs.append('--main-jar')
+          cmdArgs.append('phoenix.jar')
+          cmdArgs.append('--win-dir-chooser')    
+          cmdArgs.append('--win-menu')
+          cmdArgs.append('--app-version')
+          cmdArgs.append('0.3.1')
+          cmdArgs.append('--verbose')
+          
+          cmd = ' '.join(cmdArgs)
+
+          os.system(cmd)
+
+      shell: python
     - uses: actions/upload-artifact@master
       with:
-        name: phoenix
-        path: ./build/libs/phoenix.jar
+        name: phoenixbsl.msi
+        path: ./phoenixbsl-0.3.1.msi
