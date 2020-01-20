@@ -47,10 +47,38 @@ jobs:
             zip.extractall()
             zip.close()
       shell: python
+    - name: Download BSL LS
+      run: |
+        import requests
+        import os
+        import zipfile
+        import shutil
+
+        def getUrlDownloadBSL():
+          url = ""
+          r = requests.get("https://api.github.com/repos/1c-syntax/bsl-language-server/releases/latest")
+          json = r.json()
+          for asset in json["assets"]:
+              if asset["name"] == "bsl-language-server_win.zip":
+                url = asset["browser_download_url"]
+                break
+          return url
+
+          bsl_name = "bsl-language-server"
+          dirName = os.path.join(os.getcwd(), "build", "libs")
+
+          url = getUrlDownloadBSL()
+          tmpfile, headers = urlretrieve(url)
+          zip = zipfile.ZipFile(tmpfile)
+          zip.extractall()
+          zip.close()
+
+          shutil.move(os.path.join(os.getcwd(), bsl_name), os.path.join(dirName, bsl_name))
+      shell: python
     - name: Build jpackage msi
       run: ./gradlew jpackage
       env:
-        JPACKAGE_HOME: "${{ matrix.jdk14Path }}/bin/jpackage.exe"
+        JPACKAGE_HOME: "./${{ matrix.jdk14Path }}/bin/jpackage.exe"
     - uses: actions/upload-artifact@master
       with:
         name: phoenixbsl.msi
