@@ -58,5 +58,5 @@ tasks.shadowJar {
 
 javafx {
     version = "11"
-    modules("javafx.controls")
+    modules("javafx.controls", "javafx.fxml")
 }
