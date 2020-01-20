@@ -24,6 +24,8 @@ jobs:
         java-version: 11
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Install python lib requests
+      run: pip install requests  
     - name: Download jpackage
         # We need to download jpackage from https://jdk.java.net/jpackage/
       run: |
@@ -66,11 +68,11 @@ jobs:
       shell: python
     - name: Build jpackage msi
       run: |
+          import requests
           import os
           import zipfile
           import shutil
           from urllib.request import urlretrieve
-          import requests
 
           def getUrlDownloadBSL():
             url = ""
