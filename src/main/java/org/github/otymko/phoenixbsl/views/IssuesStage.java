@@ -1,21 +1,16 @@
 package org.github.otymko.phoenixbsl.views;
 
 import com.jfoenix.controls.JFXTreeTableColumn;
-import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeTableCell;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.eclipse.lsp4j.Diagnostic;
@@ -24,6 +19,7 @@ import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.entities.Issue;
 
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +28,8 @@ public class IssuesStage extends Stage {
 
   private Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
 
-  private JFXTreeTableView<Issue> tree = new JFXTreeTableView<>();
+  private TreeTableView<Issue> tree;
+  private RecursiveTreeItem<Issue> recursiveTreeItem;
 
   public int lineOffset = 0;
 
@@ -44,16 +41,29 @@ public class IssuesStage extends Stage {
   private Label labelWarning;
   private Label labelInfo;
 
+
   public IssuesStage() {
 
-    // займемся ui
-    setTitle("Phoenix");
-    getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.jpg")));
 
+    Parent root = null;
+    try {
+      root = FXMLLoader.load(PhoenixApp.class.getResource("/IssuesStage.fxml"));
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    }
+
+    Scene scene = new Scene(root);
+    setScene(scene);
+
+    getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.jpg")));
+    setTitle("Phoenix BSL");
+
+    tree = (TreeTableView<Issue>) scene.lookup("#issuesTree");
     tree.setPlaceholder(new Label("Замечаний нет"));
 
-    JFXTreeTableColumn<Issue, String> descriptionColumn = new JFXTreeTableColumn<>("Описание");
-    descriptionColumn.setPrefWidth(300);
+    TreeTableColumn<Issue, String> descriptionColumn = new JFXTreeTableColumn<>("Описание");
+    descriptionColumn.setPrefWidth(450);
     descriptionColumn.setCellFactory(param -> {
       TreeTableCell<Issue, String> cell = new TreeTableCell<>();
       Text text = new Text();
@@ -66,19 +76,25 @@ public class IssuesStage extends Stage {
     descriptionColumn.setCellValueFactory(
       param -> new SimpleStringProperty(param.getValue().getValue().getDescription()));
 
-    JFXTreeTableColumn<Issue, String> positionColumn = new JFXTreeTableColumn<>("стр.");
-    positionColumn.setPrefWidth(50);
+    TreeTableColumn<Issue, String> positionColumn = new JFXTreeTableColumn<>("стр.");
+    positionColumn.setPrefWidth(60);
+    positionColumn.setMinWidth(60);
+    positionColumn.setMaxWidth(60);
     positionColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().getLocation()));
     positionColumn.setReorderable(false);
+    positionColumn.setResizable(false);
 
-    JFXTreeTableColumn<Issue, String> typeColumn = new JFXTreeTableColumn<>("Тип");
-    typeColumn.setPrefWidth(90);
+    TreeTableColumn<Issue, String> typeColumn = new JFXTreeTableColumn<>("Тип");
+    typeColumn.setPrefWidth(120);
+    typeColumn.setMinWidth(120);
+    typeColumn.setMaxWidth(120);
     typeColumn.setCellValueFactory(param -> new SimpleStringProperty(severityToStringMap.get(param.getValue().getValue().getSeverity())));
     typeColumn.setReorderable(false);
+    typeColumn.setResizable(false);
 
     ObservableList<Issue> issues = FXCollections.observableArrayList();
 
-    var recursiveTreeItem = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
+    recursiveTreeItem = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
     tree.setRoot(recursiveTreeItem);
     tree.setShowRoot(false);
     tree.setEditable(true);
@@ -96,66 +112,30 @@ public class IssuesStage extends Stage {
 
     });
 
-    tree.setPrefSize(450, 520);
+    labelError = (Label) scene.lookup("#labelError");
+    labelWarning = (Label) scene.lookup("#labelWarning");
+    labelInfo = (Label) scene.lookup("#labelInfo");
 
-    GridPane main = new GridPane();
-    main.setPadding(new Insets(10, 10, 10, 10));
-    main.setHgap(20);
-    main.setVgap(20);
-
-    Label searchLabel = new Label("Поиск:");
-    searchLabel.setPrefWidth(100);
-    searchLabel.setPadding(new Insets(5, 0, 5, 10));
-
-    TextField filterField = new TextField();
-    filterField.setPrefWidth(420);
-    filterField.setPadding(new Insets(5, 0, 5, 10));
-    filterField.textProperty().addListener((o, oldVal, newVal) -> {
-      tree.setPredicate(userProp -> {
-        final Issue issue = userProp.getValue();
-        return issue.getDescription().toLowerCase().contains(newVal.toLowerCase())
-          || severityToStringMap.get(issue.getSeverity()).toLowerCase().contains(newVal.toLowerCase())
-          || issue.getLocation().toLowerCase().contains(newVal.toLowerCase());
-      });
-    });
-
-    GridPane searchPanel = new GridPane();
-    searchPanel.add(searchLabel, 0, 0);
-    searchPanel.add(filterField, 1, 0);
-
-    main.add(searchPanel, 0, 0);
-    main.add(tree, 0, 1);
-
-    // сводка внизу
-    GridPane infoPanel = new GridPane();
-    infoPanel.setAlignment(Pos.CENTER);
-
-    labelError = new Label();
-    infoPanel.add(labelError, 0, 0);
-    labelError.setPadding(new Insets(0, 50, 10, 10));
-
-    labelWarning = new Label();
-    infoPanel.add(labelWarning, 1, 0);
-    labelWarning.setPadding(new Insets(0, 50, 10, 10));
-
-    labelInfo = new Label();
-    infoPanel.add(labelInfo, 2, 0);
-    labelInfo.setPadding(new Insets(0, 10, 10, 10));
+    TextField filter = (TextField) scene.lookup("#search");
+    filter.textProperty().addListener((o, oldVal, newVal) -> filterIssuesTree(newVal));
 
     updateIndicators();
 
-    main.add(infoPanel, 0, 2);
+  }
 
-    Scene scene = new Scene(main, 480, 600);
-
-    setOnCloseRequest(event -> {
-      setIconified(true);
-      event.consume();
-    });
-
-    setScene(scene);
-    setResizable(false);
-
+  private void filterIssuesTree(String filter) {
+    if (filter.isEmpty()) {
+      recursiveTreeItem.setPredicate(userProp -> true);
+    } else {
+      tree.setRoot(recursiveTreeItem);
+      recursiveTreeItem.setPredicate(userProp -> {
+        final Issue issue = userProp.getValue();
+        final String filterLowerCase = filter.toLowerCase();
+        return issue.getDescription().toLowerCase().contains(filterLowerCase)
+          || severityToStringMap.get(issue.getSeverity()).toLowerCase().contains(filterLowerCase)
+          || issue.getLocation().toLowerCase().contains(filterLowerCase);
+      });
+    }
   }
 
   public IssuesStage(Stage ownerStage) {
@@ -193,7 +173,7 @@ public class IssuesStage extends Stage {
 
     updateIndicators();
 
-    var recursiveTreeItem = new RecursiveTreeItem<Issue>(issues, RecursiveTreeObject::getChildren);
+    recursiveTreeItem = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
     tree.setRoot(recursiveTreeItem);
     tree.setShowRoot(false);
 
