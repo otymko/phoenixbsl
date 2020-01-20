@@ -24,6 +24,8 @@ jobs:
         java-version: 11
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Install python lib requests
+      run: pip install requests  
     - name: Download jpackage
         # We need to download jpackage from https://jdk.java.net/jpackage/
       run: |
@@ -66,16 +68,27 @@ jobs:
       shell: python
     - name: Build jpackage msi
       run: |
+          import requests
           import os
           import zipfile
           import shutil
           from urllib.request import urlretrieve
 
+          def getUrlDownloadBSL():
+            url = ""
+            r = requests.get("https://api.github.com/repos/1c-syntax/bsl-language-server/releases/latest")
+            json = r.json()
+            for asset in json["assets"]:
+                if asset["name"] == "bsl-language-server_win.zip":
+                    url = asset["browser_download_url"]
+                    break
+            return url
+
           jpackage = os.path.join(os.getcwd() + "${{ matrix.jdk14Path }}", "bin", "jpackage.exe")
           bsl_name = "bsl-language-server"
           dirName = os.path.join(os.getcwd(), "build", "libs")
           
-          url = "https://github.com/1c-syntax/bsl-language-server/releases/download/v0.13.0-RC1/bsl-language-server_win.zip"
+          url = getUrlDownloadBSL()
           tmpfile, headers = urlretrieve(url)
           zip = zipfile.ZipFile(tmpfile)
           zip.extractall()
