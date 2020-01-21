@@ -78,7 +78,7 @@ jobs:
     - name: Build jpackage msi
       run: ./gradlew jpackage
       env:
-        JPACKAGE_HOME: "${{ GITHUB_WORKSPACE }}${{ matrix.jdk14Path }}/bin/jpackage.exe"
+        JPACKAGE_HOME: "${{ github.workspace }}${{ matrix.jdk14Path }}/bin/jpackage.exe"
     - uses: actions/upload-artifact@master
       with:
         name: phoenixbsl.msi
