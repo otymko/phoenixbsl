@@ -47,47 +47,26 @@ jobs:
             zip.extractall()
             zip.close()
       shell: python
-    - name: Processor file jar
+    - name: Download BSL LS
       run: |
+        import requests
         import os
-        import re
-        import ntpath
-        
-        def get_bslls_jar(dir):
-            names = os.listdir(dir)
-            for name in names:
-                fullname = os.path.join(dir, name)
-                if os.path.isfile(fullname) and re.search(pattern, fullname):
-                    return ntpath.basename(fullname)
-                return None
-        
-        pattern = r"phoenix.+\.jar"
-        dirName = os.getcwd() + "/build/libs"
-        fullname = get_bslls_jar(dirName)
-        os.rename(dirName + "/"+ fullname, dirName + "/phoenix.jar")
-      shell: python
-    - name: Build jpackage msi
-      run: |
-          import requests
-          import os
-          import zipfile
-          import shutil
-          from urllib.request import urlretrieve
+        import zipfile
+        import shutil
 
-          def getUrlDownloadBSL():
-            url = ""
-            r = requests.get("https://api.github.com/repos/1c-syntax/bsl-language-server/releases/latest")
-            json = r.json()
-            for asset in json["assets"]:
-                if asset["name"] == "bsl-language-server_win.zip":
-                    url = asset["browser_download_url"]
-                    break
-            return url
+        def getUrlDownloadBSL():
+          url = ""
+          r = requests.get("https://api.github.com/repos/1c-syntax/bsl-language-server/releases/latest")
+          json = r.json()
+          for asset in json["assets"]:
+              if asset["name"] == "bsl-language-server_win.zip":
+                url = asset["browser_download_url"]
+                break
+          return url
 
-          jpackage = os.path.join(os.getcwd() + "${{ matrix.jdk14Path }}", "bin", "jpackage.exe")
           bsl_name = "bsl-language-server"
           dirName = os.path.join(os.getcwd(), "build", "libs")
-          
+
           url = getUrlDownloadBSL()
           tmpfile, headers = urlretrieve(url)
           zip = zipfile.ZipFile(tmpfile)
@@ -95,27 +74,11 @@ jobs:
           zip.close()
 
           shutil.move(os.path.join(os.getcwd(), bsl_name), os.path.join(dirName, bsl_name))
-          
-          cmdArgs = [jpackage]
-          cmdArgs.append('--name')
-          cmdArgs.append('phoenixbsl')        
-          cmdArgs.append('--type')
-          cmdArgs.append('msi')       
-          cmdArgs.append('--input')
-          cmdArgs.append('build/libs')        
-          cmdArgs.append('--main-jar')
-          cmdArgs.append('phoenix.jar')
-          cmdArgs.append('--win-dir-chooser')    
-          cmdArgs.append('--win-menu')
-          cmdArgs.append('--app-version')
-          cmdArgs.append('0.3.1')
-          cmdArgs.append('--verbose')
-          
-          cmd = ' '.join(cmdArgs)
-
-          os.system(cmd)
-
       shell: python
+    - name: Build jpackage msi
+      run: ./gradlew jpackage
+      env:
+        JPACKAGE_HOME: "${{ github.workspace }}${{ matrix.jdk14Path }}/bin"
     - uses: actions/upload-artifact@master
       with:
         name: phoenixbsl.msi

@@ -17,7 +17,7 @@ repositories {
 }
 
 group = "org.github.otymko.phoenixbsl"
-version = "0.3.0"
+version = "0.3.1"
 
 dependencies {
     testImplementation("com.hynnet", "jacob", "1.18")
@@ -41,7 +41,11 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Xlint:deprecation")
 }
 
+// TODO: путь к jar после build, можно сделать лучше?
+var jarName = ""
+
 tasks.jar {
+    jarName = this.archiveFileName.get()
     manifest {
         attributes["Main-Class"] = "org.github.otymko.phoenixbsl.LauncherApp"
         attributes["Implementation-Version"] = "0.3.0"
@@ -54,6 +58,22 @@ tasks.shadowJar {
     project.configurations.implementation.get().isCanBeResolved = true
     configurations = listOf(project.configurations["implementation"])
     archiveClassifier.set("")
+}
+
+tasks.register<Exec>("jpackage") {
+    var jpackage = System.getenv("JPACKAGE_HOME") + "/jpackage.exe"
+    executable(jpackage)
+    args(
+            "--name", "phoenixbsl",
+            "--type", "msi",
+            "--input", "build/libs",
+            "--main-jar", jarName,
+            "--win-dir-chooser",
+            "--win-shortcut",
+            "--win-menu",
+            "--app-version", project.version,
+            "--vendor", "otymko"
+    )
 }
 
 javafx {
