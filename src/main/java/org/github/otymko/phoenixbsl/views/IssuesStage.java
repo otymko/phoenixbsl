@@ -31,6 +31,8 @@ public class IssuesStage extends Stage {
   private TreeTableView<Issue> tree;
   private RecursiveTreeItem<Issue> recursiveTreeItem;
 
+  private TextField search;
+
   public int lineOffset = 0;
 
   private int countError = 0;
@@ -116,8 +118,8 @@ public class IssuesStage extends Stage {
     labelWarning = (Label) scene.lookup("#labelWarning");
     labelInfo = (Label) scene.lookup("#labelInfo");
 
-    TextField filter = (TextField) scene.lookup("#search");
-    filter.textProperty().addListener((o, oldVal, newVal) -> filterIssuesTree(newVal));
+    search = (TextField) scene.lookup("#search");
+    search.textProperty().addListener((o, oldVal, newVal) -> filterIssuesTree(newVal));
 
     updateIndicators();
 
@@ -176,6 +178,10 @@ public class IssuesStage extends Stage {
     recursiveTreeItem = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
     tree.setRoot(recursiveTreeItem);
     tree.setShowRoot(false);
+
+    filterIssuesTree(search.getText());
+
+    tree.refresh();
 
     this.toFront();
     this.setIconified(false);
