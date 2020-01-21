@@ -73,6 +73,7 @@ jobs:
         tmpfile, headers = urlretrieve(url)
         zip = zipfile.ZipFile(tmpfile)
         zip.extractall()
+        shutil.move(os.path.join(os.getcwd(), bsl_name), os.path.join(dirName, bsl_name))
       shell: python
     - name: Build jpackage msi
       run: ./gradlew jpackage
