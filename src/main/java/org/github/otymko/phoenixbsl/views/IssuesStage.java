@@ -1,9 +1,7 @@
 package org.github.otymko.phoenixbsl.views;
 
-import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -98,21 +95,23 @@ public class IssuesStage extends Stage {
     tree = (TreeTableView<Issue>) scene.lookup("#issuesTree");
     tree.setPlaceholder(new Label("Замечаний нет"));
 
-    TreeTableColumn<Issue, String> descriptionColumn = new JFXTreeTableColumn<>("Описание");
+    TreeTableColumn<Issue, String> descriptionColumn = new TreeTableColumn<>("Описание");
     descriptionColumn.setPrefWidth(450);
     descriptionColumn.setCellFactory(param -> {
       TreeTableCell<Issue, String> cell = new TreeTableCell<>();
       Text text = new Text();
+      text.setStyle("-fx-text-fill: -fx-text-inner-color;");
       cell.setGraphic(text);
       cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
       text.textProperty().bind(cell.itemProperty());
       text.wrappingWidthProperty().bind(descriptionColumn.widthProperty());
+      cell.setStyle("-fx-text-fill: -fx-text-inner-color;");
       return cell;
     });
     descriptionColumn.setCellValueFactory(
       param -> new SimpleStringProperty(param.getValue().getValue().getDescription()));
 
-    TreeTableColumn<Issue, String> positionColumn = new JFXTreeTableColumn<>("стр.");
+    TreeTableColumn<Issue, String> positionColumn = new TreeTableColumn<>("стр.");
     positionColumn.setPrefWidth(60);
     positionColumn.setMinWidth(60);
     positionColumn.setMaxWidth(60);
@@ -120,7 +119,7 @@ public class IssuesStage extends Stage {
     positionColumn.setReorderable(false);
     positionColumn.setResizable(false);
 
-    TreeTableColumn<Issue, String> typeColumn = new JFXTreeTableColumn<>("Тип");
+    TreeTableColumn<Issue, String> typeColumn = new TreeTableColumn<>("Тип");
     typeColumn.setPrefWidth(120);
     typeColumn.setMinWidth(120);
     typeColumn.setMaxWidth(120);

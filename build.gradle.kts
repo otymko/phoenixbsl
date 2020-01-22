@@ -77,6 +77,6 @@ tasks.register<Exec>("jpackage") {
 }
 
 javafx {
-    version = "11"
+    version = "13"
     modules("javafx.controls", "javafx.fxml")
 }
