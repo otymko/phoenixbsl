@@ -32,7 +32,11 @@ public class PhoenixApp implements EventListener {
 
   private PhoenixApp() {
 
-    events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING, EventManager.EVENT_UPDATE_ISSUES);
+    events = new EventManager(
+      EventManager.EVENT_INSPECTION,
+      EventManager.EVENT_FORMATTING,
+      EventManager.EVENT_UPDATE_ISSUES,
+      EventManager.SHOW_ISSUE_STAGE);
     events.subscribe(EventManager.EVENT_INSPECTION, this);
     events.subscribe(EventManager.EVENT_FORMATTING, this);
 
@@ -186,4 +190,9 @@ public class PhoenixApp implements EventListener {
   public URI getFakeUri() {
     return fakeUri;
   }
+
+  public void showIssuesStage() {
+    events.notify(EventManager.SHOW_ISSUE_STAGE);
+  }
+
 }

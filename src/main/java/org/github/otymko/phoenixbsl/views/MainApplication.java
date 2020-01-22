@@ -15,12 +15,22 @@ public class MainApplication extends Application implements EventListener {
   private IssuesStage issuesStage;
 
   public MainApplication() {
-    PhoenixApp.getInstance().getEventManager().subscribe(EventManager.EVENT_UPDATE_ISSUES, this);
+
+    Platform.setImplicitExit(false);
+
+    EventManager eventManager = PhoenixApp.getInstance().getEventManager();
+    eventManager.subscribe(EventManager.EVENT_UPDATE_ISSUES, this);
+    eventManager.subscribe(EventManager.SHOW_ISSUE_STAGE, this);
   }
 
   @Override
   public void start(Stage primaryStage) throws Exception {
     initIssuesStage(primaryStage);
+  }
+
+  @Override
+  public void showIssuesStage() {
+    showIssuesStageImpl();
   }
 
   public void initIssuesStage(Stage owner) {
@@ -32,11 +42,24 @@ public class MainApplication extends Application implements EventListener {
   @Override
   public void updateIssues(List<Diagnostic> diagnostics) {
     issuesStage.lineOffset = PhoenixApp.getInstance().currentOffset;
+    showIssuesStageImpl();
     Platform.runLater(() -> issuesStage.updateIssues(diagnostics));
   }
 
   public static void main(String[] args) {
     launch(args);
+  }
+
+  private void showIssuesStageImpl() {
+    Platform.runLater(() -> {
+        if (!issuesStage.isShowing()) {
+          initIssuesStage(new Stage());
+        }
+        issuesStage.setIconified(false);
+        issuesStage.requestFocus();
+        issuesStage.toFront();
+      }
+    );
   }
 
 }

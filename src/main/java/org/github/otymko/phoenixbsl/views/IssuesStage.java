@@ -3,16 +3,22 @@ package org.github.otymko.phoenixbsl.views;
 import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.github.otymko.phoenixbsl.core.PhoenixAPI;
@@ -43,9 +49,11 @@ public class IssuesStage extends Stage {
   private Label labelWarning;
   private Label labelInfo;
 
+  private double xOffset = 0;
+  private double yOffset = 0;
+
 
   public IssuesStage() {
-
 
     Parent root = null;
     try {
@@ -55,11 +63,37 @@ public class IssuesStage extends Stage {
       return;
     }
 
+    root.setOnMousePressed(new EventHandlerMouseEvent2());
+    root.setOnMouseDragged(new EventHandlerMouseEvent());
+
+    initStyle(StageStyle.UNDECORATED);
+
     Scene scene = new Scene(root);
     setScene(scene);
 
-    getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.jpg")));
+    scene.setFill(Color.TRANSPARENT);
+    initStyle(StageStyle.TRANSPARENT);
+
+    scene.lookup("#toolbar").setOnMouseDragged(new EventHandlerMouseEvent());
+    scene.lookup("#toolbar").setOnMousePressed(new EventHandlerMouseEvent2());
+
+    getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.png")));
     setTitle("Phoenix BSL");
+
+    Button btnClose = (Button) scene.lookup("#btnClose");
+    btnClose.setOnAction(event -> {
+      close();
+    });
+
+    Button btnRestore = (Button) scene.lookup("#btnRestore");
+    btnRestore.setOnAction(event -> {
+      setMaximized(!isMaximized());
+    });
+
+    Button btnMinimize = (Button) scene.lookup("#btnMinimize");
+    btnMinimize.setOnAction(event -> {
+      setIconified(true);
+    });
 
     tree = (TreeTableView<Issue>) scene.lookup("#issuesTree");
     tree.setPlaceholder(new Label("Замечаний нет"));
@@ -203,6 +237,27 @@ public class IssuesStage extends Stage {
     map.put(DiagnosticSeverity.Hint, "Подсказка");
     map.put(DiagnosticSeverity.Warning, "Предупреждение");
     return map;
+  }
+
+
+  class EventHandlerMouseEvent implements EventHandler<MouseEvent> {
+
+    @Override
+    public void handle(MouseEvent event) {
+      setX(event.getScreenX() - xOffset);
+      setY(event.getScreenY() - yOffset);
+    }
+
+  }
+
+  class EventHandlerMouseEvent2 implements EventHandler<MouseEvent> {
+
+    @Override
+    public void handle(MouseEvent event) {
+      xOffset = event.getSceneX();
+      yOffset = event.getSceneY();
+    }
+
   }
 
 }

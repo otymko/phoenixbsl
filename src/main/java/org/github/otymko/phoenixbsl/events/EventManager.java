@@ -14,6 +14,7 @@ public class EventManager {
   public static final int EVENT_INSPECTION = 1;
   public static final int EVENT_FORMATTING = 2;
   public static final int EVENT_UPDATE_ISSUES = 3;
+  public static final int SHOW_ISSUE_STAGE = 4;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EventManager.class.getSimpleName());
 
@@ -42,6 +43,8 @@ public class EventManager {
         listener.inspection();
       } else if (eventType == EVENT_FORMATTING) {
         listener.formatting();
+      } else if (eventType == SHOW_ISSUE_STAGE){
+        listener.showIssuesStage();
       }
     }
   }

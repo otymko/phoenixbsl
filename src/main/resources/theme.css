@@ -1,0 +1,26 @@
+
+
+.root {
+    -fx-background-color: #cc7000;
+
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: #b36200;
+
+    -fx-background-radius: 5;
+    /* -fx-border-radius: 15; */
+}
+
+.button {
+
+    -fx-background-color: #cc7000;   
+    -fx-color: #ffffff;
+
+}
+
+.button:hover {
+    -fx-background-color: #804600;    
+}
+
+.info-label {
+    -fx-text-fill: #FFFFFF;
+}
