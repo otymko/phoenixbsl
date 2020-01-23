@@ -4,9 +4,9 @@
 
 ## Описание
 
-![Превью PhoenixBSL](/images/preview.png)
-
 Проект позволяет анализировать и форматировать код 1С в конфигураторе. Инстумент основан на проекте [BSL LS](https://github.com/1c-syntax/bsl-language-server).
+
+![Превью PhoenixBSL](/images/preview.png)
 
 ## Установка
 
