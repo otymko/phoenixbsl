@@ -58,7 +58,7 @@ jobs:
         def getUrlDownloadBSL():
             url = ""
             r = requests.get(
-                "https://api.github.com/repos/1c-syntax/bsl-language-server/releases/v0.13.0-RC6")
+                "https://api.github.com/repos/1c-syntax/bsl-language-server/releases/latest")
             json = r.json()
             for asset in json["assets"]:
                 if asset["name"] == "bsl-language-server_win.zip":
