@@ -77,7 +77,7 @@ public class IssuesStage extends Stage {
 
     getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.png")));
     Label title = (Label) scene.lookup("#titleApp");
-    title.setText("Phoenix BSL " + "0.3.2"); // TODO: брать из конфига градля
+    title.setText("Phoenix BSL v. " + PhoenixApp.getInstance().getVersionApp());
 
     Button btnClose = (Button) scene.lookup("#btnClose");
     btnClose.setOnAction(event -> {
@@ -161,7 +161,7 @@ public class IssuesStage extends Stage {
   }
 
   private void filterIssuesTree(String filter) {
-    
+
     if (filter.isEmpty()) {
       recursiveTreeItem.setPredicate(userProp -> true);
     } else {

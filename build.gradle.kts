@@ -17,7 +17,7 @@ repositories {
 }
 
 group = "org.github.otymko.phoenixbsl"
-version = "0.3.1"
+version = "0.3.3"
 
 dependencies {
     testImplementation("com.hynnet", "jacob", "1.18")
@@ -48,7 +48,7 @@ tasks.jar {
     jarName = this.archiveFileName.get()
     manifest {
         attributes["Main-Class"] = "org.github.otymko.phoenixbsl.LauncherApp"
-        attributes["Implementation-Version"] = "0.3.0"
+        attributes["Implementation-Version"] = project.version
     }
     enabled = false
     dependsOn(tasks.shadowJar)
