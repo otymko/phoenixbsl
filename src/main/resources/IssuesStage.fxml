@@ -56,8 +56,6 @@
       </HBox>
    </bottom>
    <top>
-   </top>
-   <top>
       <BorderPane BorderPane.alignment="CENTER">
          <right>
             <HBox fx:id="toolbar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="22.0" prefWidth="20.0" BorderPane.alignment="CENTER">
@@ -97,7 +95,7 @@
                   </Button>
                </children>
                <BorderPane.margin>
-                  <Insets right="12.0" />
+                  <Insets right="5.0" />
                </BorderPane.margin>
             </HBox>
          </right>
