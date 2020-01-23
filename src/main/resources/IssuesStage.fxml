@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.TextField?>
-<BorderPane prefHeight="800.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<BorderPane prefHeight="800.0" prefWidth="600.0" stylesheets="@theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <children>
@@ -18,25 +22,93 @@
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                </VBox.margin>
+               <font>
+                  <Font name="Calibri" size="15.0" />
+               </font>
             </TextField>
-            <TreeTableView fx:id="issuesTree" VBox.vgrow="ALWAYS">
+            <JFXTreeTableView fx:id="issuesTree" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" right="5.0" />
                </VBox.margin>
                <columnResizePolicy>
                   <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
-            </TreeTableView>
+            </JFXTreeTableView>
          </children>
       </VBox>
    </center>
    <bottom>
       <HBox alignment="TOP_RIGHT" prefHeight="30.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="198.0" text="Ошибки:" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-            <Label fx:id="labelWarning" alignment="CENTER" prefHeight="17.0" prefWidth="198.0" text="Предупреждения:" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-            <Label fx:id="labelInfo" alignment="CENTER" prefHeight="17.0" prefWidth="196.0" text="Информация:" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+            <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="198.0" styleClass="info-label" text="Ошибки:" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+               <font>
+                  <Font name="Calibri Bold" size="15.0" />
+               </font></Label>
+            <Label fx:id="labelWarning" alignment="CENTER" prefHeight="17.0" prefWidth="198.0" styleClass="info-label" text="Предупреждения:" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+               <font>
+                  <Font name="Calibri Bold" size="15.0" />
+               </font></Label>
+            <Label fx:id="labelInfo" alignment="CENTER" prefHeight="17.0" prefWidth="196.0" styleClass="info-label" text="Информация:" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+               <font>
+                  <Font name="Calibri Bold" size="15.0" />
+               </font></Label>
          </children>
       </HBox>
    </bottom>
+   <top>
+      <BorderPane BorderPane.alignment="CENTER">
+         <right>
+            <HBox fx:id="toolbar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="22.0" prefWidth="20.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="btnClose" minHeight="40.0" minWidth="40.0" mnemonicParsing="false" prefHeight="0.0" prefWidth="0.0">
+                     <graphic>
+                        <ImageView fx:id="imgClose" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@close.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <HBox.margin>
+                        <Insets right="3.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnRestore" minHeight="40.0" minWidth="40.0" mnemonicParsing="false" prefHeight="0.0" prefWidth="0.0">
+                     <graphic>
+                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@restore.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <HBox.margin>
+                        <Insets right="3.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnMinimize" minHeight="40.0" minWidth="40.0" mnemonicParsing="false" prefHeight="0.0" prefWidth="0.0">
+                     <graphic>
+                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@minimize.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+               <BorderPane.margin>
+                  <Insets right="5.0" />
+               </BorderPane.margin>
+            </HBox>
+         </right>
+         <left>
+            <Label fx:id="titleApp" textFill="WHITE" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="Calibri Bold" size="20.0" />
+               </font>
+               <BorderPane.margin>
+                  <Insets left="5.0" top="5.0" />
+               </BorderPane.margin>
+            </Label>
+         </left>
+      </BorderPane>
+   </top>
 </BorderPane>

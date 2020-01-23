@@ -1,18 +1,22 @@
 package org.github.otymko.phoenixbsl.views;
 
-import com.jfoenix.controls.JFXTreeTableColumn;
+import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.github.otymko.phoenixbsl.core.PhoenixAPI;
@@ -28,7 +32,7 @@ public class IssuesStage extends Stage {
 
   private Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
 
-  private TreeTableView<Issue> tree;
+  private JFXTreeTableView<Issue> tree;
   private RecursiveTreeItem<Issue> recursiveTreeItem;
 
   private TextField search;
@@ -43,9 +47,11 @@ public class IssuesStage extends Stage {
   private Label labelWarning;
   private Label labelInfo;
 
+  private double xOffset = 0;
+  private double yOffset = 0;
+
 
   public IssuesStage() {
-
 
     Parent root = null;
     try {
@@ -55,30 +61,59 @@ public class IssuesStage extends Stage {
       return;
     }
 
+    root.setOnMousePressed(new EventHandlerMouseEvent2());
+    root.setOnMouseDragged(new EventHandlerMouseEvent());
+
+    initStyle(StageStyle.UNDECORATED);
+
     Scene scene = new Scene(root);
     setScene(scene);
 
-    getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.jpg")));
-    setTitle("Phoenix BSL");
+    scene.setFill(Color.TRANSPARENT);
+    initStyle(StageStyle.TRANSPARENT);
 
-    tree = (TreeTableView<Issue>) scene.lookup("#issuesTree");
+    scene.lookup("#toolbar").setOnMouseDragged(new EventHandlerMouseEvent());
+    scene.lookup("#toolbar").setOnMousePressed(new EventHandlerMouseEvent2());
+
+    getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.png")));
+    Label title = (Label) scene.lookup("#titleApp");
+    title.setText("Phoenix BSL v. " + PhoenixApp.getInstance().getVersionApp());
+
+    Button btnClose = (Button) scene.lookup("#btnClose");
+    btnClose.setOnAction(event -> {
+      close();
+    });
+
+    Button btnRestore = (Button) scene.lookup("#btnRestore");
+    btnRestore.setOnAction(event -> {
+      setMaximized(!isMaximized());
+    });
+
+    Button btnMinimize = (Button) scene.lookup("#btnMinimize");
+    btnMinimize.setOnAction(event -> {
+      setIconified(true);
+    });
+
+    tree = (JFXTreeTableView)(TreeTableView<Issue>) scene.lookup("#issuesTree");
     tree.setPlaceholder(new Label("Замечаний нет"));
 
-    TreeTableColumn<Issue, String> descriptionColumn = new JFXTreeTableColumn<>("Описание");
+    TreeTableColumn<Issue, String> descriptionColumn = new TreeTableColumn<>("Описание");
     descriptionColumn.setPrefWidth(450);
     descriptionColumn.setCellFactory(param -> {
       TreeTableCell<Issue, String> cell = new TreeTableCell<>();
       Text text = new Text();
+      text.setStyle("-fx-text-fill: -fx-text-inner-color;");
       cell.setGraphic(text);
       cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
       text.textProperty().bind(cell.itemProperty());
       text.wrappingWidthProperty().bind(descriptionColumn.widthProperty());
+      cell.setStyle("-fx-text-fill: -fx-text-inner-color;");
       return cell;
     });
     descriptionColumn.setCellValueFactory(
       param -> new SimpleStringProperty(param.getValue().getValue().getDescription()));
 
-    TreeTableColumn<Issue, String> positionColumn = new JFXTreeTableColumn<>("стр.");
+    TreeTableColumn<Issue, String> positionColumn = new TreeTableColumn<>("стр.");
     positionColumn.setPrefWidth(60);
     positionColumn.setMinWidth(60);
     positionColumn.setMaxWidth(60);
@@ -86,7 +121,7 @@ public class IssuesStage extends Stage {
     positionColumn.setReorderable(false);
     positionColumn.setResizable(false);
 
-    TreeTableColumn<Issue, String> typeColumn = new JFXTreeTableColumn<>("Тип");
+    TreeTableColumn<Issue, String> typeColumn = new TreeTableColumn<>("Тип");
     typeColumn.setPrefWidth(120);
     typeColumn.setMinWidth(120);
     typeColumn.setMaxWidth(120);
@@ -126,6 +161,7 @@ public class IssuesStage extends Stage {
   }
 
   private void filterIssuesTree(String filter) {
+
     if (filter.isEmpty()) {
       recursiveTreeItem.setPredicate(userProp -> true);
     } else {
@@ -203,6 +239,27 @@ public class IssuesStage extends Stage {
     map.put(DiagnosticSeverity.Hint, "Подсказка");
     map.put(DiagnosticSeverity.Warning, "Предупреждение");
     return map;
+  }
+
+
+  class EventHandlerMouseEvent implements EventHandler<MouseEvent> {
+
+    @Override
+    public void handle(MouseEvent event) {
+      setX(event.getScreenX() - xOffset);
+      setY(event.getScreenY() - yOffset);
+    }
+
+  }
+
+  class EventHandlerMouseEvent2 implements EventHandler<MouseEvent> {
+
+    @Override
+    public void handle(MouseEvent event) {
+      xOffset = event.getSceneX();
+      yOffset = event.getSceneY();
+    }
+
   }
 
 }

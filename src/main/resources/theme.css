@@ -1,0 +1,43 @@
+.root {
+    -fx-background-color: #cc7000;
+
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: #b36200;
+
+    -fx-background-radius: 5;
+}
+
+.button {
+
+    -fx-background-color: #cc7000;   
+    -fx-color: #ffffff;
+
+}
+
+.button:hover {
+    -fx-background-color: #804600;    
+}
+
+.info-label {
+    -fx-text-fill: #FFFFFF;
+}
+
+.tree-table-row-cell:selected {
+    -fx-background-color: #F7DAB5;
+    -fx-text-fill: #000000;
+}
+
+.tree-table-row-cell:selected:focus {
+    -fx-background-color: #F7DAB5;
+    -fx-text-fill: #000000;
+    -fx-color: #000000;
+}
+
+.tree-table-row-cell:odd {
+    -fx-background-color: #EBEBEB;
+    -fx-background-insets: 0, 0 0 1 0; 
+}
+
+.tree-table-row-cell:selected:odd {
+    -fx-text-fill: #000000;
+}

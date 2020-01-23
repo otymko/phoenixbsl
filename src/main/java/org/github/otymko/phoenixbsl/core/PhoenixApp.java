@@ -10,10 +10,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 public class PhoenixApp implements EventListener {
 
@@ -32,7 +35,11 @@ public class PhoenixApp implements EventListener {
 
   private PhoenixApp() {
 
-    events = new EventManager(EventManager.EVENT_INSPECTION, EventManager.EVENT_FORMATTING, EventManager.EVENT_UPDATE_ISSUES);
+    events = new EventManager(
+      EventManager.EVENT_INSPECTION,
+      EventManager.EVENT_FORMATTING,
+      EventManager.EVENT_UPDATE_ISSUES,
+      EventManager.SHOW_ISSUE_STAGE);
     events.subscribe(EventManager.EVENT_INSPECTION, this);
     events.subscribe(EventManager.EVENT_FORMATTING, this);
 
@@ -186,4 +193,31 @@ public class PhoenixApp implements EventListener {
   public URI getFakeUri() {
     return fakeUri;
   }
+
+  public void showIssuesStage() {
+    events.notify(EventManager.SHOW_ISSUE_STAGE);
+  }
+
+  public String getVersionApp() {
+    // взято из com/github/_1c_syntax/bsl/languageserver/cli/VersionCommand.java
+    final var mfStream = Thread.currentThread()
+      .getContextClassLoader()
+      .getResourceAsStream("META-INF/MANIFEST.MF");
+
+    var manifest = new Manifest();
+    try {
+      manifest.read(mfStream);
+    } catch (IOException e) {
+      LOGGER.error("Can't read manifest", e);
+    }
+
+    var version = "dev";
+    if (manifest.getMainAttributes().get(Attributes.Name.MAIN_CLASS) == null){
+      return version;
+    }
+    version = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+    return version;
+
+  }
+
 }

@@ -13,4 +13,6 @@ public interface EventListener {
 
   default void updateIssues(List<Diagnostic> diagnostics) {
   }
+
+  default void showIssuesStage() { }
 }
