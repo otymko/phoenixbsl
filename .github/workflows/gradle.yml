@@ -58,7 +58,7 @@ jobs:
         def getUrlDownloadBSL():
             url = ""
             r = requests.get(
-                "https://api.github.com/repos/1c-syntax/bsl-language-server/releases/latest")
+                "https://api.github.com/repos/1c-syntax/bsl-language-server/releases/v0.13.0-RC6")
             json = r.json()
             for asset in json["assets"]:
                 if asset["name"] == "bsl-language-server_win.zip":
@@ -82,4 +82,4 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: phoenixbsl.msi
-        path: ./phoenixbsl-0.3.1.msi
+        path: ./phoenixbsl-0.3.3.msi
