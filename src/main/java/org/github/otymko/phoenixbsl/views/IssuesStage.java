@@ -1,5 +1,6 @@
 package org.github.otymko.phoenixbsl.views;
 
+import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,7 +32,7 @@ public class IssuesStage extends Stage {
 
   private Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
 
-  private TreeTableView<Issue> tree;
+  private JFXTreeTableView<Issue> tree;
   private RecursiveTreeItem<Issue> recursiveTreeItem;
 
   private TextField search;
@@ -75,7 +76,8 @@ public class IssuesStage extends Stage {
     scene.lookup("#toolbar").setOnMousePressed(new EventHandlerMouseEvent2());
 
     getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.png")));
-    setTitle("Phoenix BSL");
+    Label title = (Label) scene.lookup("#titleApp");
+    title.setText("Phoenix BSL " + "0.3.2"); // TODO: брать из конфига градля
 
     Button btnClose = (Button) scene.lookup("#btnClose");
     btnClose.setOnAction(event -> {
@@ -92,7 +94,7 @@ public class IssuesStage extends Stage {
       setIconified(true);
     });
 
-    tree = (TreeTableView<Issue>) scene.lookup("#issuesTree");
+    tree = (JFXTreeTableView)(TreeTableView<Issue>) scene.lookup("#issuesTree");
     tree.setPlaceholder(new Label("Замечаний нет"));
 
     TreeTableColumn<Issue, String> descriptionColumn = new TreeTableColumn<>("Описание");
@@ -159,6 +161,7 @@ public class IssuesStage extends Stage {
   }
 
   private void filterIssuesTree(String filter) {
+    
     if (filter.isEmpty()) {
       recursiveTreeItem.setPredicate(userProp -> true);
     } else {

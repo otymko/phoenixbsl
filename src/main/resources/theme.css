@@ -5,7 +5,6 @@
     -fx-focus-color: #b36200;
 
     -fx-background-radius: 5;
-    /* -fx-border-radius: 15; */
 }
 
 .button {
@@ -23,24 +22,22 @@
     -fx-text-fill: #FFFFFF;
 }
 
-.tree-table-row-cell {
-    -fx-background-color: -fx-table-cell-border-color, -fx-control-inner-background;
-    -fx-background-insets: 0, 0 0 1 0;
-    -fx-padding: 0.0em;
-    -fx-text-fill: -fx-text-inner-color;
-}
 .tree-table-row-cell:selected {
-    -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-focus-color;
-    -fx-background-insets: 0, 1, 2;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #F7DAB5;
+    -fx-text-fill: #000000;
+}
+
+.tree-table-row-cell:selected:focus {
+    -fx-background-color: #F7DAB5;
+    -fx-text-fill: #000000;
+    -fx-color: #000000;
 }
 
 .tree-table-row-cell:odd {
-    -fx-background-color: -fx-table-cell-border-color, derive(-fx-control-inner-background,-5%);
-    -fx-background-insets: 0, 0 0 1 0;
+    -fx-background-color: #EBEBEB;
+    -fx-background-insets: 0, 0 0 1 0; 
 }
 
 .tree-table-row-cell:selected:odd {
-    -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-focus-color;
-    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: #000000;
 }

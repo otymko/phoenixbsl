@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import com.jfoenix.controls.JFXTreeTableView?>
 <BorderPane prefHeight="800.0" prefWidth="600.0" stylesheets="@theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
@@ -25,14 +26,14 @@
                   <Font name="Calibri" size="15.0" />
                </font>
             </TextField>
-            <TreeTableView fx:id="issuesTree" VBox.vgrow="ALWAYS">
+            <JFXTreeTableView fx:id="issuesTree" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="10.0" left="5.0" right="5.0" />
                </VBox.margin>
                <columnResizePolicy>
                   <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
-            </TreeTableView>
+            </JFXTreeTableView>
          </children>
       </VBox>
    </center>
@@ -101,7 +102,7 @@
             </HBox>
          </right>
          <left>
-            <Label text="Phoenix BSL LS 0.3.2" textFill="WHITE" BorderPane.alignment="CENTER">
+            <Label fx:id="titleApp" textFill="WHITE" BorderPane.alignment="CENTER">
                <font>
                   <Font name="Calibri Bold" size="20.0" />
                </font>
