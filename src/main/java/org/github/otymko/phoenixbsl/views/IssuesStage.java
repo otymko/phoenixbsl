@@ -3,6 +3,7 @@ package org.github.otymko.phoenixbsl.views;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -94,7 +95,7 @@ public class IssuesStage extends Stage {
       setIconified(true);
     });
 
-    tree = (JFXTreeTableView)(TreeTableView<Issue>) scene.lookup("#issuesTree");
+    tree = (JFXTreeTableView) (TreeTableView<Issue>) scene.lookup("#issuesTree");
     tree.setPlaceholder(new Label("Замечаний нет"));
 
     TreeTableColumn<Issue, String> descriptionColumn = new TreeTableColumn<>("Описание");
@@ -113,11 +114,11 @@ public class IssuesStage extends Stage {
     descriptionColumn.setCellValueFactory(
       param -> new SimpleStringProperty(param.getValue().getValue().getDescription()));
 
-    TreeTableColumn<Issue, String> positionColumn = new TreeTableColumn<>("стр.");
+    TreeTableColumn<Issue, Integer> positionColumn = new TreeTableColumn<>("стр.");
     positionColumn.setPrefWidth(60);
     positionColumn.setMinWidth(60);
     positionColumn.setMaxWidth(60);
-    positionColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().getLocation()));
+    positionColumn.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getValue().getStartLine()).asObject());
     positionColumn.setReorderable(false);
     positionColumn.setResizable(false);
 
