@@ -7,6 +7,7 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.0.8"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("org.sonarqube") version "2.8"
+    id("io.franzbecker.gradle-lombok") version "3.2.0"
 }
 
 repositories {
@@ -29,6 +30,8 @@ dependencies {
     implementation("org.slf4j", "slf4j-simple", "1.8.0-beta4")
     implementation("com.jfoenix","jfoenix", "9.0.9")
     implementation("lc.kra.system","system-hook", "3.5")
+
+    compileOnly("org.projectlombok", "lombok", lombok.version)
 }
 
 configure<JavaPluginConvention> {
@@ -91,4 +94,9 @@ sonarqube {
 javafx {
     version = "13"
     modules("javafx.controls", "javafx.fxml")
+}
+
+lombok {
+    version = "1.18.10"
+    sha256 = "2836e954823bfcbad45e78c18896e3d01058e6f643749810c608b7005ee7b2fa"
 }
