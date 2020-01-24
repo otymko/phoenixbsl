@@ -6,6 +6,7 @@ plugins {
     jacoco
     id("org.openjfx.javafxplugin") version "0.0.8"
     id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("org.sonarqube") version "2.8"
 }
 
 repositories {
@@ -74,6 +75,17 @@ tasks.register<Exec>("jpackage") {
             "--app-version", project.version,
             "--vendor", "otymko"
     )
+}
+
+sonarqube {
+    properties {
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.organization", "phoenixbsl")
+        property("sonar.projectKey", "phoenixbsl")
+        property("sonar.projectName", "Phoenix BSL")
+        property("sonar.exclusions", "**/gen/**/*.*")
+    }
 }
 
 javafx {
