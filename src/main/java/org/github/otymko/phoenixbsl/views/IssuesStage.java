@@ -25,6 +25,7 @@ import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.entities.Issue;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -209,6 +210,8 @@ public class IssuesStage extends Stage {
         countInfo++;
       }
     });
+
+    FXCollections.sort(issues, Comparator.comparingInt(Issue::getStartLine));
 
     updateIndicators();
 
