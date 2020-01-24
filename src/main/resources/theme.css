@@ -27,7 +27,7 @@
     -fx-text-fill: #000000;
 }
 
-.tree-table-row-cell:selected:focus {
+.tree-table-row-cell:selected:odd {
     -fx-background-color: #F7DAB5;
     -fx-text-fill: #000000;
     -fx-color: #000000;
