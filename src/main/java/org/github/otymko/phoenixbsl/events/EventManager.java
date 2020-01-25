@@ -1,22 +1,20 @@
 package org.github.otymko.phoenixbsl.events;
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class EventManager {
 
   public static final int EVENT_INSPECTION = 1;
   public static final int EVENT_FORMATTING = 2;
   public static final int EVENT_UPDATE_ISSUES = 3;
   public static final int SHOW_ISSUE_STAGE = 4;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(EventManager.class.getSimpleName());
 
   Map<Integer, List<EventListener>> listeners = new HashMap<>();
 
@@ -50,7 +48,6 @@ public class EventManager {
   }
 
   public synchronized void notify(int eventType, List<Diagnostic> diagnostics) {
-    LOGGER.info("Событие {}", eventType);
     List<EventListener> users = listeners.get(eventType);
     if (users == null) {
       return;

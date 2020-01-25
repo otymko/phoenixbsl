@@ -1,13 +1,12 @@
 package org.github.otymko.phoenixbsl.lsp;
 
 import com.google.common.annotations.VisibleForTesting;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.github.otymko.phoenixbsl.core.PhoenixAPI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,9 +17,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+@Slf4j
 public class BSLBinding {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(BSLBinding.class.getSimpleName());
 
   private BSLLanguageClient client;
   private LanguageServer server;
@@ -55,9 +53,9 @@ public class BSLBinding {
         future.get();
         return;
       } catch (InterruptedException e) {
-        LOGGER.error(e.getMessage().toString());
+        LOGGER.error(e.getMessage());
       } catch (ExecutionException e) {
-        LOGGER.error(e.getMessage().toString());
+        LOGGER.error(e.getMessage());
       }
     }
 
@@ -121,6 +119,5 @@ public class BSLBinding {
   public void exit() {
     server.exit();
   }
-
 
 }

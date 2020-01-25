@@ -1,12 +1,13 @@
 package org.github.otymko.phoenixbsl.core;
 
-//import java.awt.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class CustomRobot {
 
   private Robot robot;
@@ -16,7 +17,7 @@ public class CustomRobot {
       robot = new Robot();
     } catch (AWTException e) {
       robot = null;
-      System.out.println("Не удалось инициализировать Robot");
+      LOGGER.error("Не удалось инициализировать Robot");
     }
   }
 

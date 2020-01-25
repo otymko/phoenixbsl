@@ -1,16 +1,14 @@
 package org.github.otymko.phoenixbsl.core;
 
 import com.sun.jna.platform.win32.WinDef;
+import lombok.extern.slf4j.Slf4j;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLBinding;
 import org.github.otymko.phoenixbsl.views.Toolbar;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
@@ -18,9 +16,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+@Slf4j
 public class PhoenixApp implements EventListener {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PhoenixApp.class.getSimpleName());
   private static final PhoenixApp INSTANCE = new PhoenixApp();
 
   public static final URI fakeUri = new File("C:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
@@ -29,6 +27,8 @@ public class PhoenixApp implements EventListener {
   private WinDef.HWND focusForm;
   private Process processBSL;
   private BSLBinding bslBinding = null;
+
+  ConfigurationApp configuration;
 
 
   public int currentOffset = 0;
@@ -43,6 +43,9 @@ public class PhoenixApp implements EventListener {
     events.subscribe(EventManager.EVENT_INSPECTION, this);
     events.subscribe(EventManager.EVENT_FORMATTING, this);
 
+    configuration = new ConfigurationApp();
+
+
   }
 
   public static PhoenixApp getInstance() {
@@ -55,17 +58,18 @@ public class PhoenixApp implements EventListener {
     String[] arguments;
     var pathApp = Path.of(".", "app/bsl-language-server/bsl-language-server.exe");
     if (pathApp.toFile().exists()) {
-      LOGGER.info("BLS LS app image is exist");
+      LOGGER.info("Найден app image BSL LS");
       arguments = new String[]{pathApp.toAbsolutePath().toString()};
     } else {
-      LOGGER.error("Not find bsl ls");
+      LOGGER.error("Не найден BSL LS");
       return;
     }
     try {
       processBSL = new ProcessBuilder(arguments).start();
     } catch (IOException e) {
-      LOGGER.error(e.getMessage());
+      LOGGER.error("Не удалалось запустить процесс с BSL. Причина {}", e.getMessage());
     }
+
   }
 
   public void initToolbar() {
@@ -87,7 +91,6 @@ public class PhoenixApp implements EventListener {
   }
 
   public void abort() {
-    LOGGER.error("Приложение уже запущено");
     PhoenixAPI.showMessageDialog("Приложение уже запущено. Повторный запуск невозможен.");
     System.exit(0);
   }
@@ -111,7 +114,7 @@ public class PhoenixApp implements EventListener {
   @Override
   public void inspection() {
 
-    LOGGER.debug("Event: inspection");
+    LOGGER.debug("Событие: анализ кода");
 
     if (processBSLIsRunning() && PhoenixAPI.isWindowsForm1S()) {
       updateFocusForm();
@@ -142,7 +145,7 @@ public class PhoenixApp implements EventListener {
   @Override
   public void formatting() {
 
-    LOGGER.debug("Event: formatting");
+    LOGGER.debug("Событие: форматирование");
 
     if (!(processBSLIsRunning() && PhoenixAPI.isWindowsForm1S())) {
       return;
@@ -208,7 +211,7 @@ public class PhoenixApp implements EventListener {
     try {
       manifest.read(mfStream);
     } catch (IOException e) {
-      LOGGER.error("Can't read manifest", e);
+      LOGGER.error("Не удалось прочитать манифест проекта", e);
     }
 
     var version = "dev";

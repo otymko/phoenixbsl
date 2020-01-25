@@ -18,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.github.otymko.phoenixbsl.core.PhoenixAPI;
@@ -30,6 +31,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+
+@Slf4j
 public class IssuesStage extends Stage {
 
   private Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
@@ -59,7 +62,7 @@ public class IssuesStage extends Stage {
     try {
       root = FXMLLoader.load(PhoenixApp.class.getResource("/IssuesStage.fxml"));
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error("Не удалось прочитать FMXL для IssuesStage. Причина {}", e.getMessage());
       return;
     }
 
@@ -246,6 +249,7 @@ public class IssuesStage extends Stage {
   }
 
 
+  // FIXME: переделать
   class EventHandlerMouseEvent implements EventHandler<MouseEvent> {
 
     @Override
@@ -256,6 +260,7 @@ public class IssuesStage extends Stage {
 
   }
 
+  // FIXME: переделать
   class EventHandlerMouseEvent2 implements EventHandler<MouseEvent> {
 
     @Override
