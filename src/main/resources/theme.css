@@ -41,3 +41,20 @@
 .tree-table-row-cell:selected:odd {
     -fx-text-fill: #000000;
 }
+
+#settingTabPane {
+    -fx-background-color: #F7DAB5;
+}
+
+.jfx-tab-pane .headers-region {
+    -fx-background-color: #cc7000;
+    -fx-text-fill: #000000;
+}
+.jfx-tab-pane .tab-header-background {
+    -fx-background-color: #cc7000;
+    -fx-text-fill: #000000;
+}
+/*.jfx-tab-pane .tab-selected-line {*/
+/*    -fx-stroke: #000000;*/
+/*    -fx-stroke-width: 3pt;*/
+/*}*/

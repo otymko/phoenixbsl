@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" onMouseClicked="#handleMouseClicked" prefHeight="41.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.github.otymko.phoenixbsl.views.StageBarController">
+    <right>
+        <HBox fx:id="toolbar" nodeOrientation="RIGHT_TO_LEFT" onMouseDragged="#handleMouseDragged" onMousePressed="#handleMousePressed" prefHeight="22.0" prefWidth="20.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="btnClose" minHeight="40.0" minWidth="40.0" mnemonicParsing="false" onAction="#handleCloseAction" prefHeight="0.0" prefWidth="0.0">
+                    <graphic>
+                        <ImageView fx:id="imgClose" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@close.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <HBox.margin>
+                        <Insets right="3.0" />
+                    </HBox.margin>
+                </Button>
+                <Button fx:id="btnRestore" minHeight="40.0" minWidth="40.0" mnemonicParsing="false" onAction="#handleRestoreAction" prefHeight="0.0" prefWidth="0.0">
+                    <graphic>
+                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@restore.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <HBox.margin>
+                        <Insets right="3.0" />
+                    </HBox.margin>
+                </Button>
+                <Button fx:id="btnMinimize" minHeight="40.0" minWidth="40.0" mnemonicParsing="false" onAction="#handleMinimizeAction" prefHeight="0.0" prefWidth="0.0">
+                    <graphic>
+                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@minimize.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </children>
+            <BorderPane.margin>
+                <Insets right="5.0" />
+            </BorderPane.margin>
+        </HBox>
+    </right>
+    <left>
+        <Label fx:id="titleApp" textFill="WHITE" BorderPane.alignment="CENTER">
+            <font>
+                <Font name="Calibri Bold" size="20.0" />
+            </font>
+            <BorderPane.margin>
+                <Insets left="5.0" top="5.0" />
+            </BorderPane.margin>
+        </Label>
+    </left>
+</BorderPane>

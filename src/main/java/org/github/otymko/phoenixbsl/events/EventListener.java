@@ -15,4 +15,7 @@ public interface EventListener {
   }
 
   default void showIssuesStage() { }
+
+  default void showSettingStage() {}
+
 }

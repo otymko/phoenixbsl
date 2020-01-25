@@ -7,25 +7,24 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.entities.Issue;
+import org.github.otymko.phoenixbsl.utils.Common;
 
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
@@ -52,33 +51,23 @@ public class IssuesStage extends Stage {
   private Label labelWarning;
   private Label labelInfo;
 
-  private double xOffset = 0;
-  private double yOffset = 0;
 
-
+  @SneakyThrows
   public IssuesStage() {
 
-    Parent root = null;
-    try {
-      root = FXMLLoader.load(PhoenixApp.class.getResource("/IssuesStage.fxml"));
-    } catch (IOException e) {
-      LOGGER.error("Не удалось прочитать FMXL для IssuesStage. Причина {}", e.getMessage());
-      return;
-    }
+    FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/IssuesStage.fxml"));
+    var controller = new StageBarController();
+    Common.setControllerFactory(loader, controller);
 
-    root.setOnMousePressed(new EventHandlerMouseEvent2());
-    root.setOnMouseDragged(new EventHandlerMouseEvent());
-
-    initStyle(StageStyle.UNDECORATED);
+    Parent root = loader.load();
+    controller.setOwner(this);
+    controller.setRootElement(root);
 
     Scene scene = new Scene(root);
     setScene(scene);
 
     scene.setFill(Color.TRANSPARENT);
     initStyle(StageStyle.TRANSPARENT);
-
-    scene.lookup("#toolbar").setOnMouseDragged(new EventHandlerMouseEvent());
-    scene.lookup("#toolbar").setOnMousePressed(new EventHandlerMouseEvent2());
 
     getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.png")));
     Label title = (Label) scene.lookup("#titleApp");
@@ -246,29 +235,6 @@ public class IssuesStage extends Stage {
     map.put(DiagnosticSeverity.Hint, "Подсказка");
     map.put(DiagnosticSeverity.Warning, "Предупреждение");
     return map;
-  }
-
-
-  // FIXME: переделать
-  class EventHandlerMouseEvent implements EventHandler<MouseEvent> {
-
-    @Override
-    public void handle(MouseEvent event) {
-      setX(event.getScreenX() - xOffset);
-      setY(event.getScreenY() - yOffset);
-    }
-
-  }
-
-  // FIXME: переделать
-  class EventHandlerMouseEvent2 implements EventHandler<MouseEvent> {
-
-    @Override
-    public void handle(MouseEvent event) {
-      xOffset = event.getSceneX();
-      yOffset = event.getSceneY();
-    }
-
   }
 
 }

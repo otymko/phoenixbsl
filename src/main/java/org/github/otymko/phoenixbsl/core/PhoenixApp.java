@@ -39,7 +39,8 @@ public class PhoenixApp implements EventListener {
       EventManager.EVENT_INSPECTION,
       EventManager.EVENT_FORMATTING,
       EventManager.EVENT_UPDATE_ISSUES,
-      EventManager.SHOW_ISSUE_STAGE);
+      EventManager.SHOW_ISSUE_STAGE,
+      EventManager.SHOW_SETTING_STAGE);
     events.subscribe(EventManager.EVENT_INSPECTION, this);
     events.subscribe(EventManager.EVENT_FORMATTING, this);
 
@@ -223,4 +224,14 @@ public class PhoenixApp implements EventListener {
 
   }
 
+  public void showSettingStage() {
+
+    events.notify(EventManager.SHOW_SETTING_STAGE);
+
+  }
+
+  public Path getPathToLogs() {
+    var path = Path.of("app", "logs");
+    return path.toAbsolutePath();
+  }
 }
