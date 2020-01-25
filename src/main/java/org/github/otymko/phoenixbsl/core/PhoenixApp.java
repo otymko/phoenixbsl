@@ -21,6 +21,7 @@ public class PhoenixApp implements EventListener {
 
   private static final PhoenixApp INSTANCE = new PhoenixApp();
 
+  private static final Path pathToFolderLog = Path.of("app", "logs");
   public static final URI fakeUri = new File("C:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
 
   private EventManager events;
@@ -231,7 +232,6 @@ public class PhoenixApp implements EventListener {
   }
 
   public Path getPathToLogs() {
-    var path = Path.of("app", "logs");
-    return path.toAbsolutePath();
+    return pathToFolderLog.toAbsolutePath();
   }
 }

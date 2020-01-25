@@ -35,6 +35,9 @@
                               </HBox>
                               <HBox prefHeight="30.0" prefWidth="200.0" />
                            </children>
+                           <BorderPane.margin>
+                              <Insets />
+                           </BorderPane.margin>
                         </VBox>
                      </center>
                      <padding>
@@ -44,6 +47,9 @@
             </content>
           </Tab>
         </tabs>
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" />
+         </BorderPane.margin>
       </JFXTabPane>
    </center>
 </BorderPane>
