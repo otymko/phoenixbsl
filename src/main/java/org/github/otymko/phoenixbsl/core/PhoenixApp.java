@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Attributes;
@@ -55,23 +57,25 @@ public class PhoenixApp implements EventListener {
   }
 
   public void initProcessBSL() {
-
     processBSL = null;
-    String[] arguments;
-    var pathApp = Path.of(".", "app/bsl-language-server/bsl-language-server.exe");
-    if (pathApp.toFile().exists()) {
-      LOGGER.info("Найден app image BSL LS");
-      arguments = new String[]{pathApp.toAbsolutePath().toString()};
-    } else {
+    Collection<String> arguments = new ArrayList<>();
+    ConfigurationApp configurationApp = PhoenixApp.getInstance().configuration;
+    if (configurationApp.isUsePathToJarBSLLS()) {
+      arguments.add("java");
+    }
+    var pathToBSLLS = Path.of(configurationApp.getPathToBSLLS()).toAbsolutePath();
+    if (!pathToBSLLS.toFile().exists()) {
       LOGGER.error("Не найден BSL LS");
       return;
     }
+
+    arguments.add(pathToBSLLS.toString());
+
     try {
-      processBSL = new ProcessBuilder(arguments).start();
+      processBSL = new ProcessBuilder(arguments.toArray(new String[0])).start();
     } catch (IOException e) {
       LOGGER.error("Не удалалось запустить процесс с BSL. Причина {}", e.getMessage());
     }
-
   }
 
   public void initToolbar() {
