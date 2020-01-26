@@ -120,7 +120,7 @@ public class PhoenixApp implements EventListener {
     bslBinding.textDocumentDidOpen(getFakeUri(), "");
   }
 
-  private void sleepCurrentThread(long value) {
+  public void sleepCurrentThread(long value) {
     try {
       Thread.currentThread().sleep(value);
     } catch (InterruptedException e) {
