@@ -2,8 +2,6 @@ package org.github.otymko.phoenixbsl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
-import org.github.otymko.phoenixbsl.lsp.BSLBinding;
-import org.github.otymko.phoenixbsl.lsp.BSLLanguageClient;
 import org.github.otymko.phoenixbsl.threads.GlobalKeyListenerThread;
 import org.github.otymko.phoenixbsl.threads.MainApplicationThread;
 
@@ -20,7 +18,7 @@ public class LauncherApp {
     try {
       runApp();
     } catch (RuntimeException | InterruptedException ex) {
-      LOGGER.error("Приложение упало. Причина {}", ex.getMessage());
+      LOGGER.error("Приложение упало", ex);
     }
 
   }
@@ -30,12 +28,15 @@ public class LauncherApp {
 
     var app = PhoenixApp.getInstance();
 
-    // инициализируем трей
-    app.initToolbar();
+    // инициализация настроек
+    app.initConfiguration();
 
     // запускаем главную форму
     MainApplicationThread mainApplicationThread = new MainApplicationThread();
     mainApplicationThread.start();
+
+    // инициализируем трей
+    app.initToolbar();
 
     // подключаем слушаеть нажатий
     GlobalKeyListenerThread globalKeyListenerThread = new GlobalKeyListenerThread();
@@ -44,25 +45,5 @@ public class LauncherApp {
     // запуск bsl ls
     app.initProcessBSL();
 
-    if (app.processBSLIsRunning()) {
-      BSLLanguageClient bslClient = new BSLLanguageClient();
-      BSLBinding bslBinding = new BSLBinding(
-        bslClient,
-        app.getProcessBSL().getInputStream(),
-        app.getProcessBSL().getOutputStream());
-      bslBinding.startInThread();
-
-      Thread.currentThread().sleep(2000);
-
-      app.setBslBinding(bslBinding);
-
-      // инициализация
-      bslBinding.initialize();
-
-      // откроем фейковый документ
-      bslBinding.textDocumentDidOpen(app.getFakeUri(), "");
-
-
-    }
   }
 }
