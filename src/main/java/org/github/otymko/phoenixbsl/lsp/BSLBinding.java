@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -66,6 +68,15 @@ public class BSLBinding {
     params.setProcessId(PhoenixAPI.getProcessId());
     params.setTrace("messages");
     ClientCapabilities serverCapabilities = new ClientCapabilities();
+
+    TextDocumentClientCapabilities textDocument = new TextDocumentClientCapabilities();
+    textDocument
+      .setCodeAction(
+        new CodeActionCapabilities(
+          new CodeActionLiteralSupportCapabilities(
+            new CodeActionKindCapabilities(Arrays.asList(CodeActionKind.QuickFix))),
+          true));
+    serverCapabilities.setTextDocument(textDocument);
     params.setCapabilities(serverCapabilities);
     return server.initialize(params);
   }
@@ -100,6 +111,28 @@ public class BSLBinding {
     textDocumentIdentifier.setUri(uri.toString());
     paramsSave.setTextDocument(textDocumentIdentifier);
     server.getTextDocumentService().didSave(paramsSave);
+  }
+
+  public void textDocumentCodeAction(URI uri) {
+    CodeActionParams params = new CodeActionParams();
+
+    TextDocumentIdentifier textDocumentIdentifier = new TextDocumentIdentifier();
+    textDocumentIdentifier.setUri(uri.toString());
+    params.setTextDocument(textDocumentIdentifier);
+
+    var context = new CodeActionContext(Collections.emptyList(), Collections.singletonList(CodeActionKind.QuickFix));
+    params.setContext(context);
+
+    Range range = new Range(new Position(0,0), new Position(4, 10));
+    params.setRange(range);
+
+    // List<Either<Command, CodeAction>> codeActions
+    var list = server.getTextDocumentService().codeAction(params);
+//    list.whenComplete((eithers, throwable) -> {
+//    });
+
+    var res = list.join();
+
   }
 
   public CompletableFuture<List<? extends TextEdit>> textDocumentFormatting(URI uri) {

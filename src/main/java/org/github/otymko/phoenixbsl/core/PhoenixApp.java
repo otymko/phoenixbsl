@@ -27,7 +27,7 @@ public class PhoenixApp implements EventListener {
 
   private static final Path pathToFolderLog = Path.of("app", "logs");
   // TODO: лучше файл настроек хранить не в каталоге с app, а в пользовательском каталоге
-  // при переустановке app тогда настройки сохраняться, с другой стороны - может сменится структура настроек
+  // при переустановке app тогда настройки сохранятся, с другой стороны - может сменится структура настроек
   private static final Path pathToConfiguration = Path.of("app", "Configuration.json").toAbsolutePath();
 
   public static final URI fakeUri = new File("C:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
@@ -47,11 +47,13 @@ public class PhoenixApp implements EventListener {
     events = new EventManager(
       EventManager.EVENT_INSPECTION,
       EventManager.EVENT_FORMATTING,
+      EventManager.EVENT_FIX_ALL,
       EventManager.EVENT_UPDATE_ISSUES,
       EventManager.SHOW_ISSUE_STAGE,
       EventManager.SHOW_SETTING_STAGE);
     events.subscribe(EventManager.EVENT_INSPECTION, this);
     events.subscribe(EventManager.EVENT_FORMATTING, this);
+    events.subscribe(EventManager.EVENT_FIX_ALL, this);
 
     configuration = new ConfigurationApp();
 
@@ -324,4 +326,22 @@ public class PhoenixApp implements EventListener {
   }
 
 
+  @Override
+  public void fixAll() {
+
+    LOGGER.debug("Событие: форматирование");
+
+    if (!(processBSLIsRunning() && PhoenixAPI.isWindowsForm1S())) {
+      return;
+    }
+
+    var textForFormatting = PhoenixAPI.getTextAll();
+
+    // DidChange
+    bslBinding.textDocumentDidChange(fakeUri, textForFormatting);
+
+    bslBinding.textDocumentCodeAction(fakeUri);
+
+
+  }
 }

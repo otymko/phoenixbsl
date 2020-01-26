@@ -16,6 +16,7 @@ public class EventManager {
   public static final int EVENT_UPDATE_ISSUES = 3;
   public static final int SHOW_ISSUE_STAGE = 4;
   public static final int SHOW_SETTING_STAGE = 5;
+  public static final int EVENT_FIX_ALL = 6;
 
   Map<Integer, List<EventListener>> listeners = new HashMap<>();
 
@@ -46,6 +47,8 @@ public class EventManager {
         listener.showIssuesStage();
       } else if (eventType == SHOW_SETTING_STAGE) {
         listener.showSettingStage();
+      } else if (eventType == EVENT_FIX_ALL) {
+        listener.fixAll();
       }
     }
   }
