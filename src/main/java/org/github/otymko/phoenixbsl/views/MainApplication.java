@@ -111,15 +111,14 @@ public class MainApplication extends Application implements EventListener {
     controller.setOwner(settingStage);
     controller.setRootElement(root);
 
-    SettingStageController controllerStage = loader.getController();
-    controllerStage.setConfiguration(PhoenixApp.getInstance().getConfiguration());
+    SettingStageController controllerStages = loader.getController();
+    controllerStages.setConfiguration(PhoenixApp.getInstance().getConfiguration());
 
     var scene = new Scene(root);
     settingStage.setScene(scene);
 
     scene.setFill(Color.TRANSPARENT);
     settingStage.initStyle(StageStyle.TRANSPARENT);
-
 
     var pathToLog = PhoenixApp.getInstance().getPathToLogs();
     var link = (Hyperlink) scene.lookup("#linkPathToLogs");
@@ -145,6 +144,8 @@ public class MainApplication extends Application implements EventListener {
       PhoenixApp.getInstance().writeConfiguration(PhoenixApp.getInstance().getConfiguration());
       settingStage.close();
     });
+
+    controllerStages.getLabelVersion().setText(PhoenixApp.getInstance().getVersionBSLLS());
 
     settingStage.show();
 

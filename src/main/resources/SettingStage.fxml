@@ -19,66 +19,94 @@
        <fx:include source="StageBar.fxml" />
    </top>
     <center>
+   </center>
+   <center>
       <JFXTabPane fx:id="settingTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
           <Tab text="Основное">
             <content>
-                  <BorderPane>
-                      <center>
-                          <GridPane BorderPane.alignment="CENTER">
-                              <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                              </columnConstraints>
-                              <rowConstraints>
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              </rowConstraints>
-                          </GridPane>
-                      </center>
-                     <padding>
+                <BorderPane>
+                    <center>
+                        <GridPane BorderPane.alignment="CENTER">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                        </GridPane>
+                    </center>
+                    <padding>
                         <Insets left="5.0" right="5.0" top="5.0" />
-                     </padding>
+                    </padding>
+                    <center>
+                        <GridPane BorderPane.alignment="CENTER">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="150.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="-Infinity" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                            </rowConstraints>
+                            <children>
+                                <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="106.0" text="Каталог с логами:" />
+                                <Hyperlink fx:id="linkPathToLogs" prefHeight="23.0" prefWidth="489.0" text="/path/to/logs" GridPane.columnIndex="1">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Hyperlink>
+                                <Label alignment="TOP_LEFT" text="Использовать BSL LS jar:" wrapText="true" GridPane.rowIndex="1" />
+                                <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="106.0" text="Путь к BSL LS:" GridPane.rowIndex="3" />
+                                <TextField fx:id="pathToBSLLS" onAction="#handlePathToBSLLSAction" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                <JFXCheckBox fx:id="usePathToJarBSLLS" checkedColor="#cc7000" onAction="#handleSelectUsePathToJarBSLLSAction" text=" " GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                <Label alignment="TOP_LEFT" layoutX="10.0" layoutY="70.0" prefHeight="17.0" prefWidth="106.0" text="Путь к JAVA:" GridPane.rowIndex="2" />
+                                <TextField fx:id="pathToJava" layoutX="160.0" layoutY="96.0" onAction="#handlePathToJavaAction" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                            </children>
+                        </GridPane>
+                    </center>
+                    <bottom>
+                        <JFXButton fx:id="btnSaveSetting" text="Сохранить" textFill="WHITE" BorderPane.alignment="TOP_RIGHT">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                            <BorderPane.margin>
+                                <Insets bottom="5.0" />
+                            </BorderPane.margin>
+                        </JFXButton>
+                    </bottom>
+                </BorderPane>
+            </content>
+          </Tab>
+          <Tab text="BSL Language Server">
+            <content>
+                  <BorderPane>
                      <center>
                         <GridPane BorderPane.alignment="CENTER">
                           <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="150.0" />
+                            <ColumnConstraints minWidth="10.0" prefWidth="150.0" />
                             <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
                           </columnConstraints>
                           <rowConstraints>
-                            <RowConstraints minHeight="-Infinity" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                            <RowConstraints />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="106.0" text="Каталог с логами:" />
-                              <Hyperlink fx:id="linkPathToLogs" prefHeight="23.0" prefWidth="489.0" text="/path/to/logs" GridPane.columnIndex="1">
-                                 <font>
-                                    <Font name="System Bold" size="12.0" />
-                                 </font>
-                              </Hyperlink>
-                              <Label alignment="TOP_LEFT" text="Использовать BSL LS jar:" wrapText="true" GridPane.rowIndex="1" />
-                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="106.0" text="Путь к BSL LS:" GridPane.rowIndex="3" />
-                              <TextField fx:id="pathToBSLLS" onAction="#handlePathToBSLLSAction" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <JFXCheckBox fx:id="usePathToJarBSLLS" checkedColor="#cc7000" onAction="#handleSelectUsePathToJarBSLLSAction" text=" " GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Label alignment="TOP_LEFT" layoutX="10.0" layoutY="70.0" prefHeight="17.0" prefWidth="106.0" text="Путь к JAVA:" GridPane.rowIndex="2" />
-                              <TextField fx:id="pathToJava" layoutX="160.0" layoutY="96.0" onAction="#handlePathToJavaAction" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="106.0" text="Версия:">
+                                 <GridPane.margin>
+                                    <Insets bottom="5.0" left="5.0" top="5.0" />
+                                 </GridPane.margin>
+                              </Label>
+                              <Label fx:id="labelVersion" alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="106.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
                            </children>
                         </GridPane>
-                     </center>
-                     <bottom>
-                        <JFXButton fx:id="btnSaveSetting" text="Сохранить" textFill="WHITE" BorderPane.alignment="TOP_RIGHT">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                           <BorderPane.margin>
-                              <Insets bottom="5.0" />
-                           </BorderPane.margin>
-                        </JFXButton>
-                     </bottom>
-                  </BorderPane>
+                     </center></BorderPane>
             </content>
           </Tab>
         </tabs>
