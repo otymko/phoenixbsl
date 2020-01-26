@@ -73,21 +73,6 @@ public class IssuesStage extends Stage {
     Label title = (Label) scene.lookup("#titleApp");
     title.setText("Phoenix BSL v. " + PhoenixApp.getInstance().getVersionApp());
 
-    Button btnClose = (Button) scene.lookup("#btnClose");
-    btnClose.setOnAction(event -> {
-      close();
-    });
-
-    Button btnRestore = (Button) scene.lookup("#btnRestore");
-    btnRestore.setOnAction(event -> {
-      setMaximized(!isMaximized());
-    });
-
-    Button btnMinimize = (Button) scene.lookup("#btnMinimize");
-    btnMinimize.setOnAction(event -> {
-      setIconified(true);
-    });
-
     tree = (JFXTreeTableView) (TreeTableView<Issue>) scene.lookup("#issuesTree");
     tree.setPlaceholder(new Label("Замечаний нет"));
 
