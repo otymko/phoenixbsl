@@ -24,6 +24,9 @@ public class Toolbar {
     popupMenu = new PopupMenu();
 
     var settingItem = new MenuItem("Настройки");
+    settingItem.addActionListener(e -> {
+      PhoenixApp.getInstance().showSettingStage();
+    });
     popupMenu.add(settingItem);
 
     var exitItem = new MenuItem("Закрыть");

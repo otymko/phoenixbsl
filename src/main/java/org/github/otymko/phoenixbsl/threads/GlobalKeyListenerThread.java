@@ -3,11 +3,13 @@ package org.github.otymko.phoenixbsl.threads;
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.events.EventManager;
 
 import java.util.Map;
 
+@Slf4j
 public class GlobalKeyListenerThread extends Thread {
 
   @Override
@@ -15,8 +17,7 @@ public class GlobalKeyListenerThread extends Thread {
 
     try {
       runHook();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       run();
     }
 
@@ -25,10 +26,9 @@ public class GlobalKeyListenerThread extends Thread {
   public void runHook() {
 
     GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(false);
-    System.out.println("Global keyboard hook successfully started. Connected keyboards:");
-
+    LOGGER.info("Global keyboard hook successfully started. Connected keyboards:");
     for (Map.Entry<Long, String> keyboard : GlobalKeyboardHook.listKeyboards().entrySet()) {
-      System.out.format("%d: %s\n", keyboard.getKey(), keyboard.getValue());
+      LOGGER.info("{}: {}\n", keyboard.getKey(), keyboard.getValue());
     }
 
     keyboardHook.addKeyListener(new GlobalKeyAdapter() {
@@ -45,9 +45,6 @@ public class GlobalKeyListenerThread extends Thread {
         }
       }
 
-      @Override
-      public void keyReleased(GlobalKeyEvent event) {
-      }
     });
 
   }

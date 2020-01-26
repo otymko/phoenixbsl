@@ -10,9 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class BSLLanguageClient implements LanguageClient {
 
-  public BSLLanguageClient() {
-//    PhoenixApp.getInstance().getEventManager().subscribe(this, EventManager.);
-  }
+  public BSLLanguageClient() {}
 
   @Override
   public CompletableFuture<ApplyWorkspaceEditResponse> applyEdit(ApplyWorkspaceEditParams params) {

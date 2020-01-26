@@ -1,8 +1,7 @@
 package org.github.otymko.phoenixbsl.core;
 
 import com.sun.jna.platform.win32.WinDef;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,11 +12,10 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 
+@Slf4j
 public class PhoenixAPI {
 
   private static final String FUN_SYMBOL = "☻"; // 9787
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(PhoenixAPI.class.getSimpleName());
   private static final CustomRobot robot = new CustomRobot();
 
   private static boolean isWindowsForm1SByClassName(String classNameForm) {
