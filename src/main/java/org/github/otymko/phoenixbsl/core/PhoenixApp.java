@@ -1,10 +1,12 @@
 package org.github.otymko.phoenixbsl.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.extern.slf4j.Slf4j;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLBinding;
+import org.github.otymko.phoenixbsl.lsp.BSLLanguageClient;
 import org.github.otymko.phoenixbsl.views.Toolbar;
 
 import java.io.File;
@@ -24,6 +26,10 @@ public class PhoenixApp implements EventListener {
   private static final PhoenixApp INSTANCE = new PhoenixApp();
 
   private static final Path pathToFolderLog = Path.of("app", "logs");
+  // TODO: лучше файл настроек хранить не в каталоге с app, а в пользовательском каталоге
+  // при переустановке app тогда настройки сохраняться, с другой стороны - может сменится структура настроек
+  private static final Path pathToConfiguration = Path.of("app", "Configuration.json").toAbsolutePath();
+
   public static final URI fakeUri = new File("C:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
 
   private EventManager events;
@@ -31,7 +37,7 @@ public class PhoenixApp implements EventListener {
   private Process processBSL;
   private BSLBinding bslBinding = null;
 
-  ConfigurationApp configuration;
+  private ConfigurationApp configuration;
 
 
   public int currentOffset = 0;
@@ -57,11 +63,19 @@ public class PhoenixApp implements EventListener {
   }
 
   public void initProcessBSL() {
+    createProcessBSLLS();
+    if (processBSL != null) {
+      connectToBSLLSProcess();
+    }
+  }
+
+  public void createProcessBSLLS() {
     processBSL = null;
     Collection<String> arguments = new ArrayList<>();
     ConfigurationApp configurationApp = PhoenixApp.getInstance().configuration;
     if (configurationApp.isUsePathToJarBSLLS()) {
-      arguments.add("java");
+      arguments.add(configurationApp.getPathToJava());
+      arguments.add("-jar");
     }
     var pathToBSLLS = Path.of(configurationApp.getPathToBSLLS()).toAbsolutePath();
     if (!pathToBSLLS.toFile().exists()) {
@@ -72,9 +86,45 @@ public class PhoenixApp implements EventListener {
     arguments.add(pathToBSLLS.toString());
 
     try {
-      processBSL = new ProcessBuilder(arguments.toArray(new String[0])).start();
+      processBSL = new ProcessBuilder()
+        .command(arguments.toArray(new String[0]))
+        .start();
+
+      sleepCurrentThread(500);
+
+      if (!processBSL.isAlive()) {
+        processBSL = null;
+        LOGGER.error("Не удалалось запустить процесс с BSL LS. Процесс был аварийно завершен.");
+      }
     } catch (IOException e) {
-      LOGGER.error("Не удалалось запустить процесс с BSL. Причина {}", e.getMessage());
+      LOGGER.error("Не удалалось запустить процесс с BSL LS", e);
+    }
+  }
+
+  public void connectToBSLLSProcess() {
+    BSLLanguageClient bslClient = new BSLLanguageClient();
+    BSLBinding bslBinding = new BSLBinding(
+      bslClient,
+      getProcessBSL().getInputStream(),
+      getProcessBSL().getOutputStream());
+    bslBinding.startInThread();
+
+    sleepCurrentThread(2000);
+
+    setBslBinding(bslBinding);
+
+    // инициализация
+    bslBinding.initialize();
+
+    // откроем фейковый документ
+    bslBinding.textDocumentDidOpen(getFakeUri(), "");
+  }
+
+  private void sleepCurrentThread(long value) {
+    try {
+      Thread.currentThread().sleep(value);
+    } catch (InterruptedException e) {
+      LOGGER.error("Не удалось сделать паузу в текущем поток", e);
     }
   }
 
@@ -238,4 +288,38 @@ public class PhoenixApp implements EventListener {
   public Path getPathToLogs() {
     return pathToFolderLog.toAbsolutePath();
   }
+
+  public void initConfiguration() {
+    // файл конфигурации должен лежать по пути: app/configuration.json
+    var fileConfiguration = pathToConfiguration.toFile();
+    if (!fileConfiguration.exists()) {
+      // создать новый по умолчанию
+      configuration = new ConfigurationApp();
+      writeConfiguration(configuration, fileConfiguration);
+    } else {
+      // прочитать в текущие настройки
+      configuration = ConfigurationApp.create(fileConfiguration);
+    }
+
+  }
+
+  public ConfigurationApp getConfiguration() {
+    return configuration;
+  }
+
+  public void writeConfiguration(ConfigurationApp configurationApp, File fileConfiguration) {
+    // запишем ее в файл
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      mapper.writeValue(fileConfiguration, configurationApp);
+    } catch (IOException e) {
+      LOGGER.error("Не удалось записать конфигурацию в файл.", e);
+    }
+  }
+
+  public void writeConfiguration(ConfigurationApp configurationApp) {
+    writeConfiguration(configurationApp, pathToConfiguration.toFile());
+  }
+
+
 }
