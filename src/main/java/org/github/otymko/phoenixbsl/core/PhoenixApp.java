@@ -120,11 +120,11 @@ public class PhoenixApp implements EventListener {
     bslBinding.textDocumentDidOpen(getFakeUri(), "");
   }
 
-  private void sleepCurrentThread(long value) {
+  public void sleepCurrentThread(long value) {
     try {
-      Thread.currentThread().sleep(value);
-    } catch (InterruptedException e) {
-      LOGGER.error("Не удалось сделать паузу в текущем поток", e);
+      Thread.sleep(value);
+    } catch (Exception e) {
+      LOGGER.warn("Не удалось сделать паузу в текущем поток", e);
     }
   }
 
@@ -253,6 +253,7 @@ public class PhoenixApp implements EventListener {
     return fakeUri;
   }
 
+  @Override
   public void showIssuesStage() {
     events.notify(EventManager.SHOW_ISSUE_STAGE);
   }
@@ -279,6 +280,7 @@ public class PhoenixApp implements EventListener {
 
   }
 
+  @Override
   public void showSettingStage() {
 
     events.notify(EventManager.SHOW_SETTING_STAGE);

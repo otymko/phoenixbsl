@@ -17,14 +17,14 @@ public class LauncherApp {
 
     try {
       runApp();
-    } catch (RuntimeException | InterruptedException ex) {
+    } catch (RuntimeException ex) {
       LOGGER.error("Приложение упало", ex);
     }
 
   }
 
 
-  private static void runApp() throws InterruptedException {
+  private static void runApp() {
 
     var app = PhoenixApp.getInstance();
 

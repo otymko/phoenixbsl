@@ -112,21 +112,16 @@ public class PhoenixAPI {
     try {
       result = getDataClipboard();
     } catch (IOException | UnsupportedFlavorException e) {
-      LOGGER.error(e.getMessage());
+      LOGGER.error("Не удалось получить из буфера обмена", e);
     }
     return result;
   }
 
   private static String getDataClipboard() throws IOException, UnsupportedFlavorException {
-
-    try {
-      Thread.sleep(20);
-    } catch (InterruptedException e) {
-      LOGGER.error(e.getMessage());
-    }
-
-    return (String) Toolkit.getDefaultToolkit()
+    PhoenixApp.getInstance().sleepCurrentThread(200);
+    var result = (String) Toolkit.getDefaultToolkit()
       .getSystemClipboard().getData(DataFlavor.stringFlavor);
+    return result;
   }
 
   public static int getProcessId() {
