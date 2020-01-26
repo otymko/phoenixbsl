@@ -30,6 +30,8 @@ dependencies {
     implementation("com.jfoenix","jfoenix", "9.0.9")
     implementation("lc.kra.system","system-hook", "3.5")
 
+    implementation("com.fasterxml.jackson.core", "jackson-databind", "2.10.2")
+
     compileOnly("org.projectlombok", "lombok", lombok.version)
 }
 
