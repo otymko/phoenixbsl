@@ -3,6 +3,11 @@ package org.github.otymko.phoenixbsl.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.Command;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.ExecuteCommandParams;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLBinding;
@@ -15,10 +20,12 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class PhoenixApp implements EventListener {
@@ -38,6 +45,8 @@ public class PhoenixApp implements EventListener {
   private BSLBinding bslBinding = null;
 
   private ConfigurationApp configuration;
+
+  private List<Diagnostic> diagnosticList = new ArrayList<>();
 
 
   public int currentOffset = 0;
@@ -86,6 +95,10 @@ public class PhoenixApp implements EventListener {
     }
 
     arguments.add(pathToBSLLS.toString());
+    arguments.add("--configuration");
+    arguments.add("F:\\DATA\\Develop\\Project\\phoenixbsl\\app\\.bsl-language-server.json");
+
+    LOGGER.debug(arguments.toString());
 
     try {
       processBSL = new ProcessBuilder()
@@ -329,19 +342,60 @@ public class PhoenixApp implements EventListener {
   @Override
   public void fixAll() {
 
-    LOGGER.debug("Событие: форматирование");
+    LOGGER.debug("Событие: обработка квикфиксов");
 
     if (!(processBSLIsRunning() && PhoenixAPI.isWindowsForm1S())) {
       return;
     }
 
-    var textForFormatting = PhoenixAPI.getTextAll();
+    var separator = "\n";
+    var textForQF= PhoenixAPI.getTextAll();
 
-    // DidChange
-    bslBinding.textDocumentDidChange(fakeUri, textForFormatting);
+    // найдем все диагностики подсказки
+    var listQF = diagnosticList.stream()
+      .filter(diagnostic -> diagnostic.getCode().equalsIgnoreCase("CanonicalSpellingKeywords"))
+      .collect(Collectors.toList());
 
-    bslBinding.textDocumentCodeAction(fakeUri);
+    List<Either<Command, CodeAction>> codeActions = new ArrayList<>();
+    try {
+      codeActions = bslBinding.textDocumentCodeAction(fakeUri, listQF);
+    } catch (ExecutionException | InterruptedException e) {
+      LOGGER.error(e.getMessage());
 
+    }
+    LOGGER.debug("Квикфиксов найдено: " + codeActions);
+    String[] strings = textForQF.split(separator);
+
+    codeActions.forEach(diagnostic -> {
+      CodeAction codeAction = diagnostic.getRight();
+      codeAction.getEdit().getChanges().forEach((s, textEdits) -> {
+        textEdits.forEach(textEdit -> {
+          var range = textEdit.getRange();
+          var currentLine = range.getStart().getLine();
+          var newText = textEdit.getNewText();
+          var currentString = strings[currentLine];
+          var newString =
+            currentString.substring(0, range.getStart().getCharacter())
+              + newText
+              + currentString.substring(range.getEnd().getCharacter());
+          strings[currentLine] = newString;
+        });
+      });
+    });
+
+    if (!codeActions.isEmpty()) {
+      var text = String.join(separator, strings);
+      PhoenixAPI.insetTextOnForm(text, false);
+    }
 
   }
+
+  public List<Diagnostic> getDiagnosticList() {
+    return this.diagnosticList;
+  }
+
+  public void setDiagnosticList(List<Diagnostic> diagnosticList){
+    this.diagnosticList = diagnosticList;
+  }
+
 }
