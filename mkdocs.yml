@@ -2,7 +2,7 @@ site_name: Phoenix BSL
 nav:
   - Домашняя: index.md
   - Руководство контрибьютора: contributing/index.md
-  - English: https://sfaqer.github.io/phoenixbsl/en
+  - English: https://otymko.github.io/phoenixbsl/en
 theme: 
   name: material
   language: ru
@@ -25,7 +25,7 @@ markdown_extensions:
   - toc:
       permalink: true
 
-site_url: 'https://sfaqer.github.io/phoenixbsl'
+site_url: 'https://otymko.github.io/phoenixbsl'
 repo_name: 'otymko/phoenixbsl'
 repo_url: 'https://github.com/otymko/phoenixbsl'
 edit_uri: 'edit/develop/docs'

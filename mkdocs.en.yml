@@ -2,7 +2,7 @@ site_name: BSL Language Server
 nav:
   - Home: index.md
   - Contributing: contributing/index.md
-  - Russian: https://sfaqer.github.io/phoenixbsl
+  - Russian: https://otymko.github.io/phoenixbsl
 theme: 
   name: material
   language: en
@@ -25,7 +25,7 @@ markdown_extensions:
   - toc:
       permalink: Link
 
-site_url: 'https://sfaqer.github.io/phoenixbsl'
+site_url: 'https://otymko.github.io/phoenixbsl'
 repo_name: 'otymko/phoenixbsl'
 repo_url: 'https://github.com/otymko/phoenixbsl'
 edit_uri: 'edit/develop/docs'

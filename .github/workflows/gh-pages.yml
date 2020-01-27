@@ -52,8 +52,8 @@ jobs:
       run: |         
         sed -i "s%Phoenix BSL%Phoenix BSL Dev%g" mkdocs.yml
         sed -i "s%Phoenix BSL%Phoenix BSL Dev%g" mkdocs.en.yml
-        sed -i "s%https://sfaqer.github.io/phoenixbsl%https://sfaqer.github.io/phoenixbsl/dev%g" mkdocs.yml
-        sed -i "s%https://sfaqer.github.io/phoenixbsl%https://sfaqer.github.io/phoenixbsl/dev%g" mkdocs.en.yml
+        sed -i "s%https://otymko.github.io/phoenixbsl%https://otymko.github.io/phoenixbsl/dev%g" mkdocs.yml
+        sed -i "s%https://otymko.github.io/phoenixbsl%https://otymko.github.io/phoenixbsl/dev%g" mkdocs.en.yml
     
     - name: Build Russian
       run: |
