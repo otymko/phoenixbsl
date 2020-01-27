@@ -1,3 +1,7 @@
+[![Actions Status](https://github.com/otymko/phoenixbsl/workflows/Java%20CI/badge.svg)](https://github.com/otymko/phoenixbsl/actions)
+[![Download](https://img.shields.io/github/release/otymko/phoenixbsl.svg?label=download&style=flat)](https://github.com/otymko/phoenixbsl/releases/latest)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=phoenixbsl&metric=alert_status)](https://sonarcloud.io/dashboard?id=phoenixbsl)
+
 # Phoenix BSL для 1С
 
 **В СТАДИИ РАЗРАБОТКИ, ИСПОЛЬЗУЙТЕ НА СВОЙ СТРАХ И РИСК =)**
