@@ -8,7 +8,6 @@ on:
     paths:
     - 'docs/**'
     - 'mkdocs.yml'
-    - 'mkdocs.en.yml'
 
 jobs:
   build-deploy:
@@ -51,16 +50,13 @@ jobs:
       if: github.ref == 'refs/heads/develop'
       run: |         
         sed -i "s%Phoenix BSL%Phoenix BSL Dev%g" mkdocs.yml
-        sed -i "s%Phoenix BSL%Phoenix BSL Dev%g" mkdocs.en.yml
         sed -i "s%https://otymko.github.io/phoenixbsl%https://otymko.github.io/phoenixbsl/dev%g" mkdocs.yml
-        sed -i "s%https://otymko.github.io/phoenixbsl%https://otymko.github.io/phoenixbsl/dev%g" mkdocs.en.yml
     
     - name: Build Russian
       run: |
         mkdir temp
         cp mkdocs.yml temp
         cp -R docs/. temp/docs
-        rm -rf temp/docs/en
         cd temp
         mkdocs build
     
@@ -76,29 +72,6 @@ jobs:
     
     - name: Clean temp
       run: rm -rf temp
-
-    - name: Build English
-      run: |
-        mkdir temp
-        cp mkdocs.en.yml temp/mkdocs.yml
-        mkdir temp/docs
-        cp -R docs/en/. temp/docs
-        mkdir temp/docs/assets
-        cp -R docs/assets/. temp/docs/assets
-        cd temp
-        mkdocs build
-        
-    - name: Public English Master
-      if: github.ref == 'refs/heads/master'
-      run: |
-        mkdir public/en
-        cp -R temp/site/. public/en
-    
-    - name: Public English Develop
-      if: github.ref == 'refs/heads/develop'
-      run: |
-        mkdir public/dev/en
-        cp -R temp/site/. public/dev/en
         
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v2.5.0
