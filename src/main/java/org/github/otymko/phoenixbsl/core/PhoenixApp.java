@@ -12,6 +12,7 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLBinding;
+import org.github.otymko.phoenixbsl.lsp.BSLConfiguration;
 import org.github.otymko.phoenixbsl.lsp.BSLLanguageClient;
 import org.github.otymko.phoenixbsl.utils.ProcessHelper;
 import org.github.otymko.phoenixbsl.views.Toolbar;
@@ -34,12 +35,11 @@ public class PhoenixApp implements EventListener {
 
   private static final PhoenixApp INSTANCE = new PhoenixApp();
 
-  private static final Path pathToFolderLog = Path.of("app", "logs");
-  // TODO: лучше файл настроек хранить не в каталоге с app, а в пользовательском каталоге
-  // при переустановке app тогда настройки сохранятся, с другой стороны - может сменится структура настроек
-  private static final Path pathToConfiguration = Path.of("app", "Configuration.json").toAbsolutePath();
-
-  public static final URI fakeUri = new File("C:/BSL/fake.bsl").toPath().toAbsolutePath().toUri();
+  private static final Path pathToFolderLog = createPathToLog();
+  private static final Path pathToConfiguration = createPathToConfiguration();
+  private static final Path pathToBSLConfiguration =
+    Path.of(System.getProperty("user.home"), "phoenixbsl", ".bsl-language-server.json");
+  public static final URI fakeUri = Path.of("fake.bsl").toUri();
 
   private EventManager events;
   private WinDef.HWND focusForm;
@@ -161,7 +161,7 @@ public class PhoenixApp implements EventListener {
     }
 
     var separator = "\n";
-    var textForQF= PhoenixAPI.getTextAll();
+    var textForQF = PhoenixAPI.getTextAll();
 
     // найдем все диагностики подсказки
     var listQF = diagnosticList.stream()
@@ -203,8 +203,6 @@ public class PhoenixApp implements EventListener {
   }
 
 
-
-
   public void createProcessBSLLS() {
 
     processBSL = null;
@@ -217,8 +215,12 @@ public class PhoenixApp implements EventListener {
 
     var arguments = ProcessHelper.getArgumentsRunProcessBSLLS(configuration);
 
-    arguments.add("--configuration");
-    arguments.add("F:\\DATA\\Develop\\Project\\phoenixbsl\\app\\.bsl-language-server.json");
+    if (pathToBSLLS.toFile().exists()) {
+      arguments.add("--configuration");
+      arguments.add(pathToBSLLS.toString());
+    }
+
+    LOGGER.debug("Строка запуска BSL LS {}", String.join(" ", arguments));
 
     try {
       processBSL = new ProcessBuilder()
@@ -341,7 +343,7 @@ public class PhoenixApp implements EventListener {
     }
 
     var version = "dev";
-    if (manifest.getMainAttributes().get(Attributes.Name.MAIN_CLASS) == null){
+    if (manifest.getMainAttributes().get(Attributes.Name.MAIN_CLASS) == null) {
       return version;
     }
     version = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
@@ -398,6 +400,42 @@ public class PhoenixApp implements EventListener {
       result = out.replaceAll("version: ", "");
     }
     return result;
+  }
+
+  public void initBSLConfiguration() {
+    createBSLConfigurationFile();
+  }
+
+  public void createBSLConfigurationFile() {
+    var bslConfiguration = new BSLConfiguration();
+    bslConfiguration.setDiagnosticLanguage("ru");
+    bslConfiguration.setShowCognitiveComplexityCodeLens(false);
+    bslConfiguration.setShowCyclomaticComplexityCodeLens(false);
+    bslConfiguration.setComputeDiagnosticsTrigger("onSave");
+    bslConfiguration.setComputeDiagnosticsSkipSupport("withSupportLocked");
+    bslConfiguration.setConfigurationRoot("src");
+
+    pathToBSLConfiguration.getParent().toFile().mkdirs();
+
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      mapper.writeValue(pathToBSLConfiguration.toFile(), bslConfiguration);
+    } catch (IOException e) {
+      LOGGER.error("Не удалось записать файл конфигурации BSL LS", e);
+    }
+
+  }
+
+  private static Path createPathToConfiguration() {
+    var path = Path.of(System.getProperty("user.home"), "phoenixbsl", "Configuration.json").toAbsolutePath();
+    path.getParent().toFile().mkdirs();
+    return path;
+  }
+
+  private static Path createPathToLog() {
+    var path = Path.of(System.getProperty("user.home"), "phoenixbsl", "logs").toAbsolutePath();
+    path.toFile().mkdirs();
+    return path;
   }
 
 
