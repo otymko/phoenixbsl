@@ -2,6 +2,7 @@ package org.github.otymko.phoenixbsl.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jna.platform.win32.WinDef;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Command;
@@ -12,6 +13,7 @@ import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLBinding;
 import org.github.otymko.phoenixbsl.lsp.BSLLanguageClient;
+import org.github.otymko.phoenixbsl.utils.ProcessHelper;
 import org.github.otymko.phoenixbsl.views.Toolbar;
 
 import java.io.File;
@@ -82,13 +84,8 @@ public class PhoenixApp implements EventListener {
 
   public void createProcessBSLLS() {
     processBSL = null;
-    Collection<String> arguments = new ArrayList<>();
-    ConfigurationApp configurationApp = PhoenixApp.getInstance().configuration;
-    if (configurationApp.isUsePathToJarBSLLS()) {
-      arguments.add(configurationApp.getPathToJava());
-      arguments.add("-jar");
-    }
-    var pathToBSLLS = Path.of(configurationApp.getPathToBSLLS()).toAbsolutePath();
+
+    var pathToBSLLS = Path.of(configuration.getPathToBSLLS()).toAbsolutePath();
     if (!pathToBSLLS.toFile().exists()) {
       LOGGER.error("Не найден BSL LS");
       return;
@@ -100,13 +97,12 @@ public class PhoenixApp implements EventListener {
 
     LOGGER.debug(arguments.toString());
 
+    var arguments = ProcessHelper.getArgumentsRunProcessBSLLS(configuration);
     try {
       processBSL = new ProcessBuilder()
         .command(arguments.toArray(new String[0]))
         .start();
-
       sleepCurrentThread(500);
-
       if (!processBSL.isAlive()) {
         processBSL = null;
         LOGGER.error("Не удалалось запустить процесс с BSL LS. Процесс был аварийно завершен.");
@@ -338,7 +334,6 @@ public class PhoenixApp implements EventListener {
     writeConfiguration(configurationApp, pathToConfiguration.toFile());
   }
 
-
   @Override
   public void fixAll() {
 
@@ -397,5 +392,21 @@ public class PhoenixApp implements EventListener {
   public void setDiagnosticList(List<Diagnostic> diagnosticList){
     this.diagnosticList = diagnosticList;
   }
+
+}
+
+  @SneakyThrows
+  public String getVersionBSLLS() {
+    var result = "<Неопределено>";
+    var arguments = ProcessHelper.getArgumentsRunProcessBSLLS(configuration);
+    arguments.add("--version");
+    var processBSL = new ProcessBuilder().command(arguments.toArray(new String[0])).start();
+    var out = ProcessHelper.getStdoutProcess(processBSL);
+    if (out.startsWith("version")) {
+      result = out.replaceAll("version: ", "");
+    }
+    return result;
+  }
+
 
 }
