@@ -2,7 +2,6 @@ site_name: Phoenix BSL
 nav:
   - Домашняя: index.md
   - Руководство контрибьютора: contributing/index.md
-  - English: https://otymko.github.io/phoenixbsl/en
 theme: 
   name: material
   language: ru
@@ -13,7 +12,7 @@ theme:
     accent: 'indigo'
 extra:
   search:
-    language: 'en, ru'
+    language: 'ru'
   social:
     - type: 'github'
       link: 'https://github.com/otymko'
