@@ -1,2 +1,0 @@
-# Contributing guide
-In developing
