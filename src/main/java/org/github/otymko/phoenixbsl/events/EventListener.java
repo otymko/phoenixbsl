@@ -11,6 +11,8 @@ public interface EventListener {
   default void inspection() {
   }
 
+  default void fixAll() { }
+
   default void updateIssues(List<Diagnostic> diagnostics) {
   }
 

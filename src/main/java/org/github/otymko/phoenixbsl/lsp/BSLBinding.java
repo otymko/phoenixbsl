@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.github.otymko.phoenixbsl.core.PhoenixAPI;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -42,7 +44,6 @@ public class BSLBinding {
 
   @VisibleForTesting
   private void start() {
-
     launcher = LSPLauncher.createClientLauncher(client, in, out);
     Future<?> future = launcher.startListening();
 
@@ -64,9 +65,21 @@ public class BSLBinding {
   public CompletableFuture<InitializeResult> initialize() {
     var params = new InitializeParams();
     params.setProcessId(PhoenixAPI.getProcessId());
-    params.setTrace("messages");
+    params.setTrace("verbose");
     ClientCapabilities serverCapabilities = new ClientCapabilities();
+
+    TextDocumentClientCapabilities textDocument = new TextDocumentClientCapabilities();
+    CodeActionCapabilities codeActionCapabilities = new CodeActionCapabilities(true);
+    textDocument.setCodeAction(codeActionCapabilities);
+    textDocument
+      .setCodeAction(
+        new CodeActionCapabilities(
+          new CodeActionLiteralSupportCapabilities(
+            new CodeActionKindCapabilities(Arrays.asList("", CodeActionKind.QuickFix))),
+          false));
+    serverCapabilities.setTextDocument(textDocument);
     params.setCapabilities(serverCapabilities);
+
     return server.initialize(params);
   }
 
@@ -100,6 +113,21 @@ public class BSLBinding {
     textDocumentIdentifier.setUri(uri.toString());
     paramsSave.setTextDocument(textDocumentIdentifier);
     server.getTextDocumentService().didSave(paramsSave);
+  }
+
+  public List<Either<Command, CodeAction>> textDocumentCodeAction(URI uri, List<Diagnostic> listDiagnostic) throws ExecutionException, InterruptedException {
+    CodeActionParams params = new CodeActionParams();
+
+    TextDocumentIdentifier textDocumentIdentifier = new TextDocumentIdentifier();
+    textDocumentIdentifier.setUri(uri.toString());
+
+    var context = new CodeActionContext();
+    context.setDiagnostics(listDiagnostic);
+
+    params.setRange(new Range());
+    params.setTextDocument(textDocumentIdentifier);
+    params.setContext(context);
+    return server.getTextDocumentService().codeAction(params).get();
   }
 
   public CompletableFuture<List<? extends TextEdit>> textDocumentFormatting(URI uri) {

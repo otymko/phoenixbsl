@@ -42,6 +42,9 @@ public class GlobalKeyListenerThread extends Thread {
           if (event.getVirtualKeyCode() == GlobalKeyEvent.VK_K) {
             PhoenixApp.getInstance().getEventManager().notify(EventManager.EVENT_FORMATTING);
           }
+          if (event.getVirtualKeyCode() == GlobalKeyEvent.VK_J) {
+            PhoenixApp.getInstance().getEventManager().notify(EventManager.EVENT_FIX_ALL);
+          }
         }
       }
 

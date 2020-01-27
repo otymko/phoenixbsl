@@ -31,6 +31,9 @@ public class LauncherApp {
     // инициализация настроек
     app.initConfiguration();
 
+    // инициализация базовых настроек BSL LS
+    app.initBSLConfiguration();
+
     // запускаем главную форму
     MainApplicationThread mainApplicationThread = new MainApplicationThread();
     mainApplicationThread.start();

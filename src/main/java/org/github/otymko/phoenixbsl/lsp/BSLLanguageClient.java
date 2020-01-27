@@ -35,9 +35,15 @@ public class BSLLanguageClient implements LanguageClient {
   @Override
   public void publishDiagnostics(PublishDiagnosticsParams publishDiagnosticsParams) {
 
+    var app = PhoenixApp.getInstance();
+
+    var diagnosticList = app.getDiagnosticList();
+    diagnosticList.clear();
+    diagnosticList.addAll(publishDiagnosticsParams.getDiagnostics());
+
     PhoenixApp.getInstance().getEventManager().notify(
       EventManager.EVENT_UPDATE_ISSUES,
-      publishDiagnosticsParams.getDiagnostics()
+      diagnosticList
     );
 
   }

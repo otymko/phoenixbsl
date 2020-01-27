@@ -104,7 +104,7 @@ public class PhoenixAPI {
   private static void clearClipboard() {
     LOGGER.debug("clearClipboard");
     var stringSelection = new StringSelection("");
-    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null); // FIXME: падает буфер обмена
   }
 
   private static String getFromClipboard() {
@@ -134,4 +134,5 @@ public class PhoenixAPI {
   public static void showMessageDialog(String message) {
     JOptionPane.showMessageDialog(new JFrame(), message);
   }
+
 }
