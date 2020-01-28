@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,6 +41,7 @@ public class PhoenixApp implements EventListener {
   private static final Path pathToBSLConfiguration =
     Path.of(System.getProperty("user.home"), "phoenixbsl", ".bsl-language-server.json");
   public static final URI fakeUri = Path.of("fake.bsl").toUri();
+  public static final List<String> diagnosticListForQuickFix = createDiagnosticListForQuickFix();
 
   private EventManager events;
   private WinDef.HWND focusForm;
@@ -165,7 +167,8 @@ public class PhoenixApp implements EventListener {
 
     // найдем все диагностики подсказки
     var listQF = diagnosticList.stream()
-      .filter(diagnostic -> diagnostic.getCode().equalsIgnoreCase("CanonicalSpellingKeywords"))
+      .filter(this::isAcceptDiagnosticForQuickFix)
+      //.filter(diagnostic -> diagnostic.getCode().equalsIgnoreCase("CanonicalSpellingKeywords"))
       .collect(Collectors.toList());
 
     List<Either<Command, CodeAction>> codeActions = new ArrayList<>();
@@ -180,6 +183,9 @@ public class PhoenixApp implements EventListener {
 
     codeActions.forEach(diagnostic -> {
       CodeAction codeAction = diagnostic.getRight();
+      if (codeAction.getTitle().startsWith("Fix all:")) {
+        return;
+      }
       codeAction.getEdit().getChanges().forEach((s, textEdits) -> {
         textEdits.forEach(textEdit -> {
           var range = textEdit.getRange();
@@ -436,6 +442,17 @@ public class PhoenixApp implements EventListener {
     var path = Path.of(System.getProperty("user.home"), "phoenixbsl", "logs").toAbsolutePath();
     path.toFile().mkdirs();
     return path;
+  }
+
+  private static List<String> createDiagnosticListForQuickFix() {
+    var list = new ArrayList<String>();
+    list.add("CanonicalSpellingKeywords");
+    list.add("SpaceAtStartComment");
+    list.add("SemicolonPresence");
+    return list;
+  }
+  private boolean isAcceptDiagnosticForQuickFix(Diagnostic diagnostic) {
+    return diagnosticListForQuickFix.contains(diagnostic.getCode());
   }
 
 
