@@ -17,6 +17,7 @@ public class PhoenixAPI {
 
   private static final String FUN_SYMBOL = "☻"; // 9787
   private static final CustomRobot robot = new CustomRobot();
+  private static final CustomTextTransfer textTransfer = new CustomTextTransfer();
 
   private static boolean isWindowsForm1SByClassName(String classNameForm) {
     return classNameForm.contains("V8") || classNameForm.contains("SWT_Window");
@@ -93,35 +94,16 @@ public class PhoenixAPI {
   // Взаимодействие с буфером обмена
 
   public static void setTextInClipboard(String text) {
-    Toolkit.getDefaultToolkit()
-      .getSystemClipboard()
-      .setContents(
-        new StringSelection(text),
-        null
-      );
+    textTransfer.setClipboardContents(text);
   }
 
   private static void clearClipboard() {
     LOGGER.debug("clearClipboard");
-    var stringSelection = new StringSelection("");
-    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null); // FIXME: падает буфер обмена
+    textTransfer.setClipboardContents("");
   }
 
   private static String getFromClipboard() {
-    var result = "";
-    try {
-      result = getDataClipboard();
-    } catch (IOException | UnsupportedFlavorException e) {
-      LOGGER.error("Не удалось получить из буфера обмена", e);
-    }
-    return result;
-  }
-
-  private static String getDataClipboard() throws IOException, UnsupportedFlavorException {
-    PhoenixApp.getInstance().sleepCurrentThread(200);
-    var result = (String) Toolkit.getDefaultToolkit()
-      .getSystemClipboard().getData(DataFlavor.stringFlavor);
-    return result;
+    return textTransfer.getClipboardContents();
   }
 
   public static int getProcessId() {
