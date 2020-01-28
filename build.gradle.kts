@@ -19,7 +19,7 @@ repositories {
 }
 
 group = "org.github.otymko.phoenixbsl"
-version = "0.3.3"
+version = "0.3.5"
 
 dependencies {
     testImplementation("com.hynnet", "jacob", "1.18")
