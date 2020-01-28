@@ -1,33 +1,30 @@
 package org.github.otymko.phoenixbsl.core;
 
-import com.google.common.primitives.Chars;
-import org.github.otymko.phoenixbsl.CustomRobot;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sun.jna.platform.win32.WinDef;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.lang.management.ManagementFactory;
 
+@Slf4j
 public class PhoenixAPI {
 
-  private static final Logger log = LoggerFactory.getLogger(PhoenixAPI.class);
-  private static CustomRobot robot = new CustomRobot();
+  private static final String FUN_SYMBOL = "☻"; // 9787
+  private static final CustomRobot robot = new CustomRobot();
+  private static final CustomTextTransfer textTransfer = new CustomTextTransfer();
 
-  public static String getTextAll() {
-    var result = "";
-    clearClipboard();
-    robot.Ctrl(KeyEvent.VK_A);
-    robot.Ctrl(KeyEvent.VK_C);
-    result = getFromClipboard();
-    log.debug("getTextAll:" + result);
-    return result;
+  private static boolean isWindowsForm1SByClassName(String classNameForm) {
+    return classNameForm.contains("V8") || classNameForm.contains("SWT_Window");
+  }
+
+  public static boolean isWindowsForm1S() {
+    return isWindowsForm1SByClassName(PhoenixUser32.getForegroundWindowClass());
   }
 
   public static String getTextSelected() {
@@ -38,70 +35,31 @@ public class PhoenixAPI {
     if (result.length() > 0) {
       robot.Ctrl(KeyEvent.VK_Z);
     }
-    log.debug("getTextSelected:" + result);
+    LOGGER.debug("getTextSelected:" + result);
     return result;
-  }
-
-  public static void goToLineOnForm(int line) {
-    var listNumber = getListKeyEventByNumber(line);
-    // Окно перейти
-    robot.Ctrl(KeyEvent.VK_G);
-    // Номер строки
-    robot.pressKeyList(listNumber);
-    // Подтвержаем ввод
-    robot.pressKey(KeyEvent.VK_ENTER);
   }
 
   public static void insetTextOnForm(String text, boolean isSelected) {
     if (!isSelected) {
       robot.Ctrl(KeyEvent.VK_A);
     }
-    setTextInClipboard(text);
+    PhoenixAPI.setTextInClipboard(text);
     robot.Ctrl(KeyEvent.VK_V);
   }
 
-  private static void clearClipboard() {
-    StringSelection stringSelection = new StringSelection("");
-    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
-    log.debug("clearClipboard");
+  public static void gotoLineModule(int line, WinDef.HWND focusForm) {
+    PhoenixUser32.setFocusWindows(focusForm);
+    goToLineOnForm(line);
   }
 
-  private static String getFromClipboard() {
-    var result = "";
-    try {
-      result = getDataClipboard();
-    } catch (UnsupportedFlavorException e) {
-      log.error(Arrays.toString(e.getStackTrace()));
-    } catch (IOException e) {
-      log.error(Arrays.toString(e.getStackTrace()));
-    } catch (IllegalAccessException e) {
-      log.error(Arrays.toString(e.getStackTrace()));
-    }
-    log.debug("getFromClipboard:", result);
-    return result;
-  }
-
-  private static String getDataClipboard() throws IllegalAccessException, IOException, UnsupportedFlavorException {
-
-    try {
-      Thread.sleep(20);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
-    String result = (String) Toolkit.getDefaultToolkit()
-        .getSystemClipboard().getData(DataFlavor.stringFlavor);
-
-    return result;
-  }
-
-  private static void setTextInClipboard(String text) {
-    Toolkit.getDefaultToolkit()
-        .getSystemClipboard()
-        .setContents(
-            new StringSelection(text),
-            null
-        );
+  public static void goToLineOnForm(int line) {
+    var listNumber = CustomRobot.getListKeyEventByNumber(line);
+    // Окно перейти
+    robot.Ctrl(KeyEvent.VK_G);
+    // Номер строки
+    robot.pressKeyList(listNumber);
+    // Подтвержаем ввод
+    robot.pressKey(KeyEvent.VK_ENTER);
   }
 
   public static int getCurrentLineNumber() {
@@ -112,79 +70,51 @@ public class PhoenixAPI {
     robot.Ctrl(KeyEvent.VK_Z);
     String[] arrStr = textAll.split("\n");
     var count = 0;
-    for (var element: arrStr) {
+    for (var element : arrStr) {
       count++;
-      if (element.contains("☻")) { // 9787
+      if (element.contains(FUN_SYMBOL)) {
         line = count - 1;
         break;
       }
     }
-    log.info("Current line ofset: " + line);
+    LOGGER.debug("Current line ofset: " + line);
     return line;
   }
 
-  // взаимодействия с формами
-  private static boolean isWindowsForm1S(String classNameForm) {
-    boolean result = true;
-    result = classNameForm.contains("V8") || classNameForm.contains("SWT_Window");
+  public static String getTextAll() {
+    var result = "";
+    clearClipboard();
+    robot.Ctrl(KeyEvent.VK_A);
+    robot.Ctrl(KeyEvent.VK_C);
+    result = getFromClipboard();
+    LOGGER.debug("getTextAll:" + result);
     return result;
   }
 
-  public static boolean isWindowsForm1S() {
-    return isWindowsForm1S(PhoenixUser32.getForegroundWindowClass());
+  // Взаимодействие с буфером обмена
+
+  public static void setTextInClipboard(String text) {
+    textTransfer.setClipboardContents(text);
   }
 
-  private static java.util.List<Integer> getListKeyEventByNumber(int inValue) {
-    List<Integer> list = new ArrayList<>();
-    var str = String.valueOf(inValue);
-    for (char symbol : str.toCharArray()) {
-      int key;
-      switch (String.valueOf(symbol)){
-        case ("0"):
-          key = KeyEvent.VK_0;
-          break;
-        case ("1"):
-          key = KeyEvent.VK_1;
-          break;
-        case ("2"):
-          key = KeyEvent.VK_2;
-          break;
-        case ("3"):
-          key = KeyEvent.VK_3;
-          break;
-        case ("4"):
-          key = KeyEvent.VK_4;
-          break;
-        case ("5"):
-          key = KeyEvent.VK_5;
-          break;
-        case ("6"):
-          key = KeyEvent.VK_6;
-          break;
-        case ("7"):
-          key = KeyEvent.VK_7;
-          break;
-        case ("8"):
-          key = KeyEvent.VK_8;
-          break;
-        case ("9"):
-          key = KeyEvent.VK_9;
-          break;
-        default:
-          key = 0;
-          break;
-      }
-
-      if (key != 0){
-        list.add((Integer) key);
-      }
-    }
-
-    return list;
+  private static void clearClipboard() {
+    LOGGER.debug("clearClipboard");
+    textTransfer.setClipboardContents("");
   }
 
-  public void getFocusForm() {
+  private static String getFromClipboard() {
+    return textTransfer.getClipboardContents();
+  }
 
+  public static int getProcessId() {
+    var bean = ManagementFactory.getRuntimeMXBean();
+    var jvmName = bean.getName();
+    var pid = Long.valueOf(jvmName.split("@")[0]);
+    return pid.intValue();
+  }
+
+  public static void showMessageDialog(String message) {
+    JOptionPane.showMessageDialog(new JFrame(), message);
   }
 
 }

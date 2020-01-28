@@ -1,62 +1,62 @@
 package org.github.otymko.phoenixbsl.views;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javafx.application.Platform;
+import org.github.otymko.phoenixbsl.core.PhoenixApp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Toolbar {
 
-  private static final Logger log = LoggerFactory.getLogger(Toolbar.class);
-  private static final String PATH_TO_ICON = "/phoenix.jpg";
-  private static final String APP_NAME = "PhoenixBSL для 1С";
+  private static final String PATH_TO_ICON = "/phoenix.png";
 
-  private static final String ITEM_NAME_SETTING = "Настройки";
-  private static final String ITEM_NAME_EXIT = "Закрыть";
-
-  private static TrayIcon trayIcon;
+  private PopupMenu popupMenu;
 
   public Toolbar() {
+    init();
+  }
 
-    var popup = new PopupMenu();
+  private void init() {
+    popupMenu = new PopupMenu();
 
-    var settingItem = new MenuItem(ITEM_NAME_SETTING);
-    settingItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-      }
+    var settingItem = new MenuItem("Настройки");
+    settingItem.addActionListener(e -> {
+      PhoenixApp.getInstance().showSettingStage();
     });
-    popup.add(settingItem);
+    popupMenu.add(settingItem);
 
-    var exitItem = new MenuItem(ITEM_NAME_EXIT);
+    var exitItem = new MenuItem("Закрыть");
     exitItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        Platform.exit();
+        PhoenixApp.getInstance().stopBSL();
         System.exit(0);
       }
     });
-    popup.add(exitItem);
+    popupMenu.add(exitItem);
 
     var systemTray = SystemTray.getSystemTray();
-    var icon = new ImageIcon(getClass().getResource(PATH_TO_ICON));
+    var icon = new ImageIcon(PhoenixApp.class.getResource(PATH_TO_ICON));
     var image = icon.getImage();
 
-    trayIcon = new TrayIcon(image, APP_NAME, popup);
+    TrayIcon trayIcon = new TrayIcon(image, "Phoenix BSL", popupMenu);
     trayIcon.setImageAutoSize(true);
+    trayIcon.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 2) {
+          PhoenixApp.getInstance().showIssuesStage();
+        }
+      }
+    });
     try {
       systemTray.add(trayIcon);
     } catch (AWTException e) {
-      log.error(e.getMessage());
+      System.out.println(e.getMessage());
     }
-
-  }
-
-  public void notifyInTray(String caption, String text) {
-    trayIcon.displayMessage(
-        caption,
-        text,
-        TrayIcon.MessageType.INFO);
   }
 
 }

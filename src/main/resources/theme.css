@@ -1,0 +1,60 @@
+.root {
+    -fx-background-color: #cc7000;
+
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: #b36200;
+
+    -fx-background-radius: 5;
+}
+
+.button {
+
+    -fx-background-color: #cc7000;   
+    -fx-color: #ffffff;
+
+}
+
+.button:hover {
+    -fx-background-color: #804600;    
+}
+
+.info-label {
+    -fx-text-fill: #FFFFFF;
+}
+
+.tree-table-row-cell:selected {
+    -fx-background-color: #F7DAB5;
+    -fx-text-fill: #000000;
+}
+
+.tree-table-row-cell:selected:odd {
+    -fx-background-color: #F7DAB5;
+    -fx-text-fill: #000000;
+    -fx-color: #000000;
+}
+
+.tree-table-row-cell:odd {
+    -fx-background-color: #EBEBEB;
+    -fx-background-insets: 0, 0 0 1 0; 
+}
+
+.tree-table-row-cell:selected:odd {
+    -fx-text-fill: #000000;
+}
+
+#settingTabPane {
+    -fx-background-color: #FFFFFF;
+}
+
+.jfx-tab-pane .headers-region {
+    -fx-background-color: #cc7000;
+    -fx-text-fill: #000000;
+}
+.jfx-tab-pane .tab-header-background {
+    -fx-background-color: #cc7000;
+    -fx-text-fill: #000000;
+}
+/*.jfx-tab-pane .tab-selected-line {*/
+/*    -fx-stroke: #000000;*/
+/*    -fx-stroke-width: 3pt;*/
+/*}*/
