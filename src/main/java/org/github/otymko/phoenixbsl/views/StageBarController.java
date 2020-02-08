@@ -4,9 +4,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import lombok.Getter;
 
+@Getter
 public class StageBarController {
 
   private Stage owner;
@@ -17,6 +20,9 @@ public class StageBarController {
 
   @FXML
   private Button btnClose;
+
+  @FXML
+  private Label titleApp;
 
   public StageBarController() {}
 

@@ -72,10 +72,24 @@ public class IssuesStage extends Stage {
     initStyle(StageStyle.TRANSPARENT);
 
     getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.png")));
-    Label title = (Label) scene.lookup("#titleApp");
+    Label title = controller.getTitleApp();
     title.setText("Phoenix BSL v. " + PhoenixApp.getInstance().getVersionApp());
 
     tree = localController.getIssuesTree();
+    initTreeTable();
+
+    labelError = localController.getLabelError();
+    labelWarning = localController.getLabelWarning();
+    labelInfo = localController.getLabelInfo();
+
+    search = localController.getSearch();
+    search.textProperty().addListener((o, oldVal, newVal) -> filterIssuesTree(newVal));
+
+    updateIndicators();
+
+  }
+
+  private void initTreeTable() {
     tree.setPlaceholder(new Label("Замечаний нет"));
 
     TreeTableColumn<Issue, String> descriptionColumn = new TreeTableColumn<>("Описание");
@@ -130,15 +144,6 @@ public class IssuesStage extends Stage {
 
     });
 
-    labelError = (Label) scene.lookup("#labelError");
-    labelWarning = (Label) scene.lookup("#labelWarning");
-    labelInfo = (Label) scene.lookup("#labelInfo");
-
-    search = (TextField) scene.lookup("#search");
-    search.textProperty().addListener((o, oldVal, newVal) -> filterIssuesTree(newVal));
-
-    updateIndicators();
-
   }
 
   private void filterIssuesTree(String filter) {
@@ -169,7 +174,7 @@ public class IssuesStage extends Stage {
     countInfo = 0;
 
     ObservableList<Issue> issues = FXCollections.observableArrayList();
-    diagnostics.stream().forEach(diagnostic -> {
+    diagnostics.forEach(diagnostic -> {
       var range = diagnostic.getRange();
       var position = range.getStart();
       var startLine = position.getLine() + 1 + lineOffset;
