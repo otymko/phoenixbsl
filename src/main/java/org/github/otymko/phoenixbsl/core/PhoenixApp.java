@@ -142,12 +142,15 @@ public class PhoenixApp implements EventListener {
     // Formatting
     var result = bslBinding.textDocumentFormatting(fakeUri);
 
+    String newText = null;
     try {
-      PhoenixAPI.insetTextOnForm(result.get().get(0).getNewText(), isSelected);
-    } catch (InterruptedException e) {
-      LOGGER.error(e.getMessage());
-    } catch (ExecutionException e) {
-      LOGGER.error(e.getMessage());
+      newText = result.get().get(0).getNewText();
+    } catch (InterruptedException | ExecutionException e) {
+      LOGGER.error("Ошибка получения форматированного текста", e);
+    }
+
+    if (newText != null) {
+      PhoenixAPI.insetTextOnForm(newText, isSelected);
     }
 
   }
@@ -180,6 +183,24 @@ public class PhoenixApp implements EventListener {
     LOGGER.debug("Квикфиксов найдено: " + codeActions);
     String[] strings = textForQF.split(separator);
 
+    try {
+      applyAllQuickFixes(codeActions, strings);
+    }
+    catch (ArrayIndexOutOfBoundsException e) {
+      LOGGER.error("При применении fix all к тексту модуля возникли ошибки", e);
+      return;
+    }
+
+    if (!codeActions.isEmpty()) {
+      var text = String.join(separator, strings);
+      PhoenixAPI.insetTextOnForm(text, false);
+    }
+
+  }
+
+  private void applyAllQuickFixes(List<Either<Command, CodeAction>> codeActions, String[] strings)
+    throws ArrayIndexOutOfBoundsException{
+
     codeActions.forEach(diagnostic -> {
       CodeAction codeAction = diagnostic.getRight();
       if (codeAction.getTitle().startsWith("Fix all:")) {
@@ -199,11 +220,6 @@ public class PhoenixApp implements EventListener {
         });
       });
     });
-
-    if (!codeActions.isEmpty()) {
-      var text = String.join(separator, strings);
-      PhoenixAPI.insetTextOnForm(text, false);
-    }
 
   }
 
@@ -401,6 +417,9 @@ public class PhoenixApp implements EventListener {
     arguments.add("--version");
     var processBSL = new ProcessBuilder().command(arguments.toArray(new String[0])).start();
     var out = ProcessHelper.getStdoutProcess(processBSL);
+    if (out == null) {
+      return result;
+    }
     if (out.startsWith("version")) {
       result = out.replaceAll("version: ", "");
     }

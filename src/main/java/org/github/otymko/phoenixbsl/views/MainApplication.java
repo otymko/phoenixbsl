@@ -1,15 +1,10 @@
 package org.github.otymko.phoenixbsl.views;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -30,6 +25,8 @@ public class MainApplication extends Application implements EventListener {
 
   private IssuesStage issuesStage;
   private Stage settingStage;
+
+  private SettingStageController controllerStages;
 
   public MainApplication() {
 
@@ -111,7 +108,7 @@ public class MainApplication extends Application implements EventListener {
     controller.setOwner(settingStage);
     controller.setRootElement(root);
 
-    SettingStageController controllerStages = loader.getController();
+    controllerStages = loader.getController();
     controllerStages.setConfiguration(PhoenixApp.getInstance().getConfiguration());
 
     var scene = new Scene(root);
@@ -121,7 +118,7 @@ public class MainApplication extends Application implements EventListener {
     settingStage.initStyle(StageStyle.TRANSPARENT);
 
     var pathToLog = PhoenixApp.getInstance().getPathToLogs();
-    var link = (Hyperlink) scene.lookup("#linkPathToLogs");
+    var link = controllerStages.getLinkPathToLogs();
     link.setText(pathToLog.toString());
 
     link.setOnAction(event -> {
@@ -136,9 +133,9 @@ public class MainApplication extends Application implements EventListener {
       }
     });
 
-    fillSettingValueFromConfiguration(scene, PhoenixApp.getInstance().getConfiguration());
+    fillSettingValueFromConfiguration(PhoenixApp.getInstance().getConfiguration());
 
-    Button btnSaveSetting = (JFXButton) scene.lookup("#btnSaveSetting");
+    var btnSaveSetting = controllerStages.getBtnSaveSetting();
     btnSaveSetting.setOnAction(event -> {
       // сохраним configuration в файл
       PhoenixApp.getInstance().writeConfiguration(PhoenixApp.getInstance().getConfiguration());
@@ -151,15 +148,15 @@ public class MainApplication extends Application implements EventListener {
 
   }
 
-  private void fillSettingValueFromConfiguration(Scene scene, ConfigurationApp configuration) {
+  private void fillSettingValueFromConfiguration(ConfigurationApp configuration) {
 
-    var usePathToJarBSLLS = (JFXCheckBox) scene.lookup("#usePathToJarBSLLS");
+    var usePathToJarBSLLS = controllerStages.getUsePathToJarBSLLS();
     usePathToJarBSLLS.setSelected(configuration.isUsePathToJarBSLLS());
 
-    var pathToJava = (TextField) scene.lookup("#pathToJava");
+    var pathToJava = controllerStages.getPathToJava();
     pathToJava.setText(configuration.getPathToJava());
 
-    var pathToBSLLS = (TextField) scene.lookup("#pathToBSLLS");
+    var pathToBSLLS = controllerStages.getPathToBSLLS();
     pathToBSLLS.setText(configuration.getPathToBSLLS());
 
   }
