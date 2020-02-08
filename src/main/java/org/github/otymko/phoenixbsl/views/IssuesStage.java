@@ -63,6 +63,8 @@ public class IssuesStage extends Stage {
     controller.setOwner(this);
     controller.setRootElement(root);
 
+    IssueStageController localController = loader.getController();
+
     Scene scene = new Scene(root);
     setScene(scene);
 
@@ -73,7 +75,7 @@ public class IssuesStage extends Stage {
     Label title = (Label) scene.lookup("#titleApp");
     title.setText("Phoenix BSL v. " + PhoenixApp.getInstance().getVersionApp());
 
-    tree = (JFXTreeTableView) (TreeTableView<Issue>) scene.lookup("#issuesTree");
+    tree = localController.getIssuesTree();
     tree.setPlaceholder(new Label("Замечаний нет"));
 
     TreeTableColumn<Issue, String> descriptionColumn = new TreeTableColumn<>("Описание");
