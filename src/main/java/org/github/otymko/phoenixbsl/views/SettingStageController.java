@@ -1,8 +1,10 @@
 package org.github.otymko.phoenixbsl.views;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import lombok.Getter;
@@ -27,6 +29,11 @@ public class SettingStageController {
   @FXML
   private Label labelVersion;
 
+  @FXML
+  private Hyperlink linkPathToLogs;
+
+  @FXML
+  private JFXButton btnSaveSetting;
 
   public void setConfiguration(ConfigurationApp configuration) {
     this.configuration = configuration;
