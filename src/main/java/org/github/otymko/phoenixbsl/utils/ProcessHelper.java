@@ -1,6 +1,7 @@
 package org.github.otymko.phoenixbsl.utils;
 
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import org.github.otymko.phoenixbsl.core.ConfigurationApp;
 
 import java.io.BufferedReader;
@@ -9,6 +10,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@UtilityClass
 public class ProcessHelper {
 
   public static Collection<String> getArgumentsRunProcessBSLLS(ConfigurationApp configuration) {
@@ -24,7 +26,6 @@ public class ProcessHelper {
     return arguments;
 
   }
-
 
   @SneakyThrows
   public static String getStdoutProcess(Process process) {

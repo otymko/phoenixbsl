@@ -14,22 +14,24 @@ import java.util.Map;
 @Slf4j
 public class GlobalKeyListenerThread extends Thread {
 
-  private PhoenixApp app = PhoenixApp.getInstance();
+  private final EventManager eventManager;
   private Map<KeyboardShortcut, Runnable> commands = new HashMap<>();
 
   public GlobalKeyListenerThread() {
 
+    eventManager = PhoenixApp.getInstance().getEventManager();
+
     commands.put(
       new KeyboardShortcut(GlobalKeyEvent.VK_I, true),
-      () -> app.getEventManager().notify(EventManager.EVENT_INSPECTION));
+      () -> eventManager.notify(EventManager.EVENT_INSPECTION));
 
     commands.put(
       new KeyboardShortcut(GlobalKeyEvent.VK_K, true),
-      () -> app.getEventManager().notify(EventManager.EVENT_FORMATTING));
+      () -> eventManager.notify(EventManager.EVENT_FORMATTING));
 
     commands.put(
       new KeyboardShortcut(GlobalKeyEvent.VK_J, true),
-      () -> app.getEventManager().notify(EventManager.EVENT_FIX_ALL));
+      () -> eventManager.notify(EventManager.EVENT_FIX_ALL));
 
   }
 
@@ -39,16 +41,16 @@ public class GlobalKeyListenerThread extends Thread {
     try {
       runHook();
     } catch (IllegalStateException e) {
-      LOGGER.error("Ошибка", e);
+      LOGGER.error("Ошибка в слушателе нажатий клавиш. Будет осуществлен перезапуск", e);
       run();
     }
 
   }
 
-  public void runHook() {
+  private void runHook() {
 
     GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(false);
-    LOGGER.info("Global keyboard hook successfully started. Connected keyboards:");
+    LOGGER.info("Глобальный слушатей нажатий клавиш запущен");
 
     keyboardHook.addKeyListener(new GlobalKeyAdapter() {
       @Override
@@ -57,11 +59,7 @@ public class GlobalKeyListenerThread extends Thread {
         if (event.isControlPressed()) {
 
           var keyShortcut = new KeyboardShortcut(event.getVirtualKeyCode(), true);
-          Runnable method = commands.entrySet().stream()
-            .filter(pair -> pair.getKey().equals(keyShortcut))
-            .map(Map.Entry::getValue)
-            .findFirst()
-            .orElse(null);
+          var method = getMethodByKeyboardShortcut(keyShortcut);
 
           if (method != null) {
             isSupportAction = true;
@@ -75,6 +73,14 @@ public class GlobalKeyListenerThread extends Thread {
       }
     });
 
+  }
+
+  private Runnable getMethodByKeyboardShortcut(KeyboardShortcut keyShortcut) {
+    return commands.entrySet().stream()
+      .filter(pair -> pair.getKey().equals(keyShortcut))
+      .map(Map.Entry::getValue)
+      .findFirst()
+      .orElse(null);
   }
 
 }
