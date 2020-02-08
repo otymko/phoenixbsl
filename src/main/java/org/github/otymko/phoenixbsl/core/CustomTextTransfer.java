@@ -19,10 +19,17 @@ public class CustomTextTransfer implements ClipboardOwner {
   public void setClipboardContents(String content) {
     stringSelection = new StringSelection(content);
     var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    clipboard.setContents(stringSelection, this);
+    PhoenixApp.getInstance().sleepCurrentThread(50);
+    try {
+      clipboard.setContents(stringSelection, this);
+    } catch (IllegalStateException e) {
+
+    }
+
   }
 
   public String getClipboardContents() {
+    PhoenixApp.getInstance().sleepCurrentThread(50);
     String content = "";
     var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     var contents = clipboard.getContents(null);
