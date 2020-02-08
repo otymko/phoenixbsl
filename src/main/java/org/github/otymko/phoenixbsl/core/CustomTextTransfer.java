@@ -23,7 +23,7 @@ public class CustomTextTransfer implements ClipboardOwner {
     try {
       clipboard.setContents(stringSelection, this);
     } catch (IllegalStateException e) {
-
+      LOGGER.error("Не удалось обновить значение в буфере обмена", e);
     }
 
   }
