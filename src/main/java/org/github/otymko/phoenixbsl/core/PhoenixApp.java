@@ -417,6 +417,9 @@ public class PhoenixApp implements EventListener {
     arguments.add("--version");
     var processBSL = new ProcessBuilder().command(arguments.toArray(new String[0])).start();
     var out = ProcessHelper.getStdoutProcess(processBSL);
+    if (out == null) {
+      return result;
+    }
     if (out.startsWith("version")) {
       result = out.replaceAll("version: ", "");
     }
