@@ -37,7 +37,7 @@ public class PhoenixApp implements EventListener {
 
   private static final Path pathToFolderLog = createPathToLog();
   private static final Path pathToConfiguration = createPathToConfiguration();
-  private static final Path pathToBSLConfiguration =
+  private static final Path pathToBSLConfigurationDefault =
     Path.of(System.getProperty("user.home"), "phoenixbsl", ".bsl-language-server.json");
   public static final URI fakeUri = Path.of("fake.bsl").toUri();
   public static final List<String> diagnosticListForQuickFix = createDiagnosticListForQuickFix();
@@ -236,9 +236,18 @@ public class PhoenixApp implements EventListener {
 
     var arguments = ProcessHelper.getArgumentsRunProcessBSLLS(configuration);
 
-    if (pathToBSLLS.toFile().exists()) {
+    // TODO: вынести в отдельное место
+    Path pathToBSLConfiguration = null;
+    if (configuration.isUseCustomBSLLSConfiguration()) {
+      pathToBSLConfiguration = Path.of(configuration.getPathToBSLLSConfiguration()).toAbsolutePath();
+    } else {
+      initBSLConfiguration();
+      pathToBSLConfiguration = pathToBSLConfigurationDefault;
+    }
+
+    if (pathToBSLConfiguration.toFile().exists()) {
       arguments.add("--configuration");
-      arguments.add(pathToBSLLS.toString());
+      arguments.add(pathToBSLConfiguration.toString());
     }
 
     LOGGER.debug("Строка запуска BSL LS {}", String.join(" ", arguments));
@@ -415,7 +424,18 @@ public class PhoenixApp implements EventListener {
     var result = "<Неопределено>";
     var arguments = ProcessHelper.getArgumentsRunProcessBSLLS(configuration);
     arguments.add("--version");
-    var processBSL = new ProcessBuilder().command(arguments.toArray(new String[0])).start();
+    Process processBSL = null;
+    try {
+      processBSL = new ProcessBuilder().command(arguments.toArray(new String[0])).start();
+    } catch (IOException e) {
+      LOGGER.error(e.getMessage());
+      return result;
+    }
+
+    if (processBSL == null) {
+      return result;
+    }
+
     var out = ProcessHelper.getStdoutProcess(processBSL);
     if (out == null) {
       return result;
@@ -439,11 +459,11 @@ public class PhoenixApp implements EventListener {
     bslConfiguration.setComputeDiagnosticsSkipSupport("withSupportLocked");
     bslConfiguration.setConfigurationRoot("src");
 
-    pathToBSLConfiguration.getParent().toFile().mkdirs();
+    pathToBSLConfigurationDefault.getParent().toFile().mkdirs();
 
     ObjectMapper mapper = new ObjectMapper();
     try {
-      mapper.writeValue(pathToBSLConfiguration.toFile(), bslConfiguration);
+      mapper.writeValue(pathToBSLConfigurationDefault.toFile(), bslConfiguration);
     } catch (IOException e) {
       LOGGER.error("Не удалось записать файл конфигурации BSL LS", e);
     }

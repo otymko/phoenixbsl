@@ -159,6 +159,12 @@ public class MainApplication extends Application implements EventListener {
     var pathToBSLLS = controllerStages.getPathToBSLLS();
     pathToBSLLS.setText(configuration.getPathToBSLLS());
 
+    var useCustomBSLLSConfiguration = controllerStages.getUseCustomBSLLSConfiguration();
+    useCustomBSLLSConfiguration.setSelected(configuration.isUseCustomBSLLSConfiguration());
+
+    var pathToBSLLSConfiguration = controllerStages.getPathToBSLLSConfiguration();
+    pathToBSLLSConfiguration.setText(configuration.getPathToBSLLSConfiguration());
+
   }
 
 
