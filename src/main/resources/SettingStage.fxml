@@ -53,6 +53,8 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" />
                             </rowConstraints>
                             <children>
                                 <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="106.0" text="Каталог с логами:" />
@@ -67,6 +69,10 @@
                                 <JFXCheckBox fx:id="usePathToJarBSLLS" checkedColor="#cc7000" onAction="#handleSelectUsePathToJarBSLLSAction" text=" " GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 <Label alignment="TOP_LEFT" layoutX="10.0" layoutY="70.0" prefHeight="17.0" prefWidth="106.0" text="Путь к JAVA:" GridPane.rowIndex="2" />
                                 <TextField fx:id="pathToJava" layoutX="160.0" layoutY="96.0" onAction="#handlePathToJavaAction" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="139.0" text="Свои настройки BSL LS:" GridPane.rowIndex="4" />
+                              <JFXCheckBox fx:id="useCustomBSLLSConfiguration" checkedColor="#cc7000" onAction="#handleSelectUseCustomBSLLSConfiguration" text=" " GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="147.0" text="Путь к настройкам BSL LS:" GridPane.rowIndex="5" />
+                              <TextField fx:id="pathToBSLLSConfiguration" onAction="#handlePathToBSLLSConfiguration" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                             </children>
                         </GridPane>
                     </center>
@@ -103,7 +109,7 @@
                                     <Insets bottom="5.0" left="5.0" top="5.0" />
                                  </GridPane.margin>
                               </Label>
-                              <Label fx:id="labelVersion" alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="106.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
+                              <Label fx:id="labelVersion" alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="437.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
                            </children>
                         </GridPane>
                      </center></BorderPane>

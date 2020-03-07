@@ -35,6 +35,12 @@ public class SettingStageController {
   @FXML
   private JFXButton btnSaveSetting;
 
+  @FXML
+  private JFXCheckBox useCustomBSLLSConfiguration;
+
+  @FXML
+  private TextField pathToBSLLSConfiguration;
+
   public void setConfiguration(ConfigurationApp configuration) {
     this.configuration = configuration;
   }
@@ -54,4 +60,13 @@ public class SettingStageController {
     configuration.setPathToBSLLS(pathToBSLLS.getText());
   }
 
+  @FXML
+  private void handleSelectUseCustomBSLLSConfiguration(ActionEvent event) {
+    configuration.setUseCustomBSLLSConfiguration(useCustomBSLLSConfiguration.isSelected());
+  }
+
+  @FXML
+  private void handlePathToBSLLSConfiguration(ActionEvent event) {
+    configuration.setPathToBSLLSConfiguration(pathToBSLLSConfiguration.getText());
+  }
 }

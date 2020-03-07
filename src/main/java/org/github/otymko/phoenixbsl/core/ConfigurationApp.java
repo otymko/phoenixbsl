@@ -18,15 +18,21 @@ public class ConfigurationApp {
   private static final String DEFAULT_PATH_TO_BSL_LS = "app/bsl-language-server/bsl-language-server.exe";
   private static final boolean DEFAULT_USE_JAR_BSL_LS = false;
   private static final String DEFAULT_PATH_TO_JAVA = "java";
+  private static final boolean DEFAULT_USE_CUSTOM_BSL_LS_CONFIGURATION = false;
+  private static final String DEFAULT_PATH_TO_BSL_LS_CONFIGURATION = ".bsl-language-server.json";
 
   private boolean usePathToJarBSLLS;
   private String pathToBSLLS;
   private String pathToJava;
+  private boolean useCustomBSLLSConfiguration;
+  private String pathToBSLLSConfiguration;
 
   ConfigurationApp () {
     setPathToBSLLS(DEFAULT_PATH_TO_BSL_LS);
     setUsePathToJarBSLLS(DEFAULT_USE_JAR_BSL_LS);
     setPathToJava(DEFAULT_PATH_TO_JAVA);
+    setUseCustomBSLLSConfiguration(DEFAULT_USE_CUSTOM_BSL_LS_CONFIGURATION);
+    setPathToBSLLSConfiguration(DEFAULT_PATH_TO_BSL_LS_CONFIGURATION);
   }
 
   public static ConfigurationApp create(File configurationFile) {

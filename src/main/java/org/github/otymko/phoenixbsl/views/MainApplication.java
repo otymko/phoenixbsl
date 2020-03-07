@@ -138,14 +138,37 @@ public class MainApplication extends Application implements EventListener {
     var btnSaveSetting = controllerStages.getBtnSaveSetting();
     btnSaveSetting.setOnAction(event -> {
       // сохраним configuration в файл
-      PhoenixApp.getInstance().writeConfiguration(PhoenixApp.getInstance().getConfiguration());
+      processSaveSettings();
       settingStage.close();
+      PhoenixApp.getInstance().restartProcessBSLLS();
     });
 
     controllerStages.getLabelVersion().setText(PhoenixApp.getInstance().getVersionBSLLS());
 
     settingStage.show();
 
+  }
+
+  private void processSaveSettings() {
+
+    var configuration = PhoenixApp.getInstance().getConfiguration();
+
+    var usePathToJarBSLLS = controllerStages.getUsePathToJarBSLLS();
+    configuration.setUsePathToJarBSLLS(usePathToJarBSLLS.isSelected());
+
+    var pathToJava = controllerStages.getPathToJava();
+    configuration.setPathToJava(pathToJava.getText());
+
+    var pathToBSLLS = controllerStages.getPathToBSLLS();
+    configuration.setPathToBSLLS(pathToBSLLS.getText());
+
+    var useCustomBSLLSConfiguration = controllerStages.getUseCustomBSLLSConfiguration();
+    configuration.setUseCustomBSLLSConfiguration(useCustomBSLLSConfiguration.isSelected());
+
+    var pathToBSLLSConfiguration = controllerStages.getPathToBSLLSConfiguration();
+    configuration.setPathToBSLLSConfiguration(pathToBSLLSConfiguration.getText());
+
+    PhoenixApp.getInstance().writeConfiguration(configuration);
   }
 
   private void fillSettingValueFromConfiguration(ConfigurationApp configuration) {
@@ -158,6 +181,12 @@ public class MainApplication extends Application implements EventListener {
 
     var pathToBSLLS = controllerStages.getPathToBSLLS();
     pathToBSLLS.setText(configuration.getPathToBSLLS());
+
+    var useCustomBSLLSConfiguration = controllerStages.getUseCustomBSLLSConfiguration();
+    useCustomBSLLSConfiguration.setSelected(configuration.isUseCustomBSLLSConfiguration());
+
+    var pathToBSLLSConfiguration = controllerStages.getPathToBSLLSConfiguration();
+    pathToBSLLSConfiguration.setText(configuration.getPathToBSLLSConfiguration());
 
   }
 
