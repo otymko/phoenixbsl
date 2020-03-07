@@ -71,7 +71,7 @@
                                 <TextField fx:id="pathToJava" layoutX="160.0" layoutY="96.0" onAction="#handlePathToJavaAction" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="139.0" text="Свои настройки BSL LS:" GridPane.rowIndex="4" />
                               <JFXCheckBox fx:id="useCustomBSLLSConfiguration" checkedColor="#cc7000" onAction="#handleSelectUseCustomBSLLSConfiguration" text=" " GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="106.0" text="Путь к настройкам:" GridPane.rowIndex="5" />
+                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="147.0" text="Путь к настройкам BSL LS:" GridPane.rowIndex="5" />
                               <TextField fx:id="pathToBSLLSConfiguration" onAction="#handlePathToBSLLSConfiguration" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                             </children>
                         </GridPane>
