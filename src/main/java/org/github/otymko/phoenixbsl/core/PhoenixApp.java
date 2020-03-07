@@ -20,6 +20,7 @@ import org.github.otymko.phoenixbsl.views.Toolbar;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +36,12 @@ public class PhoenixApp implements EventListener {
 
   private static final PhoenixApp INSTANCE = new PhoenixApp();
 
+  private static final Path basePathApp = Path.of(System.getProperty("user.home"), "phoenixbsl");
+
   private static final Path pathToFolderLog = createPathToLog();
   private static final Path pathToConfiguration = createPathToConfiguration();
   private static final Path pathToBSLConfigurationDefault =
-    Path.of(System.getProperty("user.home"), "phoenixbsl", ".bsl-language-server.json");
+    Path.of(basePathApp.toString(), ".bsl-language-server.json");
   public static final URI fakeUri = Path.of("fake.bsl").toUri();
   public static final List<String> diagnosticListForQuickFix = createDiagnosticListForQuickFix();
 
@@ -223,6 +226,11 @@ public class PhoenixApp implements EventListener {
 
   }
 
+  public void restartProcessBSLLS() {
+    stopBSL();
+    initProcessBSL();
+  }
+
 
   public void createProcessBSLLS() {
 
@@ -239,7 +247,18 @@ public class PhoenixApp implements EventListener {
     // TODO: вынести в отдельное место
     Path pathToBSLConfiguration = null;
     if (configuration.isUseCustomBSLLSConfiguration()) {
-      pathToBSLConfiguration = Path.of(configuration.getPathToBSLLSConfiguration()).toAbsolutePath();
+      Path path;
+      try {
+        path = Path.of(basePathApp.toString(), configuration.getPathToBSLLSConfiguration());
+      } catch (InvalidPathException exp) {
+        path = null;
+      }
+      if (path != null && path.toFile().exists()) {
+        pathToBSLConfiguration = path;
+      } else {
+        pathToBSLConfiguration = Path.of(configuration.getPathToBSLLSConfiguration()).toAbsolutePath();
+      }
+
     } else {
       initBSLConfiguration();
       pathToBSLConfiguration = pathToBSLConfigurationDefault;
@@ -477,7 +496,7 @@ public class PhoenixApp implements EventListener {
   }
 
   private static Path createPathToLog() {
-    var path = Path.of(System.getProperty("user.home"), "phoenixbsl", "logs").toAbsolutePath();
+    var path = Path.of(basePathApp.toString(), "logs").toAbsolutePath();
     path.toFile().mkdirs();
     return path;
   }
