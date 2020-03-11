@@ -1,8 +1,11 @@
 package org.github.otymko.phoenixbsl.views;
 
+import com.jfoenix.assets.JFoenixResources;
+import com.jfoenix.controls.JFXDecorator;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import com.jfoenix.svg.SVGGlyph;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -23,7 +26,6 @@ import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.entities.Issue;
-import org.github.otymko.phoenixbsl.utils.Common;
 
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -56,24 +58,26 @@ public class IssuesStage extends Stage {
   public IssuesStage() {
 
     FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/IssuesStage.fxml"));
-    var controller = new StageBarController();
-    Common.setControllerFactory(loader, controller);
 
     Parent root = loader.load();
-    controller.setOwner(this);
-    controller.setRootElement(root);
-
     IssueStageController localController = loader.getController();
 
-    Scene scene = new Scene(root);
+    JFXDecorator decorator = new JFXDecorator(this, root, false, true, true);
+    decorator.setCustomMaximize(true);
+    decorator.setGraphic(new SVGGlyph(""));
+
+    Scene scene = new Scene(decorator, 600, 800);
+
+    final ObservableList<String> stylesheets = scene.getStylesheets();
+    stylesheets.addAll(JFoenixResources.load("/theme.css").toExternalForm());
+
     setScene(scene);
 
     scene.setFill(Color.TRANSPARENT);
     initStyle(StageStyle.TRANSPARENT);
 
     getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.png")));
-    Label title = controller.getTitleApp();
-    title.setText("Phoenix BSL v. " + PhoenixApp.getInstance().getVersionApp());
+    this.setTitle("Phoenix BSL v. " + PhoenixApp.getInstance().getVersionApp());
 
     tree = localController.getIssuesTree();
     initTreeTable();

@@ -1,22 +1,28 @@
-.root {
-    -fx-background-color: #cc7000;
 
-    -fx-faint-focus-color: transparent;
-    -fx-focus-color: #b36200;
-
-    -fx-background-radius: 5;
+.jfx-decorator {
+    -fx-decorator-color: derive(#cc7000, -20%);
 }
 
-.button {
-
-    -fx-background-color: #cc7000;   
-    -fx-color: #ffffff;
-
+.jfx-decorator .jfx-decorator-buttons-container {
+    -fx-background-color: -fx-decorator-color;
 }
 
-.button:hover {
-    -fx-background-color: #804600;    
+.jfx-decorator .resize-border {
+    -fx-border-color: -fx-decorator-color;
+    -fx-border-width: 0 4 4 4;
 }
+
+.jfx-decorator .jfx-decorator-title-container .jfx-decorator-text {
+    -fx-fill: WHITE;
+    -fx-font-size: 16;
+}
+
+.jfx-decorator .jfx-decorator-title-container .jfx-svg-glyph {
+    -fx-shape: "M1000.944,889.44325C1000.944,889.44325,815.921,704.4202500000001,815.921,704.4202500000001C866.644,631.79425,896.616,543.60625,896.616,448.30825000000004C896.616,200.7142500000001,695.838,0.0002500000000509317,448.308,0.0002500000000509317C200.778,0.0002500000000509317,0,200.7142500000001,0,448.30825000000004C0,695.9022500000001,200.714,896.61625,448.308,896.61625C543.606,896.61625,631.858,866.64425,704.484,815.9212500000001C704.484,815.9212500000001,889.508,1000.94425,889.508,1000.94425C920.249,1031.68525,970.203,1031.68525,1000.944,1000.94425C1031.685,970.20325,1031.685,920.31325,1000.944,889.44325C1000.944,889.44325,1000.944,889.44325,1000.944,889.44325M448.244,768.59225C271.419,768.59225,128.024,625.26225,128.024,448.37225C128.024,271.48325,271.419,128.1522500000001,448.244,128.1522500000001C625.134,128.1522500000001,768.464,271.48325,768.464,448.37225C768.528,625.26225,625.198,768.59225,448.244,768.59225C448.244,768.59225,448.244,768.59225,448.244,768.59225";
+    -jfx-size: 15;
+    -fx-background-color: WHITE;
+}
+
 
 .info-label {
     -fx-text-fill: #FFFFFF;
@@ -54,7 +60,7 @@
     -fx-background-color: #cc7000;
     -fx-text-fill: #000000;
 }
-/*.jfx-tab-pane .tab-selected-line {*/
-/*    -fx-stroke: #000000;*/
-/*    -fx-stroke-width: 3pt;*/
-/*}*/
+
+#infoblock {
+    -fx-background-color: #cc7000;
+}
