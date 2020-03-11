@@ -15,13 +15,10 @@
 <?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="534.0" prefWidth="600.0" stylesheets="@theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.github.otymko.phoenixbsl.views.SettingStageController">
-   <top>
-       <fx:include source="StageBar.fxml" />
-   </top>
     <center>
    </center>
    <center>
-      <JFXTabPane fx:id="settingTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+      <JFXTabPane fx:id="settingTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Основное">
             <content>
@@ -117,7 +114,7 @@
           </Tab>
         </tabs>
          <BorderPane.margin>
-            <Insets bottom="5.0" left="5.0" right="5.0" />
+            <Insets />
          </BorderPane.margin>
       </JFXTabPane>
    </center>

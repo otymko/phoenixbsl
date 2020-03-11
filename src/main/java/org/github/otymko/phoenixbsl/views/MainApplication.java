@@ -1,7 +1,11 @@
 package org.github.otymko.phoenixbsl.views;
 
+import com.jfoenix.assets.JFoenixResources;
+import com.jfoenix.controls.JFXDecorator;
+import com.jfoenix.svg.SVGGlyph;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,7 +18,6 @@ import org.github.otymko.phoenixbsl.core.ConfigurationApp;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
-import org.github.otymko.phoenixbsl.utils.Common;
 
 import java.awt.*;
 import java.io.IOException;
@@ -100,18 +103,19 @@ public class MainApplication extends Application implements EventListener {
     }
 
     FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/SettingStage.fxml"));
-    var controller = new StageBarController();
-
     settingStage = new Stage();
-    Common.setControllerFactory(loader, controller);
     Parent root = loader.load();
-    controller.setOwner(settingStage);
-    controller.setRootElement(root);
 
     controllerStages = loader.getController();
     controllerStages.setConfiguration(PhoenixApp.getInstance().getConfiguration());
 
-    var scene = new Scene(root);
+    JFXDecorator decorator = new JFXDecorator(settingStage, root, false, false, false);
+    decorator.setCustomMaximize(false);
+    decorator.setGraphic(new SVGGlyph(""));
+
+    var scene = new Scene(decorator, 600, 534);
+    final ObservableList<String> stylesheets = scene.getStylesheets();
+    stylesheets.addAll(JFoenixResources.load("/theme.css").toExternalForm());
     settingStage.setScene(scene);
 
     scene.setFill(Color.TRANSPARENT);
