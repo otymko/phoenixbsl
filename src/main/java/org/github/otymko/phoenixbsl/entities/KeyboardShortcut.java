@@ -1,11 +1,8 @@
 package org.github.otymko.phoenixbsl.entities;
 
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 public class KeyboardShortcut extends Object{
 
   private boolean controlPressed = false;

@@ -2,61 +2,57 @@
 
 <?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<BorderPane prefHeight="800.0" prefWidth="600.0" stylesheets="@theme.css" xmlns="http://javafx.com/javafx/11.0.1"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.github.otymko.phoenixbsl.views.IssueStageController">
+
+<BorderPane prefHeight="800.0" prefWidth="600.0" stylesheets="@theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.github.otymko.phoenixbsl.views.IssueStageController">
     <center>
         <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
             <children>
                 <TextField fx:id="search" minHeight="25.0" prefHeight="20.0" prefWidth="64.0" promptText="Поиск">
                     <VBox.margin>
-                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0"/>
+                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                     </VBox.margin>
                     <font>
-                        <Font name="Calibri" size="15.0"/>
+                        <Font name="Calibri" size="15.0" />
                     </font>
                 </TextField>
                 <JFXTreeTableView fx:id="issuesTree" VBox.vgrow="ALWAYS">
                     <VBox.margin>
-                        <Insets bottom="10.0" left="5.0" right="5.0"/>
+                        <Insets bottom="10.0" left="5.0" right="5.0" />
                     </VBox.margin>
                     <columnResizePolicy>
-                        <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                 </JFXTreeTableView>
             </children>
         </VBox>
     </center>
     <bottom>
-        <HBox alignment="TOP_RIGHT" prefHeight="30.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="infoblock" alignment="TOP_RIGHT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0">
             <children>
-                <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="198.0"
-                       styleClass="info-label" text="Ошибки:" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
-                       GridPane.vgrow="ALWAYS">
+                <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" prefHeight="40.0" prefWidth="198.0" styleClass="info-label" text="Ошибки:" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
                     <font>
-                        <Font name="Calibri Bold" size="15.0"/>
+                        <Font name="Calibri Bold" size="15.0" />
                     </font>
                 </Label>
-                <Label fx:id="labelWarning" alignment="CENTER" prefHeight="17.0" prefWidth="198.0"
-                       styleClass="info-label" text="Предупреждения:" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
-                       GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                <Label fx:id="labelWarning" alignment="CENTER" prefHeight="40.0" prefWidth="198.0" styleClass="info-label" text="Предупреждения:" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
                     <font>
-                        <Font name="Calibri Bold" size="15.0"/>
+                        <Font name="Calibri Bold" size="15.0" />
                     </font>
                 </Label>
-                <Label fx:id="labelInfo" alignment="CENTER" prefHeight="17.0" prefWidth="196.0" styleClass="info-label"
-                       text="Информация:" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
-                       GridPane.vgrow="ALWAYS">
+                <Label fx:id="labelInfo" alignment="CENTER" prefHeight="40.0" prefWidth="196.0" styleClass="info-label" text="Информация:" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
                     <font>
-                        <Font name="Calibri Bold" size="15.0"/>
+                        <Font name="Calibri Bold" size="15.0" />
                     </font>
                 </Label>
             </children>
         </HBox>
     </bottom>
-    <top>
-        <fx:include source="StageBar.fxml"/>
-    </top>
 </BorderPane>
