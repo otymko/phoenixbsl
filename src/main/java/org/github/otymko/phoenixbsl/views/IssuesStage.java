@@ -7,22 +7,17 @@ import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.jfoenix.svg.SVGGlyph;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
@@ -37,6 +32,10 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class IssuesStage extends Stage {
+
+  private static final String COLUMN_DESCRIPTION = "DESCRIPTION";
+  private static final String COLUMN_POSITION = "POSITION";
+  private static final String COLUMN_TYPE = "TYPE";
 
   private static Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
   private static Map<String, DiagnosticSeverity> stringToSeverityMap = createStringToSeverityMap();
@@ -101,7 +100,6 @@ public class IssuesStage extends Stage {
     descriptionColumn.setCellFactory(param -> {
       TreeTableCell<Issue, String> cell = new TreeTableCell<>();
       Text text = new Text();
-      text.setStyle("-fx-text-fill: -fx-text-inner-color;");
       cell.setGraphic(text);
       cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
       text.textProperty().bind(cell.itemProperty());
@@ -111,49 +109,15 @@ public class IssuesStage extends Stage {
     });
     descriptionColumn.setContextMenu(null);
     descriptionColumn.setResizable(true);
-    // FIXME: сделать более понятнее и универсальнее
-    descriptionColumn.setCellValueFactory(param -> {
-
-      if (!(param.getValue().getValue() instanceof Issue)) {
-        return new SimpleStringProperty();
-      }
-      var issue = param.getValue().getValue();
-      var value = "";
-      if (issue != null) {
-        value = issue.getDescription();
-      }
-      return new SimpleStringProperty(value);
-    });
+    descriptionColumn.setCellValueFactory(param -> new SimpleStringProperty(getValueCellDescription(param).toString()));
 
     JFXTreeTableColumn<Issue, Integer> positionColumn = new JFXTreeTableColumn<>("кол-во\n/\nстр.");
+    positionColumn.setId("positionColumn");
     positionColumn.setPrefWidth(90);
     positionColumn.setMinWidth(90);
     positionColumn.setMaxWidth(90);
     positionColumn.setContextMenu(null);
-    positionColumn.setCellValueFactory(param -> {
-      if (!(param.getValue().getValue() instanceof Issue)) {
-        RecursiveTreeObject item = param.getValue().getValue();
-        if (item == null) {
-          return new SimpleIntegerProperty().asObject();
-        } else {
-          var groupValue = item.getGroupedValue();
-          if (groupValue == null) {
-            return new SimpleIntegerProperty().asObject();
-          }
-          DiagnosticSeverity severity = stringToSeverityMap.get(groupValue);
-          var list = recursiveTreeItem.getChildren().stream()
-            .filter(issueTreeItem -> issueTreeItem.getValue().getSeverity() == severity)
-            .collect(Collectors.toList());
-          return new SimpleIntegerProperty(list.size()).asObject();
-        }
-      }
-      var issue = param.getValue().getValue();
-      var value = 0;
-      if (issue != null) {
-        value = issue.getStartLine();
-      }
-      return new SimpleIntegerProperty(value).asObject();
-    });
+    positionColumn.setCellValueFactory(param -> new SimpleIntegerProperty((Integer) getValueCellPosition(param)).asObject());
     positionColumn.setResizable(true);
 
     typeColumn = new JFXTreeTableColumn<>("Тип");
@@ -162,30 +126,7 @@ public class IssuesStage extends Stage {
     typeColumn.setMaxWidth(130);
     typeColumn.setResizable(true);
     typeColumn.setContextMenu(null);
-    typeColumn.setCellValueFactory(param -> {
-      if (!(param.getValue().getValue() instanceof Issue)) {
-
-        RecursiveTreeObject item = param.getValue().getValue();
-        if (item == null) {
-          return new SimpleStringProperty();
-        } else {
-          Object prop = item.getGroupedValue();
-          if (prop == null) {
-            return new SimpleStringProperty();
-          } else {
-            return new SimpleStringProperty(item.getGroupedValue().toString());
-          }
-        }
-      }
-      var issue = param.getValue().getValue();
-      String value = "";
-      if (issue != null) {
-        value = severityToStringMap.get(issue.getSeverity());
-      }
-      return new SimpleStringProperty(value);
-    });
-
-    ObservableList<Issue> issues = FXCollections.observableArrayList();
+    typeColumn.setCellValueFactory(param -> new SimpleStringProperty(getValueCellType(param).toString()));
 
     recursiveTreeItem = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
     recursiveTreeItem.setExpanded(true);
@@ -300,6 +241,60 @@ public class IssuesStage extends Stage {
     thisMap.put(map.get(DiagnosticSeverity.Hint), DiagnosticSeverity.Hint);
     thisMap.put(map.get(DiagnosticSeverity.Warning), DiagnosticSeverity.Warning);
     return thisMap;
+  }
+
+  private Object getValueCellDescription(TreeTableColumn.CellDataFeatures<Issue, String> param) {
+    return getValueCell(param.getValue(), COLUMN_DESCRIPTION);
+  }
+
+  private String getValueCell(TreeItem item, String column) {
+
+    String result = "";
+    var value = item.getValue();
+    if (value instanceof Issue) {
+      var issue = (Issue) value;
+      switch (column) {
+        case COLUMN_DESCRIPTION:
+          result = issue.getDescription();
+          break;
+        case COLUMN_POSITION:
+          result = String.valueOf(issue.getStartLine());
+          break;
+        case COLUMN_TYPE:
+          result = severityToStringMap.get(issue.getSeverity());
+          break;
+      }
+    } else {
+      var treeObject = item.getValue();
+      if (treeObject != null) {
+        var groupValue = ((RecursiveTreeObject) treeObject).getGroupedValue();
+        if (groupValue != null) {
+          if (column.equals(COLUMN_TYPE)) {
+            result = groupValue.toString();
+          } else if (column.equals(COLUMN_POSITION)) {
+            DiagnosticSeverity severity = stringToSeverityMap.get(groupValue);
+            var list = recursiveTreeItem.getChildren().stream()
+              .filter(issueTreeItem -> issueTreeItem.getValue().getSeverity() == severity)
+              .collect(Collectors.toList());
+            result = String.valueOf(list.size());
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  private Object getValueCellPosition(TreeTableColumn.CellDataFeatures<Issue, Integer> param) {
+    var result = getValueCell(param.getValue(), COLUMN_POSITION);
+    if (result.isBlank()) {
+      return 0;
+    } else {
+      return Integer.parseInt(result);
+    }
+  }
+
+  private Object getValueCellType(TreeTableColumn.CellDataFeatures<Issue, String> param) {
+    return getValueCell(param.getValue(), COLUMN_TYPE);
   }
 
 }
