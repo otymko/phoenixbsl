@@ -2,15 +2,19 @@ package org.github.otymko.phoenixbsl.views;
 
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.controls.JFXDecorator;
+import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
 import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.jfoenix.svg.SVGGlyph;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -27,16 +31,17 @@ import org.github.otymko.phoenixbsl.core.PhoenixAPI;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.entities.Issue;
 
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
 public class IssuesStage extends Stage {
 
-  private Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
+  private static Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
+  private static Map<String, DiagnosticSeverity> stringToSeverityMap = createStringToSeverityMap();
+
+  private ObservableList<Issue> issues = FXCollections.observableArrayList();
 
   private JFXTreeTableView<Issue> tree;
   private RecursiveTreeItem<Issue> recursiveTreeItem;
@@ -53,10 +58,11 @@ public class IssuesStage extends Stage {
   private Label labelWarning;
   private Label labelInfo;
 
+  private TreeTableColumn<Issue, String> typeColumn;
+
 
   @SneakyThrows
   public IssuesStage() {
-
     FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/IssuesStage.fxml"));
 
     Parent root = loader.load();
@@ -67,14 +73,9 @@ public class IssuesStage extends Stage {
     decorator.setGraphic(new SVGGlyph(""));
 
     Scene scene = new Scene(decorator, 600, 800);
-
     final ObservableList<String> stylesheets = scene.getStylesheets();
     stylesheets.addAll(JFoenixResources.load("/theme.css").toExternalForm());
-
     setScene(scene);
-
-    scene.setFill(Color.TRANSPARENT);
-    initStyle(StageStyle.TRANSPARENT);
 
     getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.png")));
     this.setTitle("Phoenix BSL v. " + PhoenixApp.getInstance().getVersionApp());
@@ -90,13 +91,12 @@ public class IssuesStage extends Stage {
     search.textProperty().addListener((o, oldVal, newVal) -> filterIssuesTree(newVal));
 
     updateIndicators();
-
   }
 
   private void initTreeTable() {
     tree.setPlaceholder(new Label("Замечаний нет"));
 
-    TreeTableColumn<Issue, String> descriptionColumn = new TreeTableColumn<>("Описание");
+    JFXTreeTableColumn<Issue, String> descriptionColumn = new JFXTreeTableColumn<>("Описание");
     descriptionColumn.setPrefWidth(450);
     descriptionColumn.setCellFactory(param -> {
       TreeTableCell<Issue, String> cell = new TreeTableCell<>();
@@ -109,43 +109,97 @@ public class IssuesStage extends Stage {
       cell.setStyle("-fx-text-fill: -fx-text-inner-color;");
       return cell;
     });
-    descriptionColumn.setCellValueFactory(
-      param -> new SimpleStringProperty(param.getValue().getValue().getDescription()));
+    descriptionColumn.setContextMenu(null);
+    descriptionColumn.setResizable(true);
+    descriptionColumn.setCellValueFactory(param -> {
 
-    TreeTableColumn<Issue, Integer> positionColumn = new TreeTableColumn<>("стр.");
+      if (!(param.getValue().getValue() instanceof Issue)) {
+        return new SimpleStringProperty();
+      }
+      var issue = param.getValue().getValue();
+      var value = "";
+      if (issue != null) {
+        value = issue.getDescription();
+      }
+      return new SimpleStringProperty(value);
+    });
+
+    JFXTreeTableColumn<Issue, Integer> positionColumn = new JFXTreeTableColumn<>("кол-во / стр.");
     positionColumn.setPrefWidth(60);
     positionColumn.setMinWidth(60);
     positionColumn.setMaxWidth(60);
-    positionColumn.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getValue().getStartLine()).asObject());
-    positionColumn.setReorderable(false);
-    positionColumn.setResizable(false);
+    positionColumn.setContextMenu(null);
+    positionColumn.setCellValueFactory(param -> {
+      if (!(param.getValue().getValue() instanceof Issue)) {
+        RecursiveTreeObject item = param.getValue().getValue();
+        if (item == null) {
+          return new SimpleIntegerProperty().asObject();
+        } else {
+          var groupValue = item.getGroupedValue();
+          if (groupValue == null) {
+            return new SimpleIntegerProperty().asObject();
+          }
+          DiagnosticSeverity severity = stringToSeverityMap.get(groupValue);
+          var list = issues.stream().filter(issue -> issue.getSeverity() == severity).collect(Collectors.toList());
+          return new SimpleIntegerProperty(list.size()).asObject();
+        }
+      }
+      var issue = param.getValue().getValue();
+      var value = 0;
+      if (issue != null) {
+        value = issue.getStartLine();
+      }
+      return new SimpleIntegerProperty(value).asObject();
+    });
+    positionColumn.setResizable(true);
 
-    TreeTableColumn<Issue, String> typeColumn = new TreeTableColumn<>("Тип");
-    typeColumn.setPrefWidth(120);
-    typeColumn.setMinWidth(120);
-    typeColumn.setMaxWidth(120);
-    typeColumn.setCellValueFactory(param -> new SimpleStringProperty(severityToStringMap.get(param.getValue().getValue().getSeverity())));
-    typeColumn.setReorderable(false);
-    typeColumn.setResizable(false);
+    typeColumn = new JFXTreeTableColumn<>("Тип");
+    typeColumn.setPrefWidth(130);
+    typeColumn.setMinWidth(130);
+    typeColumn.setMaxWidth(130);
+    typeColumn.setResizable(true);
+    typeColumn.setContextMenu(null);
+    typeColumn.setCellValueFactory(param -> {
+      if (!(param.getValue().getValue() instanceof Issue)) {
+
+        RecursiveTreeObject item = param.getValue().getValue();
+        if (item == null) {
+          return new SimpleStringProperty();
+        } else {
+          Object prop = item.getGroupedValue();
+          if (prop == null) {
+            return new SimpleStringProperty();
+          } else {
+            return new SimpleStringProperty(item.getGroupedValue().toString());
+          }
+        }
+      }
+      var issue = param.getValue().getValue();
+      String value = "";
+      if (issue != null) {
+        value = severityToStringMap.get(issue.getSeverity()); //severityToStringMap.get(issue.getSeverity());
+      }
+      return new SimpleStringProperty(value);
+    });
 
     ObservableList<Issue> issues = FXCollections.observableArrayList();
 
     recursiveTreeItem = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
     tree.setRoot(recursiveTreeItem);
     tree.setShowRoot(false);
-    tree.setEditable(true);
+    tree.setMaxWidth(9999);
+    tree.getColumns().add(typeColumn);
     tree.getColumns().add(descriptionColumn);
     tree.getColumns().add(positionColumn);
-    tree.getColumns().add(typeColumn);
-
     tree.setOnMouseClicked(event -> {
       if (event.getClickCount() != 2) {
         return;
       }
-
-      var issue = tree.getSelectionModel().getSelectedItem().getValue();
-      PhoenixAPI.gotoLineModule(issue.getStartLine(), PhoenixApp.getInstance().getFocusForm());
-
+      var item = tree.getSelectionModel().getSelectedItem();
+      if (item != null) {
+        var issue = item.getValue();
+        PhoenixAPI.gotoLineModule(issue.getStartLine(), PhoenixApp.getInstance().getFocusForm());
+      }
     });
 
   }
@@ -172,12 +226,11 @@ public class IssuesStage extends Stage {
   }
 
   public void updateIssues(List<Diagnostic> diagnostics) {
-
     countError = 0;
     countWarning = 0;
     countInfo = 0;
 
-    ObservableList<Issue> issues = FXCollections.observableArrayList();
+    issues.clear();
     diagnostics.forEach(diagnostic -> {
       var range = diagnostic.getRange();
       var position = range.getStart();
@@ -200,37 +253,43 @@ public class IssuesStage extends Stage {
     });
 
     FXCollections.sort(issues, Comparator.comparingInt(Issue::getStartLine));
-
     updateIndicators();
 
     recursiveTreeItem = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
+    recursiveTreeItem.setExpanded(true);
     tree.setRoot(recursiveTreeItem);
     tree.setShowRoot(false);
-
-    filterIssuesTree(search.getText());
-
+//    tree.unGroup(typeColumn);
+//    tree.group(typeColumn);
     tree.refresh();
 
     this.toFront();
     this.setIconified(false);
-
   }
 
   private void updateIndicators() {
-
     labelError.setText("Ошибки: " + countError);
     labelWarning.setText("Предупреждения: " + countWarning);
     labelInfo.setText("Инфо: " + countInfo);
-
   }
 
-  private Map<DiagnosticSeverity, String> createSeverityToStringMap() {
+  private static Map<DiagnosticSeverity, String> createSeverityToStringMap() {
     Map<DiagnosticSeverity, String> map = new EnumMap<>(DiagnosticSeverity.class);
     map.put(DiagnosticSeverity.Error, "Ошибка");
     map.put(DiagnosticSeverity.Information, "Информация");
     map.put(DiagnosticSeverity.Hint, "Подсказка");
     map.put(DiagnosticSeverity.Warning, "Предупреждение");
     return map;
+  }
+
+  private static Map<String, DiagnosticSeverity> createStringToSeverityMap() {
+    Map<DiagnosticSeverity, String> map = severityToStringMap;
+    Map<String, DiagnosticSeverity> thisMap = new HashMap<>();
+    thisMap.put(map.get(DiagnosticSeverity.Error), DiagnosticSeverity.Error);
+    thisMap.put(map.get(DiagnosticSeverity.Information), DiagnosticSeverity.Information);
+    thisMap.put(map.get(DiagnosticSeverity.Hint), DiagnosticSeverity.Hint);
+    thisMap.put(map.get(DiagnosticSeverity.Warning), DiagnosticSeverity.Warning);
+    return thisMap;
   }
 
 }
