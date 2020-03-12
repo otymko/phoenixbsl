@@ -15,7 +15,7 @@
     <center>
         <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
             <children>
-                <TextField fx:id="search" minHeight="25.0" prefHeight="20.0" prefWidth="64.0" promptText="Поиск">
+                <TextField fx:id="search" minHeight="27.0" prefHeight="20.0" prefWidth="64.0" promptText="Поиск">
                     <VBox.margin>
                         <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                     </VBox.margin>

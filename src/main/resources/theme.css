@@ -54,10 +54,6 @@
     -fx-font-size:14px;
 }
 
-/*#settingTabPane {*/
-/*    -fx-background-color: #FFFFFF;*/
-/*}*/
-
 .jfx-tab-pane .headers-region {
     -fx-background-color: #cc7000;
     -fx-text-fill: #000000;
@@ -69,4 +65,8 @@
 
 #infoblock {
     -fx-background-color: #cc7000;
+}
+
+#positionColumn {
+    -fx-alignment: center;
 }

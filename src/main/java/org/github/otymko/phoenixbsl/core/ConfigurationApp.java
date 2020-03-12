@@ -20,12 +20,14 @@ public class ConfigurationApp {
   private static final String DEFAULT_PATH_TO_JAVA = "java";
   private static final boolean DEFAULT_USE_CUSTOM_BSL_LS_CONFIGURATION = false;
   private static final String DEFAULT_PATH_TO_BSL_LS_CONFIGURATION = ".bsl-language-server.json";
+  private static final boolean DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY = false;
 
   private boolean usePathToJarBSLLS;
   private String pathToBSLLS;
   private String pathToJava;
   private boolean useCustomBSLLSConfiguration;
   private String pathToBSLLSConfiguration;
+  private boolean useGroupIssuesBySeverity = DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY;
 
   ConfigurationApp () {
     setPathToBSLLS(DEFAULT_PATH_TO_BSL_LS);
@@ -33,6 +35,7 @@ public class ConfigurationApp {
     setPathToJava(DEFAULT_PATH_TO_JAVA);
     setUseCustomBSLLSConfiguration(DEFAULT_USE_CUSTOM_BSL_LS_CONFIGURATION);
     setPathToBSLLSConfiguration(DEFAULT_PATH_TO_BSL_LS_CONFIGURATION);
+    setUseGroupIssuesBySeverity(DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY);
   }
 
   public static ConfigurationApp create(File configurationFile) {
