@@ -102,8 +102,10 @@ public class MainApplication extends Application implements EventListener {
       return;
     }
 
-    FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/SettingStage.fxml"));
     settingStage = new Stage();
+    settingStage.setResizable(false);
+
+    FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/SettingStage.fxml"));
     Parent root = loader.load();
 
     controllerStages = loader.getController();
@@ -118,10 +120,8 @@ public class MainApplication extends Application implements EventListener {
     stylesheets.addAll(JFoenixResources.load("/theme.css").toExternalForm());
     settingStage.setScene(scene);
 
-    scene.setFill(Color.TRANSPARENT);
-    settingStage.initStyle(StageStyle.TRANSPARENT);
-
     var pathToLog = PhoenixApp.getInstance().getPathToLogs();
+
     var link = controllerStages.getLinkPathToLogs();
     link.setText(pathToLog.toString());
 

@@ -74,14 +74,10 @@
                         </GridPane>
                     </center>
                     <bottom>
-                        <JFXButton fx:id="btnSaveSetting" text="Сохранить" textFill="WHITE" BorderPane.alignment="TOP_RIGHT">
-                            <font>
-                                <Font name="System Bold" size="12.0" />
-                            </font>
-                            <BorderPane.margin>
-                                <Insets bottom="5.0" />
-                            </BorderPane.margin>
-                        </JFXButton>
+                        <JFXButton fx:id="btnSaveSetting" buttonType="RAISED" prefHeight="30" prefWidth="100" text="Сохранить" textFill="WHITE" BorderPane.alignment="TOP_RIGHT">
+                           <BorderPane.margin>
+                              <Insets bottom="5.0" />
+                           </BorderPane.margin></JFXButton>
                     </bottom>
                 </BorderPane>
             </content>

@@ -41,11 +41,17 @@
 
 .tree-table-row-cell:odd {
     -fx-background-color: #EBEBEB;
-    -fx-background-insets: 0, 0 0 1 0; 
+    -fx-background-insets: 0, 0 0 1 0;
 }
 
 .tree-table-row-cell:selected:odd {
     -fx-text-fill: #000000;
+}
+
+#btnSaveSetting {
+    -fx-text-fill:WHITE;
+    -fx-background-color:#cc7000;
+    -fx-font-size:14px;
 }
 
 /*#settingTabPane {*/
