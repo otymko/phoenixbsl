@@ -41,6 +41,9 @@ public class SettingStageController {
   @FXML
   private TextField pathToBSLLSConfiguration;
 
+  @FXML
+  private JFXCheckBox useGroupIssuesBySeverity;
+
   public void setConfiguration(ConfigurationApp configuration) {
     this.configuration = configuration;
   }

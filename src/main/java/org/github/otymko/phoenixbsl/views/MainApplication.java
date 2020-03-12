@@ -172,6 +172,9 @@ public class MainApplication extends Application implements EventListener {
     var pathToBSLLSConfiguration = controllerStages.getPathToBSLLSConfiguration();
     configuration.setPathToBSLLSConfiguration(pathToBSLLSConfiguration.getText());
 
+    var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
+    configuration.setUseGroupIssuesBySeverity(useGroupIssuesBySeverity.isSelected());
+
     PhoenixApp.getInstance().writeConfiguration(configuration);
   }
 
@@ -191,6 +194,9 @@ public class MainApplication extends Application implements EventListener {
 
     var pathToBSLLSConfiguration = controllerStages.getPathToBSLLSConfiguration();
     pathToBSLLSConfiguration.setText(configuration.getPathToBSLLSConfiguration());
+
+    var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
+    useGroupIssuesBySeverity.setSelected(configuration.isUseGroupIssuesBySeverity());
 
   }
 

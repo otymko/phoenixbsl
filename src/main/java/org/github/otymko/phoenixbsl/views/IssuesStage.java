@@ -124,10 +124,10 @@ public class IssuesStage extends Stage {
       return new SimpleStringProperty(value);
     });
 
-    JFXTreeTableColumn<Issue, Integer> positionColumn = new JFXTreeTableColumn<>("кол-во / стр.");
-    positionColumn.setPrefWidth(60);
-    positionColumn.setMinWidth(60);
-    positionColumn.setMaxWidth(60);
+    JFXTreeTableColumn<Issue, Integer> positionColumn = new JFXTreeTableColumn<>("кол-во\n/\nстр.");
+    positionColumn.setPrefWidth(90);
+    positionColumn.setMinWidth(90);
+    positionColumn.setMaxWidth(90);
     positionColumn.setContextMenu(null);
     positionColumn.setCellValueFactory(param -> {
       if (!(param.getValue().getValue() instanceof Issue)) {
@@ -140,7 +140,10 @@ public class IssuesStage extends Stage {
             return new SimpleIntegerProperty().asObject();
           }
           DiagnosticSeverity severity = stringToSeverityMap.get(groupValue);
-          var list = issues.stream().filter(issue -> issue.getSeverity() == severity).collect(Collectors.toList());
+//          var list = issues.stream().filter(issue -> issue.getSeverity() == severity).collect(Collectors.toList());
+          var list = recursiveTreeItem.getChildren().stream()
+            .filter(issueTreeItem -> issueTreeItem.getValue().getSeverity() == severity)
+            .collect(Collectors.toList());
           return new SimpleIntegerProperty(list.size()).asObject();
         }
       }
@@ -185,6 +188,7 @@ public class IssuesStage extends Stage {
     ObservableList<Issue> issues = FXCollections.observableArrayList();
 
     recursiveTreeItem = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
+    recursiveTreeItem.setExpanded(true);
     tree.setRoot(recursiveTreeItem);
     tree.setShowRoot(false);
     tree.setMaxWidth(9999);
@@ -209,7 +213,6 @@ public class IssuesStage extends Stage {
     if (filter.isEmpty()) {
       recursiveTreeItem.setPredicate(userProp -> true);
     } else {
-      tree.setRoot(recursiveTreeItem);
       recursiveTreeItem.setPredicate(userProp -> {
         final Issue issue = userProp.getValue();
         final String filterLowerCase = filter.toLowerCase();
@@ -218,6 +221,9 @@ public class IssuesStage extends Stage {
           || issue.getLocation().toLowerCase().contains(filterLowerCase);
       });
     }
+    tree.setRoot(recursiveTreeItem);
+    tree.refresh();
+
   }
 
   public IssuesStage(Stage ownerStage) {
@@ -258,9 +264,12 @@ public class IssuesStage extends Stage {
     recursiveTreeItem = new RecursiveTreeItem<>(issues, RecursiveTreeObject::getChildren);
     recursiveTreeItem.setExpanded(true);
     tree.setRoot(recursiveTreeItem);
+    filterIssuesTree(search.getText());
     tree.setShowRoot(false);
-//    tree.unGroup(typeColumn);
-//    tree.group(typeColumn);
+    tree.unGroup(typeColumn);
+    if (PhoenixApp.getInstance().getConfiguration().isUseGroupIssuesBySeverity()) {
+      tree.group(typeColumn);
+    }
     tree.refresh();
 
     this.toFront();
