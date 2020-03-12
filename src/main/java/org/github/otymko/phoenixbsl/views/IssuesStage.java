@@ -111,6 +111,7 @@ public class IssuesStage extends Stage {
     });
     descriptionColumn.setContextMenu(null);
     descriptionColumn.setResizable(true);
+    // FIXME: сделать более понятнее и универсальнее
     descriptionColumn.setCellValueFactory(param -> {
 
       if (!(param.getValue().getValue() instanceof Issue)) {
@@ -140,7 +141,6 @@ public class IssuesStage extends Stage {
             return new SimpleIntegerProperty().asObject();
           }
           DiagnosticSeverity severity = stringToSeverityMap.get(groupValue);
-//          var list = issues.stream().filter(issue -> issue.getSeverity() == severity).collect(Collectors.toList());
           var list = recursiveTreeItem.getChildren().stream()
             .filter(issueTreeItem -> issueTreeItem.getValue().getSeverity() == severity)
             .collect(Collectors.toList());
@@ -180,7 +180,7 @@ public class IssuesStage extends Stage {
       var issue = param.getValue().getValue();
       String value = "";
       if (issue != null) {
-        value = severityToStringMap.get(issue.getSeverity()); //severityToStringMap.get(issue.getSeverity());
+        value = severityToStringMap.get(issue.getSeverity());
       }
       return new SimpleStringProperty(value);
     });
@@ -291,6 +291,7 @@ public class IssuesStage extends Stage {
     return map;
   }
 
+  // FIXME: переделать?
   private static Map<String, DiagnosticSeverity> createStringToSeverityMap() {
     Map<DiagnosticSeverity, String> map = severityToStringMap;
     Map<String, DiagnosticSeverity> thisMap = new HashMap<>();
