@@ -82,4 +82,4 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: phoenixbsl.msi
-        path: ./phoenixbsl-0.3.5.msi
+        path: ./phoenixbsl-0.3.6.msi
