@@ -15,13 +15,10 @@
 <?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="534.0" prefWidth="600.0" stylesheets="@theme.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.github.otymko.phoenixbsl.views.SettingStageController">
-   <top>
-       <fx:include source="StageBar.fxml" />
-   </top>
     <center>
    </center>
    <center>
-      <JFXTabPane fx:id="settingTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+      <JFXTabPane fx:id="settingTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Основное">
             <content>
@@ -45,14 +42,17 @@
                     <center>
                         <GridPane BorderPane.alignment="CENTER">
                             <columnConstraints>
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="150.0" />
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="158.0" minWidth="50.0" prefWidth="158.0" />
+                                <ColumnConstraints hgrow="ALWAYS" maxWidth="435.0" minWidth="10.0" prefWidth="432.0" />
                             </columnConstraints>
                             <rowConstraints>
                                 <RowConstraints minHeight="-Infinity" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" />
                             </rowConstraints>
                             <children>
                                 <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="106.0" text="Каталог с логами:" />
@@ -67,18 +67,20 @@
                                 <JFXCheckBox fx:id="usePathToJarBSLLS" checkedColor="#cc7000" onAction="#handleSelectUsePathToJarBSLLSAction" text=" " GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 <Label alignment="TOP_LEFT" layoutX="10.0" layoutY="70.0" prefHeight="17.0" prefWidth="106.0" text="Путь к JAVA:" GridPane.rowIndex="2" />
                                 <TextField fx:id="pathToJava" layoutX="160.0" layoutY="96.0" onAction="#handlePathToJavaAction" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="139.0" text="Свои настройки BSL LS:" GridPane.rowIndex="4" />
+                              <JFXCheckBox fx:id="useCustomBSLLSConfiguration" checkedColor="#cc7000" onAction="#handleSelectUseCustomBSLLSConfiguration" text=" " GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="147.0" text="Путь к настройкам BSL LS:" GridPane.rowIndex="5" />
+                              <TextField fx:id="pathToBSLLSConfiguration" onAction="#handlePathToBSLLSConfiguration" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <Label alignment="TOP_LEFT" prefHeight="17.0" prefWidth="151.0" text="Группировать замечания:" GridPane.rowIndex="6" />
+                              <JFXCheckBox fx:id="useGroupIssuesBySeverity" checkedColor="#cc7000" text=" " GridPane.columnIndex="1" GridPane.rowIndex="6" />
                             </children>
                         </GridPane>
                     </center>
                     <bottom>
-                        <JFXButton fx:id="btnSaveSetting" text="Сохранить" textFill="WHITE" BorderPane.alignment="TOP_RIGHT">
-                            <font>
-                                <Font name="System Bold" size="12.0" />
-                            </font>
-                            <BorderPane.margin>
-                                <Insets bottom="5.0" />
-                            </BorderPane.margin>
-                        </JFXButton>
+                        <JFXButton fx:id="btnSaveSetting" buttonType="RAISED" prefHeight="30" prefWidth="100" text="Сохранить" textFill="WHITE" BorderPane.alignment="TOP_RIGHT">
+                           <BorderPane.margin>
+                              <Insets bottom="5.0" />
+                           </BorderPane.margin></JFXButton>
                     </bottom>
                 </BorderPane>
             </content>
@@ -103,7 +105,7 @@
                                     <Insets bottom="5.0" left="5.0" top="5.0" />
                                  </GridPane.margin>
                               </Label>
-                              <Label fx:id="labelVersion" alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="106.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
+                              <Label fx:id="labelVersion" alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="437.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
                            </children>
                         </GridPane>
                      </center></BorderPane>
@@ -111,7 +113,7 @@
           </Tab>
         </tabs>
          <BorderPane.margin>
-            <Insets bottom="5.0" left="5.0" right="5.0" />
+            <Insets />
          </BorderPane.margin>
       </JFXTabPane>
    </center>

@@ -1,15 +1,14 @@
 package org.github.otymko.phoenixbsl.views;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.assets.JFoenixResources;
+import com.jfoenix.controls.JFXDecorator;
+import com.jfoenix.svg.SVGGlyph;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -19,7 +18,6 @@ import org.github.otymko.phoenixbsl.core.ConfigurationApp;
 import org.github.otymko.phoenixbsl.core.PhoenixApp;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
-import org.github.otymko.phoenixbsl.utils.Common;
 
 import java.awt.*;
 import java.io.IOException;
@@ -30,6 +28,8 @@ public class MainApplication extends Application implements EventListener {
 
   private IssuesStage issuesStage;
   private Stage settingStage;
+
+  private SettingStageController controllerStages;
 
   public MainApplication() {
 
@@ -102,26 +102,27 @@ public class MainApplication extends Application implements EventListener {
       return;
     }
 
-    FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/SettingStage.fxml"));
-    var controller = new StageBarController();
-
     settingStage = new Stage();
-    Common.setControllerFactory(loader, controller);
-    Parent root = loader.load();
-    controller.setOwner(settingStage);
-    controller.setRootElement(root);
+    settingStage.setResizable(false);
 
-    SettingStageController controllerStages = loader.getController();
+    FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/SettingStage.fxml"));
+    Parent root = loader.load();
+
+    controllerStages = loader.getController();
     controllerStages.setConfiguration(PhoenixApp.getInstance().getConfiguration());
 
-    var scene = new Scene(root);
+    JFXDecorator decorator = new JFXDecorator(settingStage, root, false, false, false);
+    decorator.setCustomMaximize(false);
+    decorator.setGraphic(new SVGGlyph(""));
+
+    var scene = new Scene(decorator, 600, 534);
+    final ObservableList<String> stylesheets = scene.getStylesheets();
+    stylesheets.addAll(JFoenixResources.load("/theme.css").toExternalForm());
     settingStage.setScene(scene);
 
-    scene.setFill(Color.TRANSPARENT);
-    settingStage.initStyle(StageStyle.TRANSPARENT);
-
     var pathToLog = PhoenixApp.getInstance().getPathToLogs();
-    var link = (Hyperlink) scene.lookup("#linkPathToLogs");
+
+    var link = controllerStages.getLinkPathToLogs();
     link.setText(pathToLog.toString());
 
     link.setOnAction(event -> {
@@ -136,13 +137,14 @@ public class MainApplication extends Application implements EventListener {
       }
     });
 
-    fillSettingValueFromConfiguration(scene, PhoenixApp.getInstance().getConfiguration());
+    fillSettingValueFromConfiguration(PhoenixApp.getInstance().getConfiguration());
 
-    Button btnSaveSetting = (JFXButton) scene.lookup("#btnSaveSetting");
+    var btnSaveSetting = controllerStages.getBtnSaveSetting();
     btnSaveSetting.setOnAction(event -> {
       // сохраним configuration в файл
-      PhoenixApp.getInstance().writeConfiguration(PhoenixApp.getInstance().getConfiguration());
+      processSaveSettings();
       settingStage.close();
+      PhoenixApp.getInstance().restartProcessBSLLS();
     });
 
     controllerStages.getLabelVersion().setText(PhoenixApp.getInstance().getVersionBSLLS());
@@ -151,16 +153,50 @@ public class MainApplication extends Application implements EventListener {
 
   }
 
-  private void fillSettingValueFromConfiguration(Scene scene, ConfigurationApp configuration) {
+  private void processSaveSettings() {
 
-    var usePathToJarBSLLS = (JFXCheckBox) scene.lookup("#usePathToJarBSLLS");
+    var configuration = PhoenixApp.getInstance().getConfiguration();
+
+    var usePathToJarBSLLS = controllerStages.getUsePathToJarBSLLS();
+    configuration.setUsePathToJarBSLLS(usePathToJarBSLLS.isSelected());
+
+    var pathToJava = controllerStages.getPathToJava();
+    configuration.setPathToJava(pathToJava.getText());
+
+    var pathToBSLLS = controllerStages.getPathToBSLLS();
+    configuration.setPathToBSLLS(pathToBSLLS.getText());
+
+    var useCustomBSLLSConfiguration = controllerStages.getUseCustomBSLLSConfiguration();
+    configuration.setUseCustomBSLLSConfiguration(useCustomBSLLSConfiguration.isSelected());
+
+    var pathToBSLLSConfiguration = controllerStages.getPathToBSLLSConfiguration();
+    configuration.setPathToBSLLSConfiguration(pathToBSLLSConfiguration.getText());
+
+    var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
+    configuration.setUseGroupIssuesBySeverity(useGroupIssuesBySeverity.isSelected());
+
+    PhoenixApp.getInstance().writeConfiguration(configuration);
+  }
+
+  private void fillSettingValueFromConfiguration(ConfigurationApp configuration) {
+
+    var usePathToJarBSLLS = controllerStages.getUsePathToJarBSLLS();
     usePathToJarBSLLS.setSelected(configuration.isUsePathToJarBSLLS());
 
-    var pathToJava = (TextField) scene.lookup("#pathToJava");
+    var pathToJava = controllerStages.getPathToJava();
     pathToJava.setText(configuration.getPathToJava());
 
-    var pathToBSLLS = (TextField) scene.lookup("#pathToBSLLS");
+    var pathToBSLLS = controllerStages.getPathToBSLLS();
     pathToBSLLS.setText(configuration.getPathToBSLLS());
+
+    var useCustomBSLLSConfiguration = controllerStages.getUseCustomBSLLSConfiguration();
+    useCustomBSLLSConfiguration.setSelected(configuration.isUseCustomBSLLSConfiguration());
+
+    var pathToBSLLSConfiguration = controllerStages.getPathToBSLLSConfiguration();
+    pathToBSLLSConfiguration.setText(configuration.getPathToBSLLSConfiguration());
+
+    var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
+    useGroupIssuesBySeverity.setSelected(configuration.isUseGroupIssuesBySeverity());
 
   }
 

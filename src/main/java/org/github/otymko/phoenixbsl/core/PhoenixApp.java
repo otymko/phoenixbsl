@@ -20,6 +20,7 @@ import org.github.otymko.phoenixbsl.views.Toolbar;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +36,14 @@ public class PhoenixApp implements EventListener {
 
   private static final PhoenixApp INSTANCE = new PhoenixApp();
 
+  private static final Path basePathApp = Path.of(System.getProperty("user.home"), "phoenixbsl");
+
   private static final Path pathToFolderLog = createPathToLog();
   private static final Path pathToConfiguration = createPathToConfiguration();
-  private static final Path pathToBSLConfiguration =
-    Path.of(System.getProperty("user.home"), "phoenixbsl", ".bsl-language-server.json");
+  private static final Path pathToBSLConfigurationDefault =
+    Path.of(basePathApp.toString(), ".bsl-language-server.json");
   public static final URI fakeUri = Path.of("fake.bsl").toUri();
+  public static final List<String> diagnosticListForQuickFix = createDiagnosticListForQuickFix();
 
   private EventManager events;
   private WinDef.HWND focusForm;
@@ -141,12 +145,15 @@ public class PhoenixApp implements EventListener {
     // Formatting
     var result = bslBinding.textDocumentFormatting(fakeUri);
 
+    String newText = null;
     try {
-      PhoenixAPI.insetTextOnForm(result.get().get(0).getNewText(), isSelected);
-    } catch (InterruptedException e) {
-      LOGGER.error(e.getMessage());
-    } catch (ExecutionException e) {
-      LOGGER.error(e.getMessage());
+      newText = result.get().get(0).getNewText();
+    } catch (InterruptedException | ExecutionException e) {
+      LOGGER.error("Ошибка получения форматированного текста", e);
+    }
+
+    if (newText != null) {
+      PhoenixAPI.insetTextOnForm(newText, isSelected);
     }
 
   }
@@ -165,7 +172,8 @@ public class PhoenixApp implements EventListener {
 
     // найдем все диагностики подсказки
     var listQF = diagnosticList.stream()
-      .filter(diagnostic -> diagnostic.getCode().equalsIgnoreCase("CanonicalSpellingKeywords"))
+      .filter(this::isAcceptDiagnosticForQuickFix)
+      //.filter(diagnostic -> diagnostic.getCode().equalsIgnoreCase("CanonicalSpellingKeywords"))
       .collect(Collectors.toList());
 
     List<Either<Command, CodeAction>> codeActions = new ArrayList<>();
@@ -178,8 +186,29 @@ public class PhoenixApp implements EventListener {
     LOGGER.debug("Квикфиксов найдено: " + codeActions);
     String[] strings = textForQF.split(separator);
 
+    try {
+      applyAllQuickFixes(codeActions, strings);
+    }
+    catch (ArrayIndexOutOfBoundsException e) {
+      LOGGER.error("При применении fix all к тексту модуля возникли ошибки", e);
+      return;
+    }
+
+    if (!codeActions.isEmpty()) {
+      var text = String.join(separator, strings);
+      PhoenixAPI.insetTextOnForm(text, false);
+    }
+
+  }
+
+  private void applyAllQuickFixes(List<Either<Command, CodeAction>> codeActions, String[] strings)
+    throws ArrayIndexOutOfBoundsException{
+
     codeActions.forEach(diagnostic -> {
       CodeAction codeAction = diagnostic.getRight();
+      if (codeAction.getTitle().startsWith("Fix all:")) {
+        return;
+      }
       codeAction.getEdit().getChanges().forEach((s, textEdits) -> {
         textEdits.forEach(textEdit -> {
           var range = textEdit.getRange();
@@ -195,11 +224,11 @@ public class PhoenixApp implements EventListener {
       });
     });
 
-    if (!codeActions.isEmpty()) {
-      var text = String.join(separator, strings);
-      PhoenixAPI.insetTextOnForm(text, false);
-    }
+  }
 
+  public void restartProcessBSLLS() {
+    stopBSL();
+    initProcessBSL();
   }
 
 
@@ -215,9 +244,29 @@ public class PhoenixApp implements EventListener {
 
     var arguments = ProcessHelper.getArgumentsRunProcessBSLLS(configuration);
 
-    if (pathToBSLLS.toFile().exists()) {
+    // TODO: вынести в отдельное место
+    Path pathToBSLConfiguration = null;
+    if (configuration.isUseCustomBSLLSConfiguration()) {
+      Path path;
+      try {
+        path = Path.of(basePathApp.toString(), configuration.getPathToBSLLSConfiguration());
+      } catch (InvalidPathException exp) {
+        path = null;
+      }
+      if (path != null && path.toFile().exists()) {
+        pathToBSLConfiguration = path;
+      } else {
+        pathToBSLConfiguration = Path.of(configuration.getPathToBSLLSConfiguration()).toAbsolutePath();
+      }
+
+    } else {
+      initBSLConfiguration();
+      pathToBSLConfiguration = pathToBSLConfigurationDefault;
+    }
+
+    if (pathToBSLConfiguration.toFile().exists()) {
       arguments.add("--configuration");
-      arguments.add(pathToBSLLS.toString());
+      arguments.add(pathToBSLConfiguration.toString());
     }
 
     LOGGER.debug("Строка запуска BSL LS {}", String.join(" ", arguments));
@@ -394,8 +443,22 @@ public class PhoenixApp implements EventListener {
     var result = "<Неопределено>";
     var arguments = ProcessHelper.getArgumentsRunProcessBSLLS(configuration);
     arguments.add("--version");
-    var processBSL = new ProcessBuilder().command(arguments.toArray(new String[0])).start();
+    Process processBSL = null;
+    try {
+      processBSL = new ProcessBuilder().command(arguments.toArray(new String[0])).start();
+    } catch (IOException e) {
+      LOGGER.error(e.getMessage());
+      return result;
+    }
+
+    if (processBSL == null) {
+      return result;
+    }
+
     var out = ProcessHelper.getStdoutProcess(processBSL);
+    if (out == null) {
+      return result;
+    }
     if (out.startsWith("version")) {
       result = out.replaceAll("version: ", "");
     }
@@ -408,18 +471,22 @@ public class PhoenixApp implements EventListener {
 
   public void createBSLConfigurationFile() {
     var bslConfiguration = new BSLConfiguration();
-    bslConfiguration.setDiagnosticLanguage("ru");
-    bslConfiguration.setShowCognitiveComplexityCodeLens(false);
-    bslConfiguration.setShowCyclomaticComplexityCodeLens(false);
-    bslConfiguration.setComputeDiagnosticsTrigger("onSave");
-    bslConfiguration.setComputeDiagnosticsSkipSupport("withSupportLocked");
+    bslConfiguration.setLanguage("ru");
+    var codeLens = new BSLConfiguration.CodeLensOptions();
+    codeLens.setShowCognitiveComplexity(false);
+    codeLens.setShowCyclomaticComplexity(false);
+    bslConfiguration.setCodeLens(codeLens);
+    var diagnosticsOptions = new BSLConfiguration.DiagnosticsOptions();
+    diagnosticsOptions.setComputeTrigger("onSave");
+    diagnosticsOptions.setSkipSupport("never");
+    bslConfiguration.setDiagnostics(diagnosticsOptions);
     bslConfiguration.setConfigurationRoot("src");
 
-    pathToBSLConfiguration.getParent().toFile().mkdirs();
+    pathToBSLConfigurationDefault.getParent().toFile().mkdirs();
 
     ObjectMapper mapper = new ObjectMapper();
     try {
-      mapper.writeValue(pathToBSLConfiguration.toFile(), bslConfiguration);
+      mapper.writeValue(pathToBSLConfigurationDefault.toFile(), bslConfiguration);
     } catch (IOException e) {
       LOGGER.error("Не удалось записать файл конфигурации BSL LS", e);
     }
@@ -433,9 +500,21 @@ public class PhoenixApp implements EventListener {
   }
 
   private static Path createPathToLog() {
-    var path = Path.of(System.getProperty("user.home"), "phoenixbsl", "logs").toAbsolutePath();
+    var path = Path.of(basePathApp.toString(), "logs").toAbsolutePath();
     path.toFile().mkdirs();
     return path;
+  }
+
+  private static List<String> createDiagnosticListForQuickFix() {
+    var list = new ArrayList<String>();
+    list.add("CanonicalSpellingKeywords");
+    list.add("SpaceAtStartComment");
+    list.add("SemicolonPresence");
+    return list;
+  }
+
+  private boolean isAcceptDiagnosticForQuickFix(Diagnostic diagnostic) {
+    return diagnosticListForQuickFix.contains(diagnostic.getCode());
   }
 
 

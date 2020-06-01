@@ -1,8 +1,10 @@
 package org.github.otymko.phoenixbsl.views;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import lombok.Getter;
@@ -27,6 +29,20 @@ public class SettingStageController {
   @FXML
   private Label labelVersion;
 
+  @FXML
+  private Hyperlink linkPathToLogs;
+
+  @FXML
+  private JFXButton btnSaveSetting;
+
+  @FXML
+  private JFXCheckBox useCustomBSLLSConfiguration;
+
+  @FXML
+  private TextField pathToBSLLSConfiguration;
+
+  @FXML
+  private JFXCheckBox useGroupIssuesBySeverity;
 
   public void setConfiguration(ConfigurationApp configuration) {
     this.configuration = configuration;
@@ -47,4 +63,13 @@ public class SettingStageController {
     configuration.setPathToBSLLS(pathToBSLLS.getText());
   }
 
+  @FXML
+  private void handleSelectUseCustomBSLLSConfiguration(ActionEvent event) {
+    configuration.setUseCustomBSLLSConfiguration(useCustomBSLLSConfiguration.isSelected());
+  }
+
+  @FXML
+  private void handlePathToBSLLSConfiguration(ActionEvent event) {
+    configuration.setPathToBSLLSConfiguration(pathToBSLLSConfiguration.getText());
+  }
 }

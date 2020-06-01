@@ -19,16 +19,20 @@ repositories {
 }
 
 group = "org.github.otymko.phoenixbsl"
-version = "0.3.5"
+version = "0.3.7"
 
 dependencies {
     testImplementation("com.hynnet", "jacob", "1.18")
     testImplementation("junit", "junit", "4.12")
+    testImplementation("org.assertj", "assertj-core", "3.16.1")
+
     implementation("net.java.dev.jna:jna-platform:5.4.0")
     implementation("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.8.1")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
-    implementation("com.jfoenix","jfoenix", "9.0.9")
     implementation("lc.kra.system","system-hook", "3.5")
+
+    // ui
+    implementation("com.jfoenix","jfoenix", "9.0.9")
 
     implementation("com.fasterxml.jackson.core", "jackson-databind", "2.10.2")
 
