@@ -1,0 +1,8 @@
+{
+  "diagnosticLanguage": "ru",
+  "showCognitiveComplexityCodeLens": false,
+  "showCyclomaticComplexityCodeLens": false,
+  "computeDiagnosticsSkipSupport": "never",
+  "traceLog": null,
+  "configurationRoot": "src"
+}

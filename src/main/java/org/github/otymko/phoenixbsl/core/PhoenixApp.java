@@ -471,11 +471,15 @@ public class PhoenixApp implements EventListener {
 
   public void createBSLConfigurationFile() {
     var bslConfiguration = new BSLConfiguration();
-    bslConfiguration.setDiagnosticLanguage("ru");
-    bslConfiguration.setShowCognitiveComplexityCodeLens(false);
-    bslConfiguration.setShowCyclomaticComplexityCodeLens(false);
-    bslConfiguration.setComputeDiagnosticsTrigger("onSave");
-    bslConfiguration.setComputeDiagnosticsSkipSupport("withSupportLocked");
+    bslConfiguration.setLanguage("ru");
+    var codeLens = new BSLConfiguration.CodeLensOptions();
+    codeLens.setShowCognitiveComplexity(false);
+    codeLens.setShowCyclomaticComplexity(false);
+    bslConfiguration.setCodeLens(codeLens);
+    var diagnosticsOptions = new BSLConfiguration.DiagnosticsOptions();
+    diagnosticsOptions.setComputeTrigger("onSave");
+    diagnosticsOptions.setSkipSupport("never");
+    bslConfiguration.setDiagnostics(diagnosticsOptions);
     bslConfiguration.setConfigurationRoot("src");
 
     pathToBSLConfigurationDefault.getParent().toFile().mkdirs();
