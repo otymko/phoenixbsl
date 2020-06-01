@@ -1,0 +1,16 @@
+{
+  "language": "ru",
+  "codeLens": {
+    "showCognitiveComplexity": false,
+    "showCyclomaticComplexity": false
+  },
+  "diagnostics": {
+    "computeTrigger": "onSave",
+    "skipSupport": "never"
+  },
+  "documentLink": {
+    "useDevSite": false
+  },
+  "traceLog": null,
+  "configurationRoot": "src"
+}
