@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.lsp;
+package org.github.otymko.phoenixbsl.logic.lsp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

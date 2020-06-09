@@ -1,6 +1,7 @@
-package org.github.otymko.phoenixbsl.core;
+package org.github.otymko.phoenixbsl.logic;
 
 import lombok.extern.slf4j.Slf4j;
+import org.github.otymko.phoenixbsl.PhoenixCore;
 
 import java.awt.*;
 import java.awt.datatransfer.*;

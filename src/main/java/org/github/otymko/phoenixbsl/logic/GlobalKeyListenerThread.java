@@ -1,12 +1,12 @@
-package org.github.otymko.phoenixbsl.threads;
+package org.github.otymko.phoenixbsl.logic;
 
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.github.otymko.phoenixbsl.core.PhoenixCore;
-import org.github.otymko.phoenixbsl.entities.KeyboardShortcut;
-import org.github.otymko.phoenixbsl.events.EventManager;
+import org.github.otymko.phoenixbsl.PhoenixCore;
+import org.github.otymko.phoenixbsl.model.KeyboardShortcut;
+import org.github.otymko.phoenixbsl.logic.event.EventManager;
 
 import java.util.HashMap;
 import java.util.Map;

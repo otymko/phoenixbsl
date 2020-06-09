@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.core;
+package org.github.otymko.phoenixbsl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Slf4j
-public class ConfigurationApp {
+public class Configuration {
 
   private static final String DEFAULT_PATH_TO_BSL_LS = "app/bsl-language-server/bsl-language-server.exe";
   private static final boolean DEFAULT_USE_JAR_BSL_LS = false;
@@ -29,7 +29,7 @@ public class ConfigurationApp {
   private String pathToBSLLSConfiguration;
   private boolean useGroupIssuesBySeverity = DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY;
 
-  ConfigurationApp () {
+  public Configuration() {
     setPathToBSLLS(DEFAULT_PATH_TO_BSL_LS);
     setUsePathToJarBSLLS(DEFAULT_USE_JAR_BSL_LS);
     setPathToJava(DEFAULT_PATH_TO_JAVA);
@@ -38,14 +38,14 @@ public class ConfigurationApp {
     setUseGroupIssuesBySeverity(DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY);
   }
 
-  public static ConfigurationApp create(File configurationFile) {
+  public static Configuration create(File configurationFile) {
 
-    ConfigurationApp configuration = null;
+    Configuration configuration = null;
     if (configurationFile.exists()) {
       ObjectMapper mapper = new ObjectMapper();
       mapper.enable(ACCEPT_CASE_INSENSITIVE_ENUMS);
       try {
-        configuration = mapper.readValue(configurationFile, ConfigurationApp.class);
+        configuration = mapper.readValue(configurationFile, Configuration.class);
       } catch (IOException e) {
         LOGGER.error("Не удалось прочитать файл с конфигурацией приложения", e);
       }
@@ -58,8 +58,8 @@ public class ConfigurationApp {
 
   }
 
-  public static ConfigurationApp create() {
-    return new ConfigurationApp();
+  public static Configuration create() {
+    return new Configuration();
   }
 
 }

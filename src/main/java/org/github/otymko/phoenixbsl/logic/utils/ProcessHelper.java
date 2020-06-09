@@ -1,8 +1,8 @@
-package org.github.otymko.phoenixbsl.utils;
+package org.github.otymko.phoenixbsl.logic.utils;
 
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import org.github.otymko.phoenixbsl.core.ConfigurationApp;
+import org.github.otymko.phoenixbsl.model.Configuration;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,7 +13,7 @@ import java.util.Collection;
 @UtilityClass
 public class ProcessHelper {
 
-  public static Collection<String> getArgumentsRunProcessBSLLS(ConfigurationApp configuration) {
+  public static Collection<String> getArgumentsRunProcessBSLLS(Configuration configuration) {
     var pathToBSLLS = Path.of(configuration.getPathToBSLLS()).toAbsolutePath();
 
     Collection<String> arguments = new ArrayList<>();

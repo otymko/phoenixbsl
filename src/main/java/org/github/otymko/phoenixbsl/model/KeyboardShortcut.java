@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.entities;
+package org.github.otymko.phoenixbsl.model;
 
 import java.util.ArrayList;
 import java.util.List;

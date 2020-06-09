@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.views;
+package org.github.otymko.phoenixbsl.gui.stage;
 
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.controls.JFXDecorator;
@@ -22,9 +22,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.github.otymko.phoenixbsl.core.PhoenixAPI;
-import org.github.otymko.phoenixbsl.core.PhoenixCore;
-import org.github.otymko.phoenixbsl.entities.Issue;
+import org.github.otymko.phoenixbsl.logic.PhoenixAPI;
+import org.github.otymko.phoenixbsl.PhoenixCore;
+import org.github.otymko.phoenixbsl.gui.controller.IssueStageController;
+import org.github.otymko.phoenixbsl.model.Issue;
 
 import java.util.*;
 import java.util.stream.Collectors;

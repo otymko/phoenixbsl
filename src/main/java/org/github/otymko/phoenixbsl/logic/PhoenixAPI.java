@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.core;
+package org.github.otymko.phoenixbsl.logic;
 
 import com.sun.jna.platform.win32.WinDef;
 import lombok.extern.slf4j.Slf4j;

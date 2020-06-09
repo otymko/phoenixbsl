@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.lsp;
+package org.github.otymko.phoenixbsl.logic.lsp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;

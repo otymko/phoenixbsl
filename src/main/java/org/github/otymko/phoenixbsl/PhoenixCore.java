@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.core;
+package org.github.otymko.phoenixbsl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jna.platform.win32.WinDef;
@@ -9,14 +9,17 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.github.otymko.phoenixbsl.events.EventListener;
-import org.github.otymko.phoenixbsl.events.EventManager;
-import org.github.otymko.phoenixbsl.lsp.BSLBinding;
-import org.github.otymko.phoenixbsl.lsp.BSLConfiguration;
-import org.github.otymko.phoenixbsl.lsp.BSLLanguageClient;
-import org.github.otymko.phoenixbsl.threads.GlobalKeyListenerThread;
-import org.github.otymko.phoenixbsl.utils.ProcessHelper;
-import org.github.otymko.phoenixbsl.views.Toolbar;
+import org.github.otymko.phoenixbsl.model.Configuration;
+import org.github.otymko.phoenixbsl.logic.PhoenixAPI;
+import org.github.otymko.phoenixbsl.logic.PhoenixUser32;
+import org.github.otymko.phoenixbsl.logic.event.EventListener;
+import org.github.otymko.phoenixbsl.logic.event.EventManager;
+import org.github.otymko.phoenixbsl.logic.lsp.BSLBinding;
+import org.github.otymko.phoenixbsl.logic.lsp.BSLConfiguration;
+import org.github.otymko.phoenixbsl.logic.lsp.BSLLanguageClient;
+import org.github.otymko.phoenixbsl.logic.GlobalKeyListenerThread;
+import org.github.otymko.phoenixbsl.logic.utils.ProcessHelper;
+import org.github.otymko.phoenixbsl.gui.Toolbar;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +54,7 @@ public class PhoenixCore implements EventListener {
   private Process processBSL;
   private BSLBinding bslBinding = null;
 
-  private ConfigurationApp configuration;
+  private Configuration configuration;
 
   private List<Diagnostic> diagnosticList = new ArrayList<>();
 
@@ -70,7 +73,7 @@ public class PhoenixCore implements EventListener {
     events.subscribe(EventManager.EVENT_FORMATTING, this);
     events.subscribe(EventManager.EVENT_FIX_ALL, this);
 
-    configuration = new ConfigurationApp();
+    configuration = new Configuration();
 
 
   }
@@ -413,27 +416,27 @@ public class PhoenixCore implements EventListener {
     var fileConfiguration = pathToConfiguration.toFile();
     if (!fileConfiguration.exists()) {
       // создать новый по умолчанию
-      configuration = new ConfigurationApp();
+      configuration = new Configuration();
       writeConfiguration(configuration, fileConfiguration);
     } else {
       // прочитать в текущие настройки
-      configuration = ConfigurationApp.create(fileConfiguration);
+      configuration = Configuration.create(fileConfiguration);
     }
 
   }
 
-  public void writeConfiguration(ConfigurationApp configurationApp, File fileConfiguration) {
+  public void writeConfiguration(Configuration configuration, File fileConfiguration) {
     // запишем ее в файл
     ObjectMapper mapper = new ObjectMapper();
     try {
-      mapper.writeValue(fileConfiguration, configurationApp);
+      mapper.writeValue(fileConfiguration, configuration);
     } catch (IOException e) {
       LOGGER.error("Не удалось записать конфигурацию в файл.", e);
     }
   }
 
-  public void writeConfiguration(ConfigurationApp configurationApp) {
-    writeConfiguration(configurationApp, pathToConfiguration.toFile());
+  public void writeConfiguration(Configuration configuration) {
+    writeConfiguration(configuration, pathToConfiguration.toFile());
   }
 
   @SneakyThrows

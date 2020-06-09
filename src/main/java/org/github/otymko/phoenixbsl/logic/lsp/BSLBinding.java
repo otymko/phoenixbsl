@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.lsp;
+package org.github.otymko.phoenixbsl.logic.lsp;
 
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +7,7 @@ import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.LanguageServer;
-import org.github.otymko.phoenixbsl.core.PhoenixAPI;
+import org.github.otymko.phoenixbsl.logic.PhoenixAPI;
 
 import java.io.InputStream;
 import java.io.OutputStream;

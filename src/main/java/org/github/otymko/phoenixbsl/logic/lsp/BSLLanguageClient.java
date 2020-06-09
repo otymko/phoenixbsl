@@ -1,9 +1,9 @@
-package org.github.otymko.phoenixbsl.lsp;
+package org.github.otymko.phoenixbsl.logic.lsp;
 
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
-import org.github.otymko.phoenixbsl.core.PhoenixCore;
-import org.github.otymko.phoenixbsl.events.EventManager;
+import org.github.otymko.phoenixbsl.PhoenixCore;
+import org.github.otymko.phoenixbsl.logic.event.EventManager;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -35,9 +35,9 @@ public class BSLLanguageClient implements LanguageClient {
   @Override
   public void publishDiagnostics(PublishDiagnosticsParams publishDiagnosticsParams) {
 
-    var app = PhoenixCore.getInstance();
+    var core = PhoenixCore.getInstance();
 
-    var diagnosticList = app.getDiagnosticList();
+    var diagnosticList = core.getDiagnosticList();
     diagnosticList.clear();
     diagnosticList.addAll(publishDiagnosticsParams.getDiagnostics());
 

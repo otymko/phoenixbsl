@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.views;
+package org.github.otymko.phoenixbsl.gui.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
@@ -9,13 +9,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.github.otymko.phoenixbsl.core.ConfigurationApp;
+import org.github.otymko.phoenixbsl.model.Configuration;
 
 @Getter
 @Slf4j
 public class SettingStageController {
 
-  private ConfigurationApp configuration;
+  private Configuration configuration;
 
   @FXML
   private JFXCheckBox usePathToJarBSLLS;
@@ -44,7 +44,7 @@ public class SettingStageController {
   @FXML
   private JFXCheckBox useGroupIssuesBySeverity;
 
-  public void setConfiguration(ConfigurationApp configuration) {
+  public void setConfiguration(Configuration configuration) {
     this.configuration = configuration;
   }
 

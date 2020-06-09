@@ -1,7 +1,7 @@
-package org.github.otymko.phoenixbsl.views;
+package org.github.otymko.phoenixbsl.gui;
 
 import javafx.application.Platform;
-import org.github.otymko.phoenixbsl.core.PhoenixCore;
+import org.github.otymko.phoenixbsl.PhoenixCore;
 
 import javax.swing.*;
 import java.awt.*;

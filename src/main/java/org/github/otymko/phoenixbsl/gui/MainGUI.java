@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl;
+package org.github.otymko.phoenixbsl.gui;
 
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.controls.JFXDecorator;
@@ -11,12 +11,12 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
-import org.github.otymko.phoenixbsl.core.ConfigurationApp;
-import org.github.otymko.phoenixbsl.core.PhoenixCore;
-import org.github.otymko.phoenixbsl.events.EventListener;
-import org.github.otymko.phoenixbsl.events.EventManager;
-import org.github.otymko.phoenixbsl.views.IssuesStage;
-import org.github.otymko.phoenixbsl.views.SettingStageController;
+import org.github.otymko.phoenixbsl.gui.stage.IssuesStage;
+import org.github.otymko.phoenixbsl.model.Configuration;
+import org.github.otymko.phoenixbsl.PhoenixCore;
+import org.github.otymko.phoenixbsl.logic.event.EventListener;
+import org.github.otymko.phoenixbsl.logic.event.EventManager;
+import org.github.otymko.phoenixbsl.gui.controller.SettingStageController;
 
 import java.awt.*;
 import java.io.IOException;
@@ -171,7 +171,7 @@ public class MainGUI implements EventListener {
     PhoenixCore.getInstance().writeConfiguration(configuration);
   }
 
-  private void fillSettingValueFromConfiguration(ConfigurationApp configuration) {
+  private void fillSettingValueFromConfiguration(Configuration configuration) {
 
     var usePathToJarBSLLS = controllerStages.getUsePathToJarBSLLS();
     usePathToJarBSLLS.setSelected(configuration.isUsePathToJarBSLLS());

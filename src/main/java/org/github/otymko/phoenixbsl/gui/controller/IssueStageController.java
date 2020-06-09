@@ -1,11 +1,11 @@
-package org.github.otymko.phoenixbsl.views;
+package org.github.otymko.phoenixbsl.gui.controller;
 
 import com.jfoenix.controls.JFXTreeTableView;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import lombok.Getter;
-import org.github.otymko.phoenixbsl.entities.Issue;
+import org.github.otymko.phoenixbsl.model.Issue;
 
 @Getter
 public class IssueStageController {

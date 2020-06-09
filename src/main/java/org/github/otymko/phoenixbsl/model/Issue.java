@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.entities;
+package org.github.otymko.phoenixbsl.model;
 
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import org.eclipse.lsp4j.DiagnosticSeverity;

@@ -1,4 +1,4 @@
-package org.github.otymko.phoenixbsl.events;
+package org.github.otymko.phoenixbsl.logic.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
