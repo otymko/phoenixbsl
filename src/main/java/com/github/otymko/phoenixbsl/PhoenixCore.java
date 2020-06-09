@@ -73,7 +73,7 @@ public class PhoenixCore implements EventListener {
     events.subscribe(EventManager.EVENT_FORMATTING, this);
     events.subscribe(EventManager.EVENT_FIX_ALL, this);
 
-    configuration = new Configuration();
+    configuration = Configuration.create();
 
 
   }
@@ -416,7 +416,7 @@ public class PhoenixCore implements EventListener {
     var fileConfiguration = pathToConfiguration.toFile();
     if (!fileConfiguration.exists()) {
       // создать новый по умолчанию
-      configuration = new Configuration();
+      configuration = Configuration.create();
       writeConfiguration(configuration, fileConfiguration);
     } else {
       // прочитать в текущие настройки

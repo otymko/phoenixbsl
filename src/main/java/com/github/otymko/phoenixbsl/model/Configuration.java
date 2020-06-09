@@ -15,12 +15,12 @@ import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITI
 @Slf4j
 public class Configuration {
 
-  private static final String DEFAULT_PATH_TO_BSL_LS = "app/bsl-language-server/bsl-language-server.exe";
-  private static final boolean DEFAULT_USE_JAR_BSL_LS = false;
-  private static final String DEFAULT_PATH_TO_JAVA = "java";
-  private static final boolean DEFAULT_USE_CUSTOM_BSL_LS_CONFIGURATION = false;
-  private static final String DEFAULT_PATH_TO_BSL_LS_CONFIGURATION = ".bsl-language-server.json";
-  private static final boolean DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY = false;
+  public static final String DEFAULT_PATH_TO_BSL_LS = "app/bsl-language-server/bsl-language-server.exe";
+  public static final boolean DEFAULT_USE_JAR_BSL_LS = false;
+  public static final String DEFAULT_PATH_TO_JAVA = "java";
+  public static final boolean DEFAULT_USE_CUSTOM_BSL_LS_CONFIGURATION = false;
+  public static final String DEFAULT_PATH_TO_BSL_LS_CONFIGURATION = ".bsl-language-server.json";
+  public static final boolean DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY = false;
 
   private boolean usePathToJarBSLLS;
   private String pathToBSLLS;
@@ -29,7 +29,7 @@ public class Configuration {
   private String pathToBSLLSConfiguration;
   private boolean useGroupIssuesBySeverity = DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY;
 
-  public Configuration() {
+  private Configuration() {
     setPathToBSLLS(DEFAULT_PATH_TO_BSL_LS);
     setUsePathToJarBSLLS(DEFAULT_USE_JAR_BSL_LS);
     setPathToJava(DEFAULT_PATH_TO_JAVA);
@@ -38,8 +38,11 @@ public class Configuration {
     setUseGroupIssuesBySeverity(DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY);
   }
 
-  public static Configuration create(File configurationFile) {
+  public static Configuration create() {
+    return new Configuration();
+  }
 
+  public static Configuration create(File configurationFile) {
     Configuration configuration = null;
     if (configurationFile.exists()) {
       ObjectMapper mapper = new ObjectMapper();
@@ -56,10 +59,6 @@ public class Configuration {
     }
     return configuration;
 
-  }
-
-  public static Configuration create() {
-    return new Configuration();
   }
 
 }
