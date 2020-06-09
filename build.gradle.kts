@@ -18,7 +18,7 @@ repositories {
     maven { url = URI("https://jitpack.io") }
 }
 
-group = "org.github.otymko.phoenixbsl"
+group = "com.github.otymko.phoenixbsl"
 version = "0.3.7"
 
 dependencies {
@@ -56,7 +56,7 @@ var jarName = ""
 tasks.jar {
     jarName = this.archiveFileName.get()
     manifest {
-        attributes["Main-Class"] = "org.github.otymko.phoenixbsl.PhoenixLauncher"
+        attributes["Main-Class"] = "com.github.otymko.phoenixbsl.PhoenixLauncher"
         attributes["Implementation-Version"] = project.version
     }
     enabled = false
