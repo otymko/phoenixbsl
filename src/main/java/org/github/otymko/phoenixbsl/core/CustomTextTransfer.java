@@ -19,7 +19,7 @@ public class CustomTextTransfer implements ClipboardOwner {
   public void setClipboardContents(String content) {
     stringSelection = new StringSelection(content);
     var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    PhoenixApp.getInstance().sleepCurrentThread(50);
+    PhoenixCore.getInstance().sleepCurrentThread(50);
     try {
       clipboard.setContents(stringSelection, this);
     } catch (IllegalStateException e) {
@@ -29,7 +29,7 @@ public class CustomTextTransfer implements ClipboardOwner {
   }
 
   public String getClipboardContents() {
-    PhoenixApp.getInstance().sleepCurrentThread(50);
+    PhoenixCore.getInstance().sleepCurrentThread(50);
     String content = "";
     var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     var contents = clipboard.getContents(null);

@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
 import org.github.otymko.phoenixbsl.core.ConfigurationApp;
-import org.github.otymko.phoenixbsl.core.PhoenixApp;
+import org.github.otymko.phoenixbsl.core.PhoenixCore;
 import org.github.otymko.phoenixbsl.events.EventListener;
 import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.views.IssuesStage;
@@ -30,12 +30,10 @@ public class MainGUI implements EventListener {
 
   private SettingStageController controllerStages;
 
-  public MainGUI(Stage mainStage){
-
+  public MainGUI(Stage mainStage) {
     Platform.setImplicitExit(false);
     initIssuesStage(mainStage);
     initializeEvents();
-
   }
 
   @Override
@@ -45,7 +43,7 @@ public class MainGUI implements EventListener {
 
   @Override
   public void updateIssues(List<Diagnostic> diagnostics) {
-    issuesStage.lineOffset = PhoenixApp.getInstance().currentOffset;
+    issuesStage.lineOffset = PhoenixCore.getInstance().currentOffset;
     showIssuesStageImpl();
     Platform.runLater(() -> issuesStage.updateIssues(diagnostics));
   }
@@ -68,7 +66,7 @@ public class MainGUI implements EventListener {
   }
 
   private void initializeEvents() {
-    EventManager eventManager = PhoenixApp.getInstance().getEventManager();
+    EventManager eventManager = PhoenixCore.getInstance().getEventManager();
     eventManager.subscribe(EventManager.EVENT_UPDATE_ISSUES, this);
     eventManager.subscribe(EventManager.SHOW_ISSUE_STAGE, this);
     eventManager.subscribe(EventManager.SHOW_SETTING_STAGE, this);
@@ -100,11 +98,11 @@ public class MainGUI implements EventListener {
     settingStage = new Stage();
     settingStage.setResizable(false);
 
-    FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/SettingStage.fxml"));
+    FXMLLoader loader = new FXMLLoader(PhoenixCore.class.getResource("/SettingStage.fxml"));
     Parent root = loader.load();
 
     controllerStages = loader.getController();
-    controllerStages.setConfiguration(PhoenixApp.getInstance().getConfiguration());
+    controllerStages.setConfiguration(PhoenixCore.getInstance().getConfiguration());
 
     JFXDecorator decorator = new JFXDecorator(settingStage, root, false, false, false);
     decorator.setCustomMaximize(false);
@@ -115,7 +113,7 @@ public class MainGUI implements EventListener {
     stylesheets.addAll(JFoenixResources.load("/theme.css").toExternalForm());
     settingStage.setScene(scene);
 
-    var pathToLog = PhoenixApp.getInstance().getPathToLogs();
+    var pathToLog = PhoenixCore.getInstance().getPathToLogs();
 
     var link = controllerStages.getLinkPathToLogs();
     link.setText(pathToLog.toString());
@@ -132,17 +130,17 @@ public class MainGUI implements EventListener {
       }
     });
 
-    fillSettingValueFromConfiguration(PhoenixApp.getInstance().getConfiguration());
+    fillSettingValueFromConfiguration(PhoenixCore.getInstance().getConfiguration());
 
     var btnSaveSetting = controllerStages.getBtnSaveSetting();
     btnSaveSetting.setOnAction(event -> {
       // сохраним configuration в файл
       processSaveSettings();
       settingStage.close();
-      PhoenixApp.getInstance().restartProcessBSLLS();
+      PhoenixCore.getInstance().restartProcessBSLLS();
     });
 
-    controllerStages.getLabelVersion().setText(PhoenixApp.getInstance().getVersionBSLLS());
+    controllerStages.getLabelVersion().setText(PhoenixCore.getInstance().getVersionBSLLS());
 
     settingStage.show();
 
@@ -150,7 +148,7 @@ public class MainGUI implements EventListener {
 
   private void processSaveSettings() {
 
-    var configuration = PhoenixApp.getInstance().getConfiguration();
+    var configuration = PhoenixCore.getInstance().getConfiguration();
 
     var usePathToJarBSLLS = controllerStages.getUsePathToJarBSLLS();
     configuration.setUsePathToJarBSLLS(usePathToJarBSLLS.isSelected());
@@ -170,7 +168,7 @@ public class MainGUI implements EventListener {
     var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
     configuration.setUseGroupIssuesBySeverity(useGroupIssuesBySeverity.isSelected());
 
-    PhoenixApp.getInstance().writeConfiguration(configuration);
+    PhoenixCore.getInstance().writeConfiguration(configuration);
   }
 
   private void fillSettingValueFromConfiguration(ConfigurationApp configuration) {

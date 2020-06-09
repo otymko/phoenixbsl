@@ -14,6 +14,7 @@ import org.github.otymko.phoenixbsl.events.EventManager;
 import org.github.otymko.phoenixbsl.lsp.BSLBinding;
 import org.github.otymko.phoenixbsl.lsp.BSLConfiguration;
 import org.github.otymko.phoenixbsl.lsp.BSLLanguageClient;
+import org.github.otymko.phoenixbsl.threads.GlobalKeyListenerThread;
 import org.github.otymko.phoenixbsl.utils.ProcessHelper;
 import org.github.otymko.phoenixbsl.views.Toolbar;
 
@@ -32,9 +33,9 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Data
-public class PhoenixApp implements EventListener {
+public class PhoenixCore implements EventListener {
 
-  private static final PhoenixApp INSTANCE = new PhoenixApp();
+  private static final PhoenixCore INSTANCE = new PhoenixCore();
 
   private static final Path basePathApp = Path.of(System.getProperty("user.home"), "phoenixbsl");
 
@@ -56,7 +57,7 @@ public class PhoenixApp implements EventListener {
 
   public int currentOffset = 0;
 
-  private PhoenixApp() {
+  private PhoenixCore() {
 
     events = new EventManager(
       EventManager.EVENT_INSPECTION,
@@ -74,7 +75,7 @@ public class PhoenixApp implements EventListener {
 
   }
 
-  public static PhoenixApp getInstance() {
+  public static PhoenixCore getInstance() {
     return INSTANCE;
   }
 
@@ -188,8 +189,7 @@ public class PhoenixApp implements EventListener {
 
     try {
       applyAllQuickFixes(codeActions, strings);
-    }
-    catch (ArrayIndexOutOfBoundsException e) {
+    } catch (ArrayIndexOutOfBoundsException e) {
       LOGGER.error("При применении fix all к тексту модуля возникли ошибки", e);
       return;
     }
@@ -202,7 +202,7 @@ public class PhoenixApp implements EventListener {
   }
 
   private void applyAllQuickFixes(List<Either<Command, CodeAction>> codeActions, String[] strings)
-    throws ArrayIndexOutOfBoundsException{
+    throws ArrayIndexOutOfBoundsException {
 
     codeActions.forEach(diagnostic -> {
       CodeAction codeAction = diagnostic.getRight();
@@ -315,8 +315,8 @@ public class PhoenixApp implements EventListener {
     }
   }
 
-  public void initToolbar() {
-    var toolbar = new Toolbar();
+  public void startToolbar() {
+    new Toolbar();
   }
 
   public boolean appIsRunning() {
@@ -327,9 +327,7 @@ public class PhoenixApp implements EventListener {
         ph -> ph.info().command().isPresent()
           && ph.info().command().get().contains("phoenixbsl")
           && ph.pid() != thisPid)
-      .forEach((process) -> {
-        isRunning.set(true);
-      });
+      .forEach((process) -> isRunning.set(true));
     return isRunning.get();
   }
 
@@ -410,7 +408,7 @@ public class PhoenixApp implements EventListener {
     return pathToFolderLog.toAbsolutePath();
   }
 
-  public void initConfiguration() {
+  public void initializeConfiguration() {
     // файл конфигурации должен лежать по пути: app/configuration.json
     var fileConfiguration = pathToConfiguration.toFile();
     if (!fileConfiguration.exists()) {
@@ -517,5 +515,7 @@ public class PhoenixApp implements EventListener {
     return diagnosticListForQuickFix.contains(diagnostic.getCode());
   }
 
-
+  public void initializeGlobalKeyListener() {
+    new GlobalKeyListenerThread().start();
+  }
 }

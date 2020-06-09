@@ -1,7 +1,7 @@
 package org.github.otymko.phoenixbsl.views;
 
 import javafx.application.Platform;
-import org.github.otymko.phoenixbsl.core.PhoenixApp;
+import org.github.otymko.phoenixbsl.core.PhoenixCore;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,7 +25,7 @@ public class Toolbar {
 
     var settingItem = new MenuItem("Настройки");
     settingItem.addActionListener(e -> {
-      PhoenixApp.getInstance().showSettingStage();
+      PhoenixCore.getInstance().showSettingStage();
     });
     popupMenu.add(settingItem);
 
@@ -33,14 +33,14 @@ public class Toolbar {
     exitItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Platform.exit();
-        PhoenixApp.getInstance().stopBSL();
+        PhoenixCore.getInstance().stopBSL();
         System.exit(0);
       }
     });
     popupMenu.add(exitItem);
 
     var systemTray = SystemTray.getSystemTray();
-    var icon = new ImageIcon(PhoenixApp.class.getResource(PATH_TO_ICON));
+    var icon = new ImageIcon(PhoenixCore.class.getResource(PATH_TO_ICON));
     var image = icon.getImage();
 
     TrayIcon trayIcon = new TrayIcon(image, "Phoenix BSL", popupMenu);
@@ -48,7 +48,7 @@ public class Toolbar {
     trayIcon.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         if (e.getClickCount() == 2) {
-          PhoenixApp.getInstance().showIssuesStage();
+          PhoenixCore.getInstance().showIssuesStage();
         }
       }
     });

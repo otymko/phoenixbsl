@@ -4,7 +4,7 @@ import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.github.otymko.phoenixbsl.core.PhoenixApp;
+import org.github.otymko.phoenixbsl.core.PhoenixCore;
 import org.github.otymko.phoenixbsl.entities.KeyboardShortcut;
 import org.github.otymko.phoenixbsl.events.EventManager;
 
@@ -19,7 +19,7 @@ public class GlobalKeyListenerThread extends Thread {
 
   public GlobalKeyListenerThread() {
 
-    eventManager = PhoenixApp.getInstance().getEventManager();
+    eventManager = PhoenixCore.getInstance().getEventManager();
 
     commands.put(
       new KeyboardShortcut(GlobalKeyEvent.VK_I, true),
@@ -68,7 +68,7 @@ public class GlobalKeyListenerThread extends Thread {
 
         }
         if (isSupportAction) {
-          PhoenixApp.getInstance().sleepCurrentThread(50);
+          PhoenixCore.getInstance().sleepCurrentThread(50);
         }
       }
     });

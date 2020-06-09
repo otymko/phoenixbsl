@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.github.otymko.phoenixbsl.core.PhoenixAPI;
-import org.github.otymko.phoenixbsl.core.PhoenixApp;
+import org.github.otymko.phoenixbsl.core.PhoenixCore;
 import org.github.otymko.phoenixbsl.entities.Issue;
 
 import java.util.*;
@@ -62,7 +62,7 @@ public class IssuesStage extends Stage {
 
   @SneakyThrows
   public IssuesStage() {
-    FXMLLoader loader = new FXMLLoader(PhoenixApp.class.getResource("/IssuesStage.fxml"));
+    FXMLLoader loader = new FXMLLoader(PhoenixCore.class.getResource("/IssuesStage.fxml"));
 
     Parent root = loader.load();
     IssueStageController localController = loader.getController();
@@ -76,8 +76,8 @@ public class IssuesStage extends Stage {
     stylesheets.addAll(JFoenixResources.load("/theme.css").toExternalForm());
     setScene(scene);
 
-    getIcons().add(new Image(PhoenixApp.class.getResourceAsStream("/phoenix.png")));
-    this.setTitle("Phoenix BSL v. " + PhoenixApp.getInstance().getVersionApp());
+    getIcons().add(new Image(PhoenixCore.class.getResourceAsStream("/phoenix.png")));
+    this.setTitle("Phoenix BSL v. " + PhoenixCore.getInstance().getVersionApp());
 
     tree = localController.getIssuesTree();
     initTreeTable();
@@ -143,7 +143,7 @@ public class IssuesStage extends Stage {
       var item = tree.getSelectionModel().getSelectedItem();
       if (item != null) {
         var issue = item.getValue();
-        PhoenixAPI.gotoLineModule(issue.getStartLine(), PhoenixApp.getInstance().getFocusForm());
+        PhoenixAPI.gotoLineModule(issue.getStartLine(), PhoenixCore.getInstance().getFocusForm());
       }
     });
 
@@ -208,7 +208,7 @@ public class IssuesStage extends Stage {
     filterIssuesTree(search.getText());
     tree.setShowRoot(false);
     tree.unGroup(typeColumn);
-    if (PhoenixApp.getInstance().getConfiguration().isUseGroupIssuesBySeverity()) {
+    if (PhoenixCore.getInstance().getConfiguration().isUseGroupIssuesBySeverity()) {
       tree.group(typeColumn);
     }
     tree.refresh();
