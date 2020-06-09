@@ -56,7 +56,7 @@ var jarName = ""
 tasks.jar {
     jarName = this.archiveFileName.get()
     manifest {
-        attributes["Main-Class"] = "org.github.otymko.phoenixbsl.LauncherApp"
+        attributes["Main-Class"] = "org.github.otymko.phoenixbsl.PhoenixLauncher"
         attributes["Implementation-Version"] = project.version
     }
     enabled = false
