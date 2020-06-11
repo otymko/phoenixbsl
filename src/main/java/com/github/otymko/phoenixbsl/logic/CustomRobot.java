@@ -46,15 +46,13 @@ public class CustomRobot {
     robot.keyRelease(KeyEvent.VK_ALT);
   }
 
+  // FIXME: вынести метод в другой класс
   public static List<Integer> getListKeyEventByNumber(int inValue) {
     List<Integer> list = new ArrayList<>();
     var str = String.valueOf(inValue);
     for (char symbol : str.toCharArray()) {
       int key;
       switch (String.valueOf(symbol)) {
-        case ("0"):
-          key = KeyEvent.VK_0;
-          break;
         case ("1"):
           key = KeyEvent.VK_1;
           break;
@@ -82,8 +80,9 @@ public class CustomRobot {
         case ("9"):
           key = KeyEvent.VK_9;
           break;
+        case ("0"):
         default:
-          key = 0;
+          key = KeyEvent.VK_0;
           break;
       }
       list.add(key);
