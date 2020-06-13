@@ -56,13 +56,10 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Xlint:deprecation")
 }
 
-// TODO: путь к jar после build, можно сделать лучше?
-var jarName = ""
-
 tasks.jar {
-    jarName = this.archiveFileName.get()
+    var mainClass = project.group.toString() + ".PhoenixLauncher"
     manifest {
-        attributes["Main-Class"] = "com.github.otymko.phoenixbsl.PhoenixLauncher"
+        attributes["Main-Class"] = mainClass
         attributes["Implementation-Version"] = project.version
     }
     enabled = false
@@ -83,7 +80,7 @@ tasks.register<Exec>("jpackage") {
             "--name", "phoenixbsl",
             "--type", "msi",
             "--input", "build/libs",
-            "--main-jar", jarName,
+            "--main-jar", "phoenix-$version.jar",
             "--win-dir-chooser",
             "--win-shortcut",
             "--win-menu",
