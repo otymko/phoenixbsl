@@ -26,6 +26,7 @@ repositories {
 
 group = "com.github.otymko.phoenixbsl"
 version = gitVersionCalculator.calculateVersion("v")
+var semver = calculateVersion("v", false)
 
 dependencies {
     testImplementation("com.hynnet", "jacob", "1.18")
@@ -73,7 +74,7 @@ tasks.shadowJar {
 }
 
 tasks.register<Exec>("jpackage") {
-    var semver = calculateVersion("v", false)
+    dependsOn(tasks.shadowJar)
     var jpackage = System.getenv("JPACKAGE_HOME") + "/jpackage.exe"
     executable(jpackage)
     args(
