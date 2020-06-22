@@ -1,5 +1,10 @@
 import java.net.URI
 
+import com.github.gradle_git_version_calculator.GitRepository;
+import com.github.gradle_git_version_calculator.GitCommandsFactory;
+import com.github.gradle_git_version_calculator.GitVersionCalculator;
+
+
 plugins {
     java
     maven
@@ -8,6 +13,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("org.sonarqube") version "2.8"
     id("io.franzbecker.gradle-lombok") version "3.2.0"
+    id("com.github.gradle-git-version-calculator") version "1.1.0"
 }
 
 repositories {
@@ -19,7 +25,8 @@ repositories {
 }
 
 group = "com.github.otymko.phoenixbsl"
-version = "0.3.7"
+version = gitVersionCalculator.calculateVersion("v")
+var semver = calculateVersion("v", false)
 
 dependencies {
     testImplementation("com.hynnet", "jacob", "1.18")
@@ -50,13 +57,10 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Xlint:deprecation")
 }
 
-// TODO: путь к jar после build, можно сделать лучше?
-var jarName = ""
-
 tasks.jar {
-    jarName = this.archiveFileName.get()
+    var mainClass = project.group.toString() + ".PhoenixLauncher"
     manifest {
-        attributes["Main-Class"] = "com.github.otymko.phoenixbsl.PhoenixLauncher"
+        attributes["Main-Class"] = mainClass
         attributes["Implementation-Version"] = project.version
     }
     enabled = false
@@ -70,17 +74,18 @@ tasks.shadowJar {
 }
 
 tasks.register<Exec>("jpackage") {
+    dependsOn(tasks.shadowJar)
     var jpackage = System.getenv("JPACKAGE_HOME") + "/jpackage.exe"
     executable(jpackage)
     args(
             "--name", "phoenixbsl",
             "--type", "msi",
             "--input", "build/libs",
-            "--main-jar", jarName,
+            "--main-jar", "phoenix-$version.jar",
             "--win-dir-chooser",
             "--win-shortcut",
             "--win-menu",
-            "--app-version", project.version,
+            "--app-version", semver,
             "--vendor", "otymko"
     )
 }
@@ -104,4 +109,14 @@ javafx {
 lombok {
     version = "1.18.10"
     sha256 = "2836e954823bfcbad45e78c18896e3d01058e6f643749810c608b7005ee7b2fa"
+}
+
+/* Получить версия проекта без дополнительной информации
+(только major, minor, patch)
+ */
+fun calculateVersion(prefix: String?, withSnapshot: Boolean): String? {
+    val repository = GitRepository(GitCommandsFactory(project.projectDir.absolutePath))
+    val calculator = GitVersionCalculator(repository)
+    val semver = calculator.calculateSemVer(prefix, withSnapshot)
+    return String.format("%d.%d.%d", semver.major, semver.minor, semver.patch)
 }
