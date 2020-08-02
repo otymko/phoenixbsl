@@ -1,11 +1,13 @@
 package com.github.otymko.phoenixbsl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.otymko.phoenixbsl.gui.Toolbar;
 import com.github.otymko.phoenixbsl.logic.GlobalKeyListenerThread;
 import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
 import com.github.otymko.phoenixbsl.logic.PhoenixUser32;
 import com.github.otymko.phoenixbsl.logic.event.EventListener;
 import com.github.otymko.phoenixbsl.logic.event.EventManager;
+import com.github.otymko.phoenixbsl.logic.lsp.BSLBinding;
 import com.github.otymko.phoenixbsl.logic.lsp.BSLConfiguration;
 import com.github.otymko.phoenixbsl.logic.lsp.BSLLanguageClient;
 import com.github.otymko.phoenixbsl.logic.utils.ProcessHelper;
@@ -18,8 +20,6 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import com.github.otymko.phoenixbsl.logic.lsp.BSLBinding;
-import com.github.otymko.phoenixbsl.gui.Toolbar;
 
 import java.io.File;
 import java.io.IOException;
@@ -324,11 +324,13 @@ public class PhoenixCore implements EventListener {
 
   public boolean appIsRunning() {
     var thisPid = ProcessHandle.current().pid();
+    var thisUser = ProcessHandle.current().info().user().orElse("");
     var isRunning = new AtomicBoolean(false);
     ProcessHandle.allProcesses()
       .filter(
         ph -> ph.info().command().isPresent()
           && ph.info().command().get().contains("phoenixbsl")
+          && !ph.info().user().orElse("").equals(thisUser)
           && ph.pid() != thisPid)
       .forEach((process) -> isRunning.set(true));
     return isRunning.get();
