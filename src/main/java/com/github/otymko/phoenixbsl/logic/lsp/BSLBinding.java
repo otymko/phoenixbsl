@@ -97,7 +97,7 @@ public class BSLBinding {
     var params = new DidChangeTextDocumentParams();
     VersionedTextDocumentIdentifier versionedTextDocumentIdentifier = new VersionedTextDocumentIdentifier();
     versionedTextDocumentIdentifier.setUri(uri.toString());
-    versionedTextDocumentIdentifier.setVersion(1);
+    versionedTextDocumentIdentifier.setVersion(0);
     params.setTextDocument(versionedTextDocumentIdentifier);
     var textDocument = new TextDocumentContentChangeEvent();
     textDocument.setText(text);
