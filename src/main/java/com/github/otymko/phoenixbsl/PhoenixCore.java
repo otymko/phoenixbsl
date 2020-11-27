@@ -11,13 +11,10 @@ import com.github.otymko.phoenixbsl.logic.service.LSService;
 import com.github.otymko.phoenixbsl.model.Configuration;
 import com.github.otymko.phoenixbsl.model.ProjectSetting;
 import lombok.Data;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Attributes;
@@ -177,11 +174,10 @@ public class PhoenixCore implements EventListener {
     return context.getPathToFolderLog().toAbsolutePath();
   }
 
-  @SneakyThrows
-  public void updateContentFile(Path path, String content) {
-    var fooStream = new FileOutputStream(path.toFile(), false);
-    fooStream.write(content.getBytes(StandardCharsets.UTF_8));
-    fooStream.close();
+  public void updateContent(Path path, String content) {
+    textEditor.setPathToFile(path);
+    textEditor.setContent(content);
+    textEditor.saveContent();
   }
 
   private void initContext() {
@@ -215,7 +211,7 @@ public class PhoenixCore implements EventListener {
   }
 
   private void initTextEditor() {
-    textEditor = new DesignerTextEditor(this);
+    textEditor = new DesignerTextEditor();
   }
 
   private void initToolbar() {

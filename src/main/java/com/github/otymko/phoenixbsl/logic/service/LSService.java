@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class LSService implements Service {
   private final PhoenixCore core;
-
   private Process process;
   private BSLBinding binding;
 
@@ -131,7 +130,7 @@ public class LSService implements Service {
     binding.initialize();
 
     // откроем фейковый документ
-    core.updateContentFile(core.getProjectSetting().getFakePath(), "");
+    core.updateContent(core.getProjectSetting().getFakePath(), "");
     binding.textDocumentDidOpen(core.getFakeUri(), "");
 
   }
@@ -182,7 +181,7 @@ public class LSService implements Service {
       textForCheck = PhoenixAPI.getTextAll();
     }
 
-    core.updateContentFile(core.getProjectSetting().getFakePath(), textForCheck);
+    core.updateContent(core.getProjectSetting().getFakePath(), textForCheck);
     binding.textDocumentDidChange(core.getFakeUri(), textForCheck);
     binding.textDocumentDidSave(core.getFakeUri());
   }
@@ -199,7 +198,7 @@ public class LSService implements Service {
     }
 
     // DidChange
-    core.updateContentFile(core.getProjectSetting().getFakePath(), textForFormatting);
+    core.updateContent(core.getProjectSetting().getFakePath(), textForFormatting);
     binding.textDocumentDidChange(core.getFakeUri(), textForFormatting);
 
     // Formatting
