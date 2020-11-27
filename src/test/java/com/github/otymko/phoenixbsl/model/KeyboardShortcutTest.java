@@ -1,6 +1,5 @@
 package com.github.otymko.phoenixbsl.model;
 
-import junit.framework.TestCase;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
 import org.junit.Test;
 
@@ -9,7 +8,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class KeyboardShortcutTest extends TestCase {
+public class KeyboardShortcutTest {
 
   @Test
   public void testConstructor() {

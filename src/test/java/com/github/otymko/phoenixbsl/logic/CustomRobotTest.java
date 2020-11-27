@@ -1,13 +1,12 @@
 package com.github.otymko.phoenixbsl.logic;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.awt.event.KeyEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CustomRobotTest extends TestCase {
+public class CustomRobotTest {
 
   @Test
   public void test_getListKeyEventByNumber() {
