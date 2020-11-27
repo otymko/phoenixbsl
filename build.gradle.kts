@@ -34,7 +34,7 @@ dependencies {
     testImplementation("org.assertj", "assertj-core", "3.16.1")
 
     implementation("net.java.dev.jna:jna-platform:5.4.0")
-    implementation("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.8.1")
+    implementation("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.9.0")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
     implementation("lc.kra.system","system-hook", "3.5")
 
