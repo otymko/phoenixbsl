@@ -1,10 +1,15 @@
 package com.github.otymko.phoenixbsl.logic;
 
-import lombok.extern.slf4j.Slf4j;
 import com.github.otymko.phoenixbsl.PhoenixCore;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 @Slf4j

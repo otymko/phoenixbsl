@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class KeyboardShortcut extends Object{
-
+public class KeyboardShortcut extends Object {
   private final boolean controlPressed;
   private final List<Integer> keyList;
 
@@ -22,8 +21,7 @@ public class KeyboardShortcut extends Object{
     keyList.add(key);
   }
 
-  public boolean equals(KeyboardShortcut obj)
-  {
+  public boolean equals(KeyboardShortcut obj) {
     return obj.controlPressed == controlPressed && keyList.equals(obj.keyList);
   }
 

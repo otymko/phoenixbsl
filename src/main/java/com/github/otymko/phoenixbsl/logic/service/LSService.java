@@ -3,6 +3,7 @@ package com.github.otymko.phoenixbsl.logic.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
+import com.github.otymko.phoenixbsl.logic.designer.DesignerTextEditor;
 import com.github.otymko.phoenixbsl.logic.lsp.BSLBinding;
 import com.github.otymko.phoenixbsl.logic.lsp.BSLConfiguration;
 import com.github.otymko.phoenixbsl.logic.lsp.BSLLanguageClient;
@@ -79,7 +80,7 @@ public class LSService implements Service {
     if (configuration.isUseCustomBSLLSConfiguration()) {
       Path path;
       try {
-        path = Path.of(core.getBasePathApp().toString(), configuration.getPathToBSLLSConfiguration());
+        path = Path.of(core.getContext().getBasePathApp().toString(), configuration.getPathToBSLLSConfiguration());
       } catch (InvalidPathException exp) {
         path = null;
       }
@@ -91,7 +92,7 @@ public class LSService implements Service {
 
     } else {
       initBSLConfiguration();
-      pathToBSLConfiguration = core.getPathToBSLConfigurationDefault();
+      pathToBSLConfiguration = core.getContext().getPathToBSLConfigurationDefault();
     }
 
     if (pathToBSLConfiguration.toFile().exists()) {
@@ -152,11 +153,11 @@ public class LSService implements Service {
     bslConfiguration.setDiagnostics(diagnosticsOptions);
     bslConfiguration.setConfigurationRoot("src");
 
-    core.getPathToBSLConfigurationDefault().getParent().toFile().mkdirs();
+    core.getContext().getPathToBSLConfigurationDefault().getParent().toFile().mkdirs();
 
     ObjectMapper mapper = new ObjectMapper();
     try {
-      mapper.writeValue(core.getPathToBSLConfigurationDefault().toFile(), bslConfiguration);
+      mapper.writeValue(core.getContext().getPathToBSLConfigurationDefault().toFile(), bslConfiguration);
     } catch (IOException e) {
       LOGGER.error("Не удалось записать файл конфигурации BSL LS", e);
     }
@@ -170,14 +171,13 @@ public class LSService implements Service {
   public void validate() {
     LOGGER.debug("Событие: анализ кода");
 
-    core.setCurrentOffset(0); // currentOffset = 0;
+    core.getTextEditor().setCurrentOffset(0);
     var textForCheck = "";
     var textModuleSelected = PhoenixAPI.getTextSelected();
     if (textModuleSelected.length() > 0) {
       // получем номер строки
       textForCheck = textModuleSelected;
-      core.setCurrentOffset(PhoenixAPI.getCurrentLineNumber());
-      //currentOffset = PhoenixAPI.getCurrentLineNumber();
+      core.getTextEditor().setCurrentOffset(PhoenixAPI.getCurrentLineNumber());
     } else {
       textForCheck = PhoenixAPI.getTextAll();
     }
@@ -223,7 +223,7 @@ public class LSService implements Service {
     var textForQF = PhoenixAPI.getTextAll();
 
     // найдем все диагностики подсказки
-    var listQF = core.getDiagnosticList().stream()
+    var listQF = core.getTextEditor().getDiagnostics().stream()
       .filter(this::isAcceptDiagnosticForQuickFix)
       .collect(Collectors.toList());
 
@@ -276,7 +276,7 @@ public class LSService implements Service {
   }
 
   private boolean isAcceptDiagnosticForQuickFix(Diagnostic diagnostic) {
-    return core.getDiagnosticListForQuickFix().contains(diagnostic.getCode());
+    return DesignerTextEditor.DIAGNOSTIC_FOR_QF.contains(diagnostic.getCode().getLeft());
   }
 
   @SneakyThrows

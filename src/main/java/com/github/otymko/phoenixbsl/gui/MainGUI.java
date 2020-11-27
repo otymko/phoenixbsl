@@ -1,5 +1,6 @@
 package com.github.otymko.phoenixbsl.gui;
 
+import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.gui.controller.SettingStageController;
 import com.github.otymko.phoenixbsl.gui.stage.IssuesStage;
 import com.github.otymko.phoenixbsl.logic.event.EventListener;
@@ -16,7 +17,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
-import com.github.otymko.phoenixbsl.PhoenixCore;
 
 import java.awt.*;
 import java.io.IOException;
@@ -42,7 +42,8 @@ public class MainGUI implements EventListener {
 
   @Override
   public void updateIssues(List<Diagnostic> diagnostics) {
-    issuesStage.lineOffset = PhoenixCore.getInstance().currentOffset;
+//    issuesStage.lineOffset = PhoenixCore.getInstance().getTextEditor().currentOffset;
+    issuesStage.lineOffset = PhoenixCore.getInstance().getTextEditor().getCurrentOffset();
     showIssuesStageImpl();
     Platform.runLater(() -> issuesStage.updateIssues(diagnostics));
   }
@@ -136,7 +137,7 @@ public class MainGUI implements EventListener {
       // сохраним configuration в файл
       processSaveSettings();
       settingStage.close();
-      PhoenixCore.getInstance().restartProcessBSLLS();
+      PhoenixCore.getInstance().restartBSLLS();
     });
 
     controllerStages.getLabelVersion().setText(PhoenixCore.getInstance().getVersionBSLLS());
@@ -167,7 +168,7 @@ public class MainGUI implements EventListener {
     var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
     configuration.setUseGroupIssuesBySeverity(useGroupIssuesBySeverity.isSelected());
 
-    PhoenixCore.getInstance().writeConfiguration(configuration);
+    PhoenixCore.getInstance().getContext().writeConfiguration(configuration);
   }
 
   private void fillSettingValueFromConfiguration(Configuration configuration) {

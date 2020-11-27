@@ -33,7 +33,7 @@ public class Toolbar {
     exitItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Platform.exit();
-        PhoenixCore.getInstance().stopBSL();
+        PhoenixCore.getInstance().stopBSLLS();
         System.exit(0);
       }
     });

@@ -11,13 +11,16 @@ public interface EventListener {
   default void inspection() {
   }
 
-  default void fixAll() { }
+  default void fixAll() {
+  }
 
   default void updateIssues(List<Diagnostic> diagnostics) {
   }
 
-  default void showIssuesStage() { }
+  default void showIssuesStage() {
+  }
 
-  default void showSettingStage() {}
+  default void showSettingStage() {
+  }
 
 }

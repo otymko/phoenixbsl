@@ -1,7 +1,9 @@
 package com.github.otymko.phoenixbsl.gui.stage;
 
+import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.gui.controller.IssueStageController;
 import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
+import com.github.otymko.phoenixbsl.model.Issue;
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.controls.JFXDecorator;
 import com.jfoenix.controls.JFXTreeTableColumn;
@@ -16,7 +18,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
+import javafx.scene.control.TreeTableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -24,10 +31,12 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import com.github.otymko.phoenixbsl.PhoenixCore;
-import com.github.otymko.phoenixbsl.model.Issue;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -144,7 +153,7 @@ public class IssuesStage extends Stage {
       var item = tree.getSelectionModel().getSelectedItem();
       if (item != null) {
         var issue = item.getValue();
-        PhoenixAPI.gotoLineModule(issue.getStartLine(), PhoenixCore.getInstance().getFocusForm());
+        PhoenixAPI.gotoLineModule(issue.getStartLine(), PhoenixCore.getInstance().getTextEditor().getFocusForm());
       }
     });
 
