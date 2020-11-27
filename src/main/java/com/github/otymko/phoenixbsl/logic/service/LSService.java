@@ -199,6 +199,7 @@ public class LSService implements Service {
     }
 
     // DidChange
+    core.updateContentFile(core.getProjectSetting().getFakePath(), textForFormatting);
     binding.textDocumentDidChange(core.getFakeUri(), textForFormatting);
 
     // Formatting
