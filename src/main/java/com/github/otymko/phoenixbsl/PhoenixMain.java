@@ -26,8 +26,9 @@ public class PhoenixMain extends Application implements EventListener {
 
     var core = PhoenixCore.getInstance();
     core.initializeConfiguration(); // инициализируем настроек
-    core.startToolbar(); // запустим трей
+    core.initToolbar(); // запустим трей
     core.initializeGlobalKeyListener(); // подключаем слушаеть нажатий
+    core.initEmptyProject();
     core.initProcessBSL(); // запустим bsl ls
 
     new MainGUI(mainStage);
