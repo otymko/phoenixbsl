@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class KeyboardShortcut extends Object {
+public class KeyboardShortcut {
   private final boolean controlPressed;
   private final List<Integer> keyList;
 

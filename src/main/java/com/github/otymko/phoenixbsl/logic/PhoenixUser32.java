@@ -5,8 +5,11 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 
 public class PhoenixUser32 {
+  public static final User32 user32 = User32.INSTANCE;
 
-  public static User32 user32 = User32.INSTANCE;
+  private PhoenixUser32() {
+    // noon
+  }
 
   public static String getForegroundWindowClass() {
     WinDef.HWND hwnd = getHWNDFocusForm();
@@ -16,8 +19,7 @@ public class PhoenixUser32 {
   public static String getClassNameForm(WinDef.HWND hwnd) {
     char[] windowClass = new char[512];
     user32.GetClassName(hwnd, windowClass, 512);
-    String wClass = Native.toString(windowClass);
-    return wClass;
+    return Native.toString(windowClass);
   }
 
   public static WinDef.HWND getHWNDFocusForm() {

@@ -15,7 +15,7 @@ import java.util.Map;
 public class GlobalKeyListenerThread extends Thread {
 
   private final EventManager eventManager;
-  private Map<KeyboardShortcut, Runnable> commands = new HashMap<>();
+  private final Map<KeyboardShortcut, Runnable> commands = new HashMap<>();
 
   public GlobalKeyListenerThread() {
 
@@ -49,7 +49,7 @@ public class GlobalKeyListenerThread extends Thread {
 
   private void runHook() {
 
-    GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(false);
+    var keyboardHook = new GlobalKeyboardHook(false);
     LOGGER.info("Глобальный слушатей нажатий клавиш запущен");
 
     keyboardHook.addKeyListener(new GlobalKeyAdapter() {

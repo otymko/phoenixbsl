@@ -42,20 +42,18 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class IssuesStage extends Stage {
-
   private static final String COLUMN_DESCRIPTION = "DESCRIPTION";
   private static final String COLUMN_POSITION = "POSITION";
   private static final String COLUMN_TYPE = "TYPE";
+  private static final Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
+  private static final Map<String, DiagnosticSeverity> stringToSeverityMap = createStringToSeverityMap();
 
-  private static Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
-  private static Map<String, DiagnosticSeverity> stringToSeverityMap = createStringToSeverityMap();
+  private final ObservableList<Issue> issues = FXCollections.observableArrayList();
 
-  private ObservableList<Issue> issues = FXCollections.observableArrayList();
-
-  private JFXTreeTableView<Issue> tree;
+  private final JFXTreeTableView<Issue> tree;
   private RecursiveTreeItem<Issue> recursiveTreeItem;
 
-  private TextField search;
+  private final TextField search;
 
   public int lineOffset = 0;
 
@@ -63,9 +61,9 @@ public class IssuesStage extends Stage {
   private int countWarning = 0;
   private int countInfo = 0;
 
-  private Label labelError;
-  private Label labelWarning;
-  private Label labelInfo;
+  private final Label labelError;
+  private final Label labelWarning;
+  private final Label labelInfo;
 
   private TreeTableColumn<Issue, String> typeColumn;
 
@@ -242,7 +240,6 @@ public class IssuesStage extends Stage {
     return map;
   }
 
-  // FIXME: переделать?
   private static Map<String, DiagnosticSeverity> createStringToSeverityMap() {
     Map<DiagnosticSeverity, String> map = severityToStringMap;
     Map<String, DiagnosticSeverity> thisMap = new HashMap<>();
@@ -273,6 +270,9 @@ public class IssuesStage extends Stage {
         case COLUMN_TYPE:
           result = severityToStringMap.get(issue.getSeverity());
           break;
+        default:
+          LOGGER.warn("Колонка не поддерживается: " + column);
+          break;
       }
     } else {
       var treeObject = item.getValue();
@@ -282,7 +282,7 @@ public class IssuesStage extends Stage {
           if (column.equals(COLUMN_TYPE)) {
             result = groupValue.toString();
           } else if (column.equals(COLUMN_POSITION)) {
-            DiagnosticSeverity severity = stringToSeverityMap.get(groupValue);
+            var severity = stringToSeverityMap.get(groupValue);
             var list = recursiveTreeItem.getChildren().stream()
               .filter(issueTreeItem -> issueTreeItem.getValue().getSeverity() == severity)
               .collect(Collectors.toList());

@@ -15,15 +15,13 @@ import java.io.IOException;
 @Slf4j
 public class CustomTextTransfer implements ClipboardOwner {
 
-  private StringSelection stringSelection;
-
   @Override
   public void lostOwnership(Clipboard clipboard, Transferable contents) {
-    // TODO Auto-generated method stub
+    // none
   }
 
   public void setClipboardContents(String content) {
-    stringSelection = new StringSelection(content);
+    var stringSelection = new StringSelection(content);
     var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     PhoenixCore.getInstance().sleepCurrentThread(50);
     try {
@@ -43,10 +41,8 @@ public class CustomTextTransfer implements ClipboardOwner {
     if (hasTransferableText) {
       try {
         content = (String) contents.getTransferData(DataFlavor.stringFlavor);
-      } catch (UnsupportedFlavorException ex) {
-        LOGGER.error(ex.getMessage());
-      } catch (IOException ex) {
-        LOGGER.error(ex.getMessage());
+      } catch (UnsupportedFlavorException | IOException ex) {
+        LOGGER.error(ex.getMessage(), ex);
       }
     }
     return content;

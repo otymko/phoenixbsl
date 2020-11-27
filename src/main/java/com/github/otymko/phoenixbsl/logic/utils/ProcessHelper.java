@@ -13,7 +13,7 @@ import java.util.Collection;
 @UtilityClass
 public class ProcessHelper {
 
-  public static Collection<String> getArgumentsRunProcessBSLLS(Configuration configuration) {
+  public Collection<String> getArgumentsRunProcessBSLLS(Configuration configuration) {
     var pathToBSLLS = Path.of(configuration.getPathToBSLLS()).toAbsolutePath();
 
     Collection<String> arguments = new ArrayList<>();
@@ -24,19 +24,15 @@ public class ProcessHelper {
     arguments.add(pathToBSLLS.toString());
 
     return arguments;
-
   }
 
   @SneakyThrows
-  public static String getStdoutProcess(Process process) {
-
+  public String getStdoutProcess(Process process) {
     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
     String line = bufferedReader.readLine();
     process.waitFor();
     bufferedReader.close();
-
     return line;
-
   }
 
 }

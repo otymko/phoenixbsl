@@ -74,8 +74,7 @@ public class LSService implements Service {
 
     var arguments = ProcessHelper.getArgumentsRunProcessBSLLS(configuration);
 
-    // TODO: вынести в отдельное место
-    Path pathToBSLConfiguration = null;
+    Path pathToBSLConfiguration;
     if (configuration.isUseCustomBSLLSConfiguration()) {
       Path path;
       try {
@@ -249,9 +248,7 @@ public class LSService implements Service {
     }
   }
 
-  private void applyAllQuickFixes(List<Either<Command, CodeAction>> codeActions, String[] strings)
-    throws ArrayIndexOutOfBoundsException {
-
+  private void applyAllQuickFixes(List<Either<Command, CodeAction>> codeActions, String[] strings) {
     codeActions.forEach(diagnostic -> {
       CodeAction codeAction = diagnostic.getRight();
       if (codeAction.getTitle().startsWith("Fix all:")) {
@@ -283,7 +280,7 @@ public class LSService implements Service {
     var result = "<Неопределено>";
     var arguments = ProcessHelper.getArgumentsRunProcessBSLLS(core.getConfiguration());
     arguments.add("--version");
-    Process processBSL = null;
+    Process processBSL;
     try {
       processBSL = new ProcessBuilder().command(arguments.toArray(new String[0])).start();
     } catch (IOException e) {

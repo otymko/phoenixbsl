@@ -24,7 +24,6 @@ import java.util.List;
 
 @Slf4j
 public class MainGUI implements EventListener {
-
   private IssuesStage issuesStage;
   private Stage settingStage;
 
@@ -42,7 +41,6 @@ public class MainGUI implements EventListener {
 
   @Override
   public void updateIssues(List<Diagnostic> diagnostics) {
-//    issuesStage.lineOffset = PhoenixCore.getInstance().getTextEditor().currentOffset;
     issuesStage.lineOffset = PhoenixCore.getInstance().getTextEditor().getCurrentOffset();
     showIssuesStageImpl();
     Platform.runLater(() -> issuesStage.updateIssues(diagnostics));
@@ -119,9 +117,8 @@ public class MainGUI implements EventListener {
     link.setText(pathToLog.toString());
 
     link.setOnAction(event -> {
-      Desktop desktop = null;
       if (Desktop.isDesktopSupported()) {
-        desktop = Desktop.getDesktop();
+        var desktop = Desktop.getDesktop();
         try {
           desktop.open(pathToLog.toFile());
         } catch (IOException e) {

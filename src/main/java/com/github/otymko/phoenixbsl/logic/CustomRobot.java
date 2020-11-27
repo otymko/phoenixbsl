@@ -9,7 +9,6 @@ import java.util.List;
 
 @Slf4j
 public class CustomRobot {
-
   private Robot robot;
 
   public CustomRobot() {
