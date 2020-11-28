@@ -151,7 +151,7 @@ public class LSService implements Service {
     bslConfiguration.setDiagnostics(diagnosticsOptions);
     bslConfiguration.setConfigurationRoot("src");
 
-    core.getContext().getPathToBSLConfigurationDefault().getParent().toFile().mkdirs()
+    core.getContext().getPathToBSLConfigurationDefault().getParent().toFile().mkdirs();
 
     ObjectMapper mapper = new ObjectMapper();
     try {
