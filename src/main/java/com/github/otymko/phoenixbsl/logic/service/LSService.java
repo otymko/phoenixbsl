@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
 import com.github.otymko.phoenixbsl.logic.designer.DesignerTextEditor;
+import com.github.otymko.phoenixbsl.logic.designer.FormattingText;
 import com.github.otymko.phoenixbsl.logic.lsp.BSLBinding;
 import com.github.otymko.phoenixbsl.logic.lsp.BSLConfiguration;
 import com.github.otymko.phoenixbsl.logic.lsp.BSLLanguageClient;
@@ -18,7 +19,6 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -151,7 +151,7 @@ public class LSService implements Service {
     bslConfiguration.setDiagnostics(diagnosticsOptions);
     bslConfiguration.setConfigurationRoot("src");
 
-    core.getContext().getPathToBSLConfigurationDefault().getParent().toFile().mkdirs();
+    core.getContext().getPathToBSLConfigurationDefault().getParent().toFile().mkdirs()
 
     ObjectMapper mapper = new ObjectMapper();
     try {
@@ -166,109 +166,60 @@ public class LSService implements Service {
     return process != null;
   }
 
-  public void validate() {
-    LOGGER.debug("Событие: анализ кода");
-
-    core.getTextEditor().setCurrentOffset(0);
-    var textForCheck = "";
-    var textModuleSelected = PhoenixAPI.getTextSelected();
-    if (textModuleSelected.length() > 0) {
-      // получем номер строки
-      textForCheck = textModuleSelected;
-      core.getTextEditor().setCurrentOffset(PhoenixAPI.getCurrentLineNumber());
-    } else {
-      textForCheck = PhoenixAPI.getTextAll();
-    }
-
-    core.updateContent(core.getProjectSetting().getFakePath(), textForCheck);
-    binding.textDocumentDidChange(core.getFakeUri(), textForCheck);
-    binding.textDocumentDidSave(core.getFakeUri());
+  public void validate(Path path, String content) {
+    var uri = path.toUri();
+    binding.textDocumentDidChange(uri, content);
+    binding.textDocumentDidSave(uri);
   }
 
-  public void formatting() {
-    var textForFormatting = "";
-    var isSelected = false;
-    var textModuleSelected = PhoenixAPI.getTextSelected();
-    if (textModuleSelected.length() > 0) {
-      textForFormatting = textModuleSelected;
-      isSelected = true;
-    } else {
-      textForFormatting = PhoenixAPI.getTextAll();
-    }
+  public void formatting(Path path, FormattingText formattingText) {
+    var uri = path.toUri();
 
     // DidChange
-    core.updateContent(core.getProjectSetting().getFakePath(), textForFormatting);
-    binding.textDocumentDidChange(core.getFakeUri(), textForFormatting);
+    binding.textDocumentDidChange(uri, formattingText.getContext());
 
     // Formatting
-    var result = binding.textDocumentFormatting(core.getFakeUri());
-
+    var result = binding.textDocumentFormatting(uri);
     String newText = null;
     try {
       newText = result.get().get(0).getNewText();
-    } catch (InterruptedException | ExecutionException e) {
+    } catch (ExecutionException e) {
       LOGGER.error("Ошибка получения форматированного текста", e);
+    } catch (InterruptedException e) {
+      LOGGER.error("Ошибка получения форматированного текста", e);
+      Thread.currentThread().interrupt();
     }
 
-    if (newText != null) {
-      PhoenixAPI.insetTextOnForm(newText, isSelected);
-    }
+    formattingText.setContext(newText);
   }
 
-  public void fixAll() {
-    var separator = "\n";
-
-    var textForQF = PhoenixAPI.getTextAll();
+  public void fixAll(Path path, String textForQF) {
+    var uri = path.toUri();
 
     // найдем все диагностики подсказки
-    var listQF = core.getTextEditor().getDiagnostics().stream()
+    var listQF = core.getTextEditor().getDiagnostics().parallelStream()
       .filter(this::isAcceptDiagnosticForQuickFix)
       .collect(Collectors.toList());
 
-    List<Either<Command, CodeAction>> codeActions = new ArrayList<>();
+    List<Either<Command, CodeAction>> codeActions = null;
     try {
-      codeActions = binding.textDocumentCodeAction(core.getFakeUri(), listQF);
-    } catch (ExecutionException | InterruptedException e) {
-      LOGGER.error(e.getMessage());
-
+      codeActions = binding.textDocumentCodeAction(uri, listQF);
+    } catch (ExecutionException e) {
+      LOGGER.error(e.getMessage(), e);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      LOGGER.error(e.getMessage(), e);
     }
-    LOGGER.debug("Квикфиксов найдено: " + codeActions);
-    String[] strings = textForQF.split(separator);
 
-    try {
-      applyAllQuickFixes(codeActions, strings);
-    } catch (ArrayIndexOutOfBoundsException e) {
-      LOGGER.error("При применении fix all к тексту модуля возникли ошибки", e);
+    if (codeActions == null || codeActions.isEmpty()) {
       return;
     }
 
-    if (!codeActions.isEmpty()) {
-      var text = String.join(separator, strings);
-      PhoenixAPI.insetTextOnForm(text, false);
-    }
-  }
+    LOGGER.debug("Квикфиксов найдено: " + codeActions.size());
 
-  private void applyAllQuickFixes(List<Either<Command, CodeAction>> codeActions, String[] strings) {
-    codeActions.forEach(diagnostic -> {
-      CodeAction codeAction = diagnostic.getRight();
-      if (codeAction.getTitle().startsWith("Fix all:")) {
-        return;
-      }
-      codeAction.getEdit().getChanges().forEach((s, textEdits) -> {
-        textEdits.forEach(textEdit -> {
-          var range = textEdit.getRange();
-          var currentLine = range.getStart().getLine();
-          var newText = textEdit.getNewText();
-          var currentString = strings[currentLine];
-          var newString =
-            currentString.substring(0, range.getStart().getCharacter())
-              + newText
-              + currentString.substring(range.getEnd().getCharacter());
-          strings[currentLine] = newString;
-        });
-      });
-    });
-
+    var text = PhoenixAPI.applyFixForText(textForQF, codeActions);
+    core.updateContent(path, text);
+    core.getTextEditor().updateContentDesigner(text, false);
   }
 
   private boolean isAcceptDiagnosticForQuickFix(Diagnostic diagnostic) {

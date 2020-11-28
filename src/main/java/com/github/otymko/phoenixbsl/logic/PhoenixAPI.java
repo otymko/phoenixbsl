@@ -1,12 +1,17 @@
 package com.github.otymko.phoenixbsl.logic;
 
+import com.github.otymko.phoenixbsl.logic.designer.DesignerTextEditor;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.Command;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.lang.management.ManagementFactory;
+import java.util.List;
 
 @Slf4j
 @UtilityClass
@@ -111,6 +116,39 @@ public class PhoenixAPI {
 
   public void showMessageDialog(String message) {
     JOptionPane.showMessageDialog(new JFrame(), message);
+  }
+
+  public static String applyFixForText(String textForQF, List<Either<Command, CodeAction>> codeActions) {
+    var strings = textForQF.split(DesignerTextEditor.SEPARATOR);
+    try {
+      applyAllQuickFixes(codeActions, strings);
+    } catch (ArrayIndexOutOfBoundsException e) {
+      LOGGER.error("При применении fix all к тексту модуля возникли ошибки", e);
+      return null;
+    }
+    return String.join(DesignerTextEditor.SEPARATOR, strings);
+  }
+
+  private static void applyAllQuickFixes(List<Either<Command, CodeAction>> codeActions, String[] strings) {
+    codeActions.forEach(diagnostic -> {
+      CodeAction codeAction = diagnostic.getRight();
+      if (codeAction.getTitle().startsWith("Fix all:")) {
+        return;
+      }
+      codeAction.getEdit().getChanges().forEach((s, textEdits) -> textEdits.forEach(textEdit ->
+      {
+        var range = textEdit.getRange();
+        var currentLine = range.getStart().getLine();
+        var newText = textEdit.getNewText();
+        var currentString = strings[currentLine];
+        var newString =
+          currentString.substring(0, range.getStart().getCharacter())
+            + newText
+            + currentString.substring(range.getEnd().getCharacter());
+        strings[currentLine] = newString;
+      }));
+    });
+
   }
 
 }

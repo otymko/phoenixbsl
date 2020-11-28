@@ -21,6 +21,7 @@ import java.util.List;
 @Slf4j
 public class DesignerTextEditor implements EventListener {
   public static final List<String> DIAGNOSTIC_FOR_QF = createDiagnosticListForQuickFix();
+  public static final String SEPARATOR = "\n";
   private final PhoenixCore core;
   @Getter
   @Setter
@@ -48,13 +49,17 @@ public class DesignerTextEditor implements EventListener {
   @Override
   public void inspection() {
     LOGGER.debug("Событие: анализ кода");
-    if (PhoenixAPI.isWindowsForm1S()) {
-      updateFocusForm();
-    } else {
+    if (!PhoenixAPI.isWindowsForm1S()) {
       return;
     }
+    updateFocusForm();
+
+    var path = core.getProjectSetting().getFakePath();
+    var textForCheck = getTextFormDesigner();
+    core.updateContent(path, textForCheck);
+
     if (core.getLsService().isAlive()) {
-      core.getLsService().validate();
+      core.getLsService().validate(path, content);
     }
   }
 
@@ -64,8 +69,17 @@ public class DesignerTextEditor implements EventListener {
     if (!PhoenixAPI.isWindowsForm1S()) {
       return;
     }
+    updateFocusForm();
+
+    var path = core.getProjectSetting().getFakePath();
+    var formattingText = getFormattingText();
+    core.updateContent(path, formattingText.getContext());
+
     if (core.getLsService().isAlive()) {
-      core.getLsService().formatting();
+      core.getLsService().formatting(path, formattingText);
+      if (formattingText.getContext() != null) {
+        PhoenixAPI.insetTextOnForm(formattingText.getContext(), formattingText.isSelected());
+      }
     }
   }
 
@@ -75,8 +89,14 @@ public class DesignerTextEditor implements EventListener {
     if (!PhoenixAPI.isWindowsForm1S()) {
       return;
     }
+    updateFocusForm();
+
+    var path = core.getProjectSetting().getFakePath();
+    var text = PhoenixAPI.getTextAll();
+    core.updateContent(path, text);
+
     if (core.getLsService().isAlive()) {
-      core.getLsService().fixAll();
+      core.getLsService().fixAll(path, text);
     }
   }
 
@@ -87,8 +107,39 @@ public class DesignerTextEditor implements EventListener {
     fooStream.close();
   }
 
+  public void updateContentDesigner(String text, boolean isSelected) {
+    PhoenixAPI.insetTextOnForm(text, isSelected);
+  }
+
   public void updateFocusForm() {
     focusForm = PhoenixUser32.getHWNDFocusForm();
+  }
+
+  private String getTextFormDesigner() {
+    setCurrentOffset(0);
+    var textForCheck = "";
+    var textModuleSelected = PhoenixAPI.getTextSelected();
+    if (textModuleSelected.length() > 0) {
+      // получем номер строки
+      textForCheck = textModuleSelected;
+      setCurrentOffset(PhoenixAPI.getCurrentLineNumber());
+    } else {
+      textForCheck = PhoenixAPI.getTextAll();
+    }
+    return textForCheck;
+  }
+
+  private FormattingText getFormattingText() {
+    var textForFormatting = "";
+    var isSelected = false;
+    var textModuleSelected = PhoenixAPI.getTextSelected();
+    if (textModuleSelected.length() > 0) {
+      textForFormatting = textModuleSelected;
+      isSelected = true;
+    } else {
+      textForFormatting = PhoenixAPI.getTextAll();
+    }
+    return new FormattingText(textForFormatting, isSelected);
   }
 
   private static List<String> createDiagnosticListForQuickFix() {

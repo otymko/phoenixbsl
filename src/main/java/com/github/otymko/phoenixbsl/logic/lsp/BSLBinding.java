@@ -73,7 +73,10 @@ public class BSLBinding {
       try {
         future.get();
         return;
-      } catch (InterruptedException | ExecutionException e) {
+      } catch (InterruptedException e) {
+        LOGGER.error(e.getMessage(), e);
+        Thread.currentThread().interrupt();
+      } catch (ExecutionException e) {
         LOGGER.error(e.getMessage(), e);
       }
     }
