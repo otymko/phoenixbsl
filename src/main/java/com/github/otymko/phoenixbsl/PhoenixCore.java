@@ -40,9 +40,6 @@ public class PhoenixCore implements EventListener {
       EventManager.EVENT_UPDATE_ISSUES,
       EventManager.SHOW_ISSUE_STAGE,
       EventManager.SHOW_SETTING_STAGE);
-    eventManager.subscribe(EventManager.EVENT_INSPECTION, this);
-    eventManager.subscribe(EventManager.EVENT_FORMATTING, this);
-    eventManager.subscribe(EventManager.EVENT_FIX_ALL, this);
 
     configuration = Configuration.create();
   }
@@ -59,42 +56,6 @@ public class PhoenixCore implements EventListener {
     initGlobalKeyListener(); // подключаем слушаеть нажатий
     initEmptyProject();
     initProcessBSL(); // запустим bsl ls
-  }
-
-  @Override
-  public void inspection() {
-    LOGGER.debug("Событие: анализ кода");
-    if (PhoenixAPI.isWindowsForm1S()) {
-      getTextEditor().updateFocusForm();
-    } else {
-      return;
-    }
-
-    if (lsService.isAlive()) {
-      lsService.validate();
-    }
-  }
-
-  @Override
-  public void formatting() {
-    LOGGER.debug("Событие: форматирование");
-    if (!PhoenixAPI.isWindowsForm1S()) {
-      return;
-    }
-    if (lsService.isAlive()) {
-      lsService.formatting();
-    }
-  }
-
-  @Override
-  public void fixAll() {
-    LOGGER.debug("Событие: обработка квикфиксов");
-    if (!PhoenixAPI.isWindowsForm1S()) {
-      return;
-    }
-    if (lsService.isAlive()) {
-      lsService.fixAll();
-    }
   }
 
   @Override
@@ -211,7 +172,7 @@ public class PhoenixCore implements EventListener {
   }
 
   private void initTextEditor() {
-    textEditor = new DesignerTextEditor();
+    textEditor = new DesignerTextEditor(this);
   }
 
   private void initToolbar() {
