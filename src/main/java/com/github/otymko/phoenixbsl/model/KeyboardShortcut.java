@@ -21,8 +21,22 @@ public class KeyboardShortcut {
     keyList.add(key);
   }
 
-  public boolean equals(KeyboardShortcut obj) {
-    return obj.controlPressed == controlPressed && keyList.equals(obj.keyList);
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+
+    var object = (KeyboardShortcut) obj;
+    return object.controlPressed == controlPressed && keyList.equals(object.keyList);
   }
 
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

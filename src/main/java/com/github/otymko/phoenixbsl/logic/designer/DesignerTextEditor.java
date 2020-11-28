@@ -8,11 +8,11 @@ import com.github.otymko.phoenixbsl.logic.event.EventManager;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -100,11 +100,12 @@ public class DesignerTextEditor implements EventListener {
     }
   }
 
-  @SneakyThrows
   public void saveContent() {
-    var fooStream = new FileOutputStream(pathToFile.toFile(), false);
-    fooStream.write(content.getBytes(StandardCharsets.UTF_8));
-    fooStream.close();
+    try (var fooStream = new FileOutputStream(pathToFile.toFile(), false)) {
+      fooStream.write(content.getBytes(StandardCharsets.UTF_8));
+    } catch (IOException e) {
+      LOGGER.error(e.getMessage(), e);
+    }
   }
 
   public void updateContentDesigner(String text, boolean isSelected) {
