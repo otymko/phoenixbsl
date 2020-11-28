@@ -98,12 +98,24 @@ public class PhoenixCore implements EventListener {
   }
 
   public boolean appIsRunning() {
-    var thisPid = ProcessHandle.current().pid();
+    var currentProcess = ProcessHandle.current();
+    var thisPid = currentProcess.pid();
+
+    // исключаем, если это запуск jar
+    var optionalCommand = currentProcess.info().command();
+    if (optionalCommand.isPresent()) {
+      if (optionalCommand.get().equals("java.exe")) {
+        return false;
+      }
+    }
+
+    var thisUser = currentProcess.info().user().orElse("");
     var isRunning = new AtomicBoolean(false);
     ProcessHandle.allProcesses()
       .filter(
         ph -> ph.info().command().isPresent()
-          && ph.info().command().get().contains(APPLICATION_NAME)
+          && ph.info().command().get().contains(PhoenixCore.APPLICATION_NAME)
+          && !ph.info().user().orElse("").equals(thisUser)
           && ph.pid() != thisPid)
       .findAny()
       .ifPresent(processHandle -> isRunning.set(true));
