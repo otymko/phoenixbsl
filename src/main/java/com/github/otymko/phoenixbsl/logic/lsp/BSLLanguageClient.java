@@ -1,6 +1,7 @@
 package com.github.otymko.phoenixbsl.logic.lsp;
 
 import com.github.otymko.phoenixbsl.PhoenixCore;
+import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
 import com.github.otymko.phoenixbsl.logic.event.EventManager;
 import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
 import org.eclipse.lsp4j.ApplyWorkspaceEditResponse;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class BSLLanguageClient implements LanguageClient {
+  private static final String SOURCE = "bsl-language-server";
 
   public BSLLanguageClient() {
     // none
@@ -45,11 +47,10 @@ public class BSLLanguageClient implements LanguageClient {
 
   @Override
   public void publishDiagnostics(PublishDiagnosticsParams publishDiagnosticsParams) {
-
     var core = PhoenixCore.getInstance();
 
     var diagnosticList = core.getTextEditor().getDiagnostics();
-    diagnosticList.clear();
+    PhoenixAPI.clearListBySource(diagnosticList, SOURCE);
     diagnosticList.addAll(publishDiagnosticsParams.getDiagnostics());
 
     PhoenixCore.getInstance().getEventManager().notify(

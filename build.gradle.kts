@@ -34,6 +34,8 @@ dependencies {
     implementation("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.9.0")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
     implementation("lc.kra.system","system-hook", "3.8")
+    implementation("com.github.silverbulleters:sonarlint-core:123a8b2")
+
 
     // ui
     implementation("com.jfoenix","jfoenix", "9.0.10")
