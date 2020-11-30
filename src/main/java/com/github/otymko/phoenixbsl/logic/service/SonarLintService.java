@@ -8,6 +8,7 @@ import com.github.otymko.phoenixbsl.logic.sonarlint.DefaultClientInputFile;
 import com.github.otymko.phoenixbsl.logic.sonarlint.StoreIssueListener;
 import com.github.otymko.phoenixbsl.model.ProjectSetting;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class SonarLintService implements Service {
   private static final String SERVER_ID = "BF41A1F2-AXXb5ffO74B20IfqK24x";
   private static final String SOURCE = "sonarlint";
@@ -48,14 +50,20 @@ public class SonarLintService implements Service {
 
   @Override
   public void start() {
-    ServerConfiguration serverConfiguration = ServerConfiguration.builder()
+    var serverConfiguration = ServerConfiguration.builder()
       .token(project.getToken())
       .url(project.getServerUrl())
       .userAgent(PhoenixCore.APPLICATION_NAME)
       .build();
 
     connection = new ConnectedSonarLintEngineImpl(configuration);
-    connection.update(serverConfiguration, null);
+    try {
+      connection.update(serverConfiguration, null);
+    } catch (Exception e) {
+      LOGGER.error(e.getMessage(), e);
+      connection = null;
+      return;
+    }
     connection.updateProject(serverConfiguration, project.getProjectKey(), null);
     connection.start();
   }
@@ -84,7 +92,7 @@ public class SonarLintService implements Service {
       .setProjectKey(project.getProjectKey())
       .build();
 
-    StoreIssueListener issueListener = new StoreIssueListener(new ArrayList<>());
+    var issueListener = new StoreIssueListener(new ArrayList<>());
     connection.analyze(analysisConfiguration, issueListener, logOutput, null);
 
     var diagnostics = issueListener.getIssues()
@@ -109,7 +117,7 @@ public class SonarLintService implements Service {
     PhoenixAPI.clearListBySource(diagnosticList, SOURCE);
     diagnosticList.addAll(diagnostics);
 
-    PhoenixCore.getInstance().getEventManager().notify(
+    core.getEventManager().notify(
       EventManager.EVENT_UPDATE_ISSUES,
       diagnosticList
     );
