@@ -10,19 +10,17 @@ import java.util.Map;
 
 @Slf4j
 public class EventManager {
-
   public static final int EVENT_INSPECTION = 1;
   public static final int EVENT_FORMATTING = 2;
   public static final int EVENT_UPDATE_ISSUES = 3;
   public static final int SHOW_ISSUE_STAGE = 4;
   public static final int SHOW_SETTING_STAGE = 5;
   public static final int EVENT_FIX_ALL = 6;
-
-  Map<Integer, List<EventListener>> listeners = new HashMap<>();
+  private final Map<Integer, List<EventListener>> listeners = new HashMap<>();
 
   public EventManager(int... operations) {
     for (int operation : operations) {
-      this.listeners.put(operation, new ArrayList<>());
+      listeners.put(operation, new ArrayList<>());
     }
   }
 
@@ -37,13 +35,13 @@ public class EventManager {
   }
 
   public synchronized void notify(int eventType) {
-    List< EventListener> users = listeners.get(eventType);
+    List<EventListener> users = listeners.get(eventType);
     for (EventListener listener : users) {
       if (eventType == EVENT_INSPECTION) {
         listener.inspection();
       } else if (eventType == EVENT_FORMATTING) {
         listener.formatting();
-      } else if (eventType == SHOW_ISSUE_STAGE){
+      } else if (eventType == SHOW_ISSUE_STAGE) {
         listener.showIssuesStage();
       } else if (eventType == SHOW_SETTING_STAGE) {
         listener.showSettingStage();

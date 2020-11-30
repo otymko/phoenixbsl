@@ -9,17 +9,14 @@ plugins {
     java
     maven
     jacoco
-    id("org.openjfx.javafxplugin") version "0.0.8"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
-    id("org.sonarqube") version "2.8"
-    id("io.franzbecker.gradle-lombok") version "3.2.0"
+    id("org.openjfx.javafxplugin") version "0.0.9"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("org.sonarqube") version "3.0"
+    id("io.franzbecker.gradle-lombok") version "4.0.0"
     id("com.github.gradle-git-version-calculator") version "1.1.0"
 }
 
 repositories {
-    flatDir {
-        dirs("libs")
-    }
     mavenCentral()
     maven { url = URI("https://jitpack.io") }
 }
@@ -31,17 +28,17 @@ var semver = calculateVersion("v", false)
 dependencies {
     testImplementation("com.hynnet", "jacob", "1.18")
     testImplementation("junit", "junit", "4.12")
-    testImplementation("org.assertj", "assertj-core", "3.16.1")
+    testImplementation("org.assertj", "assertj-core", "3.18.1")
 
-    implementation("net.java.dev.jna:jna-platform:5.4.0")
-    implementation("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.8.1")
+    implementation("net.java.dev.jna:jna-platform:5.6.0")
+    implementation("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.9.0")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
-    implementation("lc.kra.system","system-hook", "3.5")
+    implementation("lc.kra.system","system-hook", "3.8")
 
     // ui
-    implementation("com.jfoenix","jfoenix", "9.0.9")
+    implementation("com.jfoenix","jfoenix", "9.0.10")
 
-    implementation("com.fasterxml.jackson.core", "jackson-databind", "2.10.2")
+    implementation("com.fasterxml.jackson.core", "jackson-databind", "2.11.3")
 
     compileOnly("org.projectlombok", "lombok", lombok.version)
 }
@@ -58,7 +55,7 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.jar {
-    var mainClass = project.group.toString() + ".PhoenixLauncher"
+    var mainClass = project.group.toString() + ".PhoenixMain"
     manifest {
         attributes["Main-Class"] = mainClass
         attributes["Implementation-Version"] = project.version
@@ -107,8 +104,7 @@ javafx {
 }
 
 lombok {
-    version = "1.18.10"
-    sha256 = "2836e954823bfcbad45e78c18896e3d01058e6f643749810c608b7005ee7b2fa"
+    version = "1.18.16"
 }
 
 /* Получить версия проекта без дополнительной информации

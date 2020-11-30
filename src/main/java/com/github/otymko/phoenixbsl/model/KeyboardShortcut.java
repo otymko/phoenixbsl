@@ -1,13 +1,14 @@
 package com.github.otymko.phoenixbsl.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class KeyboardShortcut extends Object{
-
+@EqualsAndHashCode
+public class KeyboardShortcut {
   private final boolean controlPressed;
   private final List<Integer> keyList;
 
@@ -21,10 +22,4 @@ public class KeyboardShortcut extends Object{
     keyList = new ArrayList<>();
     keyList.add(key);
   }
-
-  public boolean equals(KeyboardShortcut obj)
-  {
-    return obj.controlPressed == controlPressed && keyList.equals(obj.keyList);
-  }
-
 }

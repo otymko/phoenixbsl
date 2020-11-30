@@ -1,16 +1,27 @@
 package com.github.otymko.phoenixbsl.logic.lsp;
 
-import com.github.otymko.phoenixbsl.logic.event.EventManager;
-import org.eclipse.lsp4j.*;
-import org.eclipse.lsp4j.services.LanguageClient;
 import com.github.otymko.phoenixbsl.PhoenixCore;
+import com.github.otymko.phoenixbsl.logic.event.EventManager;
+import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
+import org.eclipse.lsp4j.ApplyWorkspaceEditResponse;
+import org.eclipse.lsp4j.ConfigurationParams;
+import org.eclipse.lsp4j.MessageActionItem;
+import org.eclipse.lsp4j.MessageParams;
+import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.RegistrationParams;
+import org.eclipse.lsp4j.ShowMessageRequestParams;
+import org.eclipse.lsp4j.UnregistrationParams;
+import org.eclipse.lsp4j.WorkspaceFolder;
+import org.eclipse.lsp4j.services.LanguageClient;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class BSLLanguageClient implements LanguageClient {
 
-  public BSLLanguageClient() {}
+  public BSLLanguageClient() {
+    // none
+  }
 
   @Override
   public CompletableFuture<ApplyWorkspaceEditResponse> applyEdit(ApplyWorkspaceEditParams params) {
@@ -29,7 +40,7 @@ public class BSLLanguageClient implements LanguageClient {
 
   @Override
   public void telemetryEvent(Object o) {
-
+    // none
   }
 
   @Override
@@ -37,7 +48,7 @@ public class BSLLanguageClient implements LanguageClient {
 
     var core = PhoenixCore.getInstance();
 
-    var diagnosticList = core.getDiagnosticList();
+    var diagnosticList = core.getTextEditor().getDiagnostics();
     diagnosticList.clear();
     diagnosticList.addAll(publishDiagnosticsParams.getDiagnostics());
 
@@ -50,6 +61,7 @@ public class BSLLanguageClient implements LanguageClient {
 
   @Override
   public void showMessage(MessageParams messageParams) {
+    // none
   }
 
   @Override
@@ -59,7 +71,7 @@ public class BSLLanguageClient implements LanguageClient {
 
   @Override
   public void logMessage(MessageParams messageParams) {
-
+    // none
   }
 
   @Override
@@ -70,11 +82,6 @@ public class BSLLanguageClient implements LanguageClient {
   @Override
   public CompletableFuture<List<Object>> configuration(ConfigurationParams configurationParams) {
     return null;
-  }
-
-  @Override
-  public void semanticHighlighting(SemanticHighlightingParams params) {
-
   }
 
 }

@@ -1,7 +1,10 @@
 package com.github.otymko.phoenixbsl.gui.stage;
 
+import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.gui.controller.IssueStageController;
 import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
+import com.github.otymko.phoenixbsl.model.Issue;
+import com.github.otymko.phoenixbsl.model.ProjectSetting;
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.controls.JFXDecorator;
 import com.jfoenix.controls.JFXTreeTableColumn;
@@ -16,7 +19,13 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
+import javafx.scene.control.TreeTableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -24,29 +33,30 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import com.github.otymko.phoenixbsl.PhoenixCore;
-import com.github.otymko.phoenixbsl.model.Issue;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
 @Slf4j
 public class IssuesStage extends Stage {
-
   private static final String COLUMN_DESCRIPTION = "DESCRIPTION";
   private static final String COLUMN_POSITION = "POSITION";
   private static final String COLUMN_TYPE = "TYPE";
+  private static final Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
+  private static final Map<String, DiagnosticSeverity> stringToSeverityMap = createStringToSeverityMap();
 
-  private static Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
-  private static Map<String, DiagnosticSeverity> stringToSeverityMap = createStringToSeverityMap();
+  private final ObservableList<Issue> issues = FXCollections.observableArrayList();
 
-  private ObservableList<Issue> issues = FXCollections.observableArrayList();
-
-  private JFXTreeTableView<Issue> tree;
+  private final JFXTreeTableView<Issue> tree;
   private RecursiveTreeItem<Issue> recursiveTreeItem;
 
-  private TextField search;
+  private final ComboBox<ProjectSetting> project;
+  private final TextField search;
 
   public int lineOffset = 0;
 
@@ -54,9 +64,9 @@ public class IssuesStage extends Stage {
   private int countWarning = 0;
   private int countInfo = 0;
 
-  private Label labelError;
-  private Label labelWarning;
-  private Label labelInfo;
+  private final Label labelError;
+  private final Label labelWarning;
+  private final Label labelInfo;
 
   private TreeTableColumn<Issue, String> typeColumn;
 
@@ -86,6 +96,13 @@ public class IssuesStage extends Stage {
     labelError = localController.getLabelError();
     labelWarning = localController.getLabelWarning();
     labelInfo = localController.getLabelInfo();
+
+    project = localController.getProject();
+    project.getItems().setAll(PhoenixCore.getInstance().getConfiguration().getProjects());
+    project.setPromptText("Выберите проект");
+    project.getSelectionModel().select(PhoenixCore.getInstance().getProject());
+    project.setOnAction(event ->
+      PhoenixCore.getInstance().updateProject(project.getSelectionModel().getSelectedItem()));
 
     search = localController.getSearch();
     search.textProperty().addListener((o, oldVal, newVal) -> filterIssuesTree(newVal));
@@ -144,7 +161,7 @@ public class IssuesStage extends Stage {
       var item = tree.getSelectionModel().getSelectedItem();
       if (item != null) {
         var issue = item.getValue();
-        PhoenixAPI.gotoLineModule(issue.getStartLine(), PhoenixCore.getInstance().getFocusForm());
+        PhoenixAPI.gotoLineModule(issue.getStartLine(), PhoenixCore.getInstance().getTextEditor().getFocusForm());
       }
     });
 
@@ -233,7 +250,6 @@ public class IssuesStage extends Stage {
     return map;
   }
 
-  // FIXME: переделать?
   private static Map<String, DiagnosticSeverity> createStringToSeverityMap() {
     Map<DiagnosticSeverity, String> map = severityToStringMap;
     Map<String, DiagnosticSeverity> thisMap = new HashMap<>();
@@ -264,6 +280,9 @@ public class IssuesStage extends Stage {
         case COLUMN_TYPE:
           result = severityToStringMap.get(issue.getSeverity());
           break;
+        default:
+          LOGGER.warn("Колонка не поддерживается: " + column);
+          break;
       }
     } else {
       var treeObject = item.getValue();
@@ -273,7 +292,7 @@ public class IssuesStage extends Stage {
           if (column.equals(COLUMN_TYPE)) {
             result = groupValue.toString();
           } else if (column.equals(COLUMN_POSITION)) {
-            DiagnosticSeverity severity = stringToSeverityMap.get(groupValue);
+            var severity = stringToSeverityMap.get(groupValue);
             var list = recursiveTreeItem.getChildren().stream()
               .filter(issueTreeItem -> issueTreeItem.getValue().getSeverity() == severity)
               .collect(Collectors.toList());

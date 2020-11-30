@@ -1,5 +1,6 @@
 package com.github.otymko.phoenixbsl.gui;
 
+import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.gui.controller.SettingStageController;
 import com.github.otymko.phoenixbsl.gui.stage.IssuesStage;
 import com.github.otymko.phoenixbsl.logic.event.EventListener;
@@ -16,7 +17,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.Diagnostic;
-import com.github.otymko.phoenixbsl.PhoenixCore;
 
 import java.awt.*;
 import java.io.IOException;
@@ -24,7 +24,6 @@ import java.util.List;
 
 @Slf4j
 public class MainGUI implements EventListener {
-
   private IssuesStage issuesStage;
   private Stage settingStage;
 
@@ -42,7 +41,7 @@ public class MainGUI implements EventListener {
 
   @Override
   public void updateIssues(List<Diagnostic> diagnostics) {
-    issuesStage.lineOffset = PhoenixCore.getInstance().currentOffset;
+    issuesStage.lineOffset = PhoenixCore.getInstance().getTextEditor().getCurrentOffset();
     showIssuesStageImpl();
     Platform.runLater(() -> issuesStage.updateIssues(diagnostics));
   }
@@ -118,9 +117,8 @@ public class MainGUI implements EventListener {
     link.setText(pathToLog.toString());
 
     link.setOnAction(event -> {
-      Desktop desktop = null;
       if (Desktop.isDesktopSupported()) {
-        desktop = Desktop.getDesktop();
+        var desktop = Desktop.getDesktop();
         try {
           desktop.open(pathToLog.toFile());
         } catch (IOException e) {
@@ -136,7 +134,7 @@ public class MainGUI implements EventListener {
       // сохраним configuration в файл
       processSaveSettings();
       settingStage.close();
-      PhoenixCore.getInstance().restartProcessBSLLS();
+      PhoenixCore.getInstance().restartBSLLS();
     });
 
     controllerStages.getLabelVersion().setText(PhoenixCore.getInstance().getVersionBSLLS());
@@ -167,7 +165,10 @@ public class MainGUI implements EventListener {
     var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
     configuration.setUseGroupIssuesBySeverity(useGroupIssuesBySeverity.isSelected());
 
-    PhoenixCore.getInstance().writeConfiguration(configuration);
+    var project = controllerStages.getProject();
+    configuration.setProject(project.getText());
+
+    PhoenixCore.getInstance().getContext().writeConfiguration(configuration);
   }
 
   private void fillSettingValueFromConfiguration(Configuration configuration) {
@@ -189,6 +190,9 @@ public class MainGUI implements EventListener {
 
     var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
     useGroupIssuesBySeverity.setSelected(configuration.isUseGroupIssuesBySeverity());
+
+    var project = controllerStages.getProject();
+    project.setText(configuration.getProject());
 
   }
 

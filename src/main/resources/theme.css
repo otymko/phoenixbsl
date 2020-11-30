@@ -70,3 +70,17 @@
 #positionColumn {
     -fx-alignment: center;
 }
+
+.combo-box-base:focused {
+    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+}
+
+.combo-box-popup .list-view .list-cell
+{
+    -fx-background-color: #cc7000;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover
+{
+    -fx-background-color: derive(#cc7000, -20%);
+}

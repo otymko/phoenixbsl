@@ -1,14 +1,13 @@
 package com.github.otymko.phoenixbsl.model;
 
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class Issue extends RecursiveTreeObject<Issue> {
-
   private String description = "";
   private String location = "";
   private int startLine = 0;

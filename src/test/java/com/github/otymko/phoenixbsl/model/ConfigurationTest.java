@@ -1,13 +1,13 @@
 package com.github.otymko.phoenixbsl.model;
 
-import junit.framework.TestCase;
+import com.github.otymko.phoenixbsl.logic.PhoenixContext;
 import org.junit.Test;
 
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ConfigurationTest extends TestCase {
+public class ConfigurationTest {
 
   @Test
   public void testCreate() {
@@ -22,7 +22,7 @@ public class ConfigurationTest extends TestCase {
     assertThat(configuration.isUseCustomBSLLSConfiguration())
       .isEqualTo(Configuration.DEFAULT_USE_CUSTOM_BSL_LS_CONFIGURATION);
     assertThat(configuration.getPathToBSLLSConfiguration())
-      .isEqualTo(Configuration.DEFAULT_PATH_TO_BSL_LS_CONFIGURATION);
+      .isEqualTo(PhoenixContext.BSL_CONFIGURATION_NAME);
     assertThat(configuration.isUseGroupIssuesBySeverity())
       .isEqualTo(Configuration.DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY);
   }

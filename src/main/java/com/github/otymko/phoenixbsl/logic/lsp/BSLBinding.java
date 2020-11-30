@@ -3,8 +3,30 @@ package com.github.otymko.phoenixbsl.logic.lsp;
 import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.lsp4j.*;
-import org.eclipse.lsp4j.jsonrpc.Launcher;
+import org.eclipse.lsp4j.ClientCapabilities;
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.CodeActionCapabilities;
+import org.eclipse.lsp4j.CodeActionContext;
+import org.eclipse.lsp4j.CodeActionKind;
+import org.eclipse.lsp4j.CodeActionKindCapabilities;
+import org.eclipse.lsp4j.CodeActionLiteralSupportCapabilities;
+import org.eclipse.lsp4j.CodeActionParams;
+import org.eclipse.lsp4j.Command;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DidChangeTextDocumentParams;
+import org.eclipse.lsp4j.DidOpenTextDocumentParams;
+import org.eclipse.lsp4j.DidSaveTextDocumentParams;
+import org.eclipse.lsp4j.DocumentFormattingParams;
+import org.eclipse.lsp4j.FormattingOptions;
+import org.eclipse.lsp4j.InitializeParams;
+import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextDocumentClientCapabilities;
+import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.eclipse.lsp4j.TextDocumentItem;
+import org.eclipse.lsp4j.TextEdit;
+import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.LanguageServer;
@@ -17,17 +39,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 @Slf4j
 public class BSLBinding {
-
-  private BSLLanguageClient client;
+  private static final String TRACE_LEVEL = "verbose";
+  private final BSLLanguageClient client;
   private LanguageServer server;
-  private InputStream in;
-  private OutputStream out;
-  private Launcher<LanguageServer> launcher;
-  private Thread thread = new Thread(this::start);
+  private final InputStream in;
+  private final OutputStream out;
+  private final Thread thread = new Thread(this::start);
 
   public BSLBinding(BSLLanguageClient client, InputStream in, OutputStream out) {
     this.client = client;
@@ -44,8 +64,8 @@ public class BSLBinding {
 
   @VisibleForTesting
   private void start() {
-    launcher = LSPLauncher.createClientLauncher(client, in, out);
-    Future<?> future = launcher.startListening();
+    var launcher = LSPLauncher.createClientLauncher(client, in, out);
+    var future = launcher.startListening();
 
     server = launcher.getRemoteProxy();
 
@@ -54,9 +74,10 @@ public class BSLBinding {
         future.get();
         return;
       } catch (InterruptedException e) {
-        LOGGER.error(e.getMessage());
+        LOGGER.error(e.getMessage(), e);
+        Thread.currentThread().interrupt();
       } catch (ExecutionException e) {
-        LOGGER.error(e.getMessage());
+        LOGGER.error(e.getMessage(), e);
       }
     }
 
@@ -65,11 +86,11 @@ public class BSLBinding {
   public CompletableFuture<InitializeResult> initialize() {
     var params = new InitializeParams();
     params.setProcessId(PhoenixAPI.getProcessId());
-    params.setTrace("verbose");
-    ClientCapabilities serverCapabilities = new ClientCapabilities();
+    params.setTrace(TRACE_LEVEL);
+    var serverCapabilities = new ClientCapabilities();
 
-    TextDocumentClientCapabilities textDocument = new TextDocumentClientCapabilities();
-    CodeActionCapabilities codeActionCapabilities = new CodeActionCapabilities(true);
+    var textDocument = new TextDocumentClientCapabilities();
+    var codeActionCapabilities = new CodeActionCapabilities(true);
     textDocument.setCodeAction(codeActionCapabilities);
     textDocument
       .setCodeAction(
@@ -84,8 +105,8 @@ public class BSLBinding {
   }
 
   public void textDocumentDidOpen(URI uri, String text) {
-    DidOpenTextDocumentParams params = new DidOpenTextDocumentParams();
-    TextDocumentItem item = new TextDocumentItem();
+    var params = new DidOpenTextDocumentParams();
+    var item = new TextDocumentItem();
     item.setLanguageId("bsl");
     item.setUri(uri.toString());
     item.setText(text);
@@ -95,7 +116,7 @@ public class BSLBinding {
 
   public void textDocumentDidChange(URI uri, String text) {
     var params = new DidChangeTextDocumentParams();
-    VersionedTextDocumentIdentifier versionedTextDocumentIdentifier = new VersionedTextDocumentIdentifier();
+    var versionedTextDocumentIdentifier = new VersionedTextDocumentIdentifier();
     versionedTextDocumentIdentifier.setUri(uri.toString());
     versionedTextDocumentIdentifier.setVersion(0);
     params.setTextDocument(versionedTextDocumentIdentifier);
@@ -109,16 +130,16 @@ public class BSLBinding {
 
   public void textDocumentDidSave(URI uri) {
     var paramsSave = new DidSaveTextDocumentParams();
-    TextDocumentIdentifier textDocumentIdentifier = new TextDocumentIdentifier();
+    var textDocumentIdentifier = new TextDocumentIdentifier();
     textDocumentIdentifier.setUri(uri.toString());
     paramsSave.setTextDocument(textDocumentIdentifier);
     server.getTextDocumentService().didSave(paramsSave);
   }
 
   public List<Either<Command, CodeAction>> textDocumentCodeAction(URI uri, List<Diagnostic> listDiagnostic) throws ExecutionException, InterruptedException {
-    CodeActionParams params = new CodeActionParams();
+    var params = new CodeActionParams();
 
-    TextDocumentIdentifier textDocumentIdentifier = new TextDocumentIdentifier();
+    var textDocumentIdentifier = new TextDocumentIdentifier();
     textDocumentIdentifier.setUri(uri.toString());
 
     var context = new CodeActionContext();

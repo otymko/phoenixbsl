@@ -1,12 +1,12 @@
 package com.github.otymko.phoenixbsl.logic;
 
+import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.logic.event.EventManager;
 import com.github.otymko.phoenixbsl.model.KeyboardShortcut;
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
 import lombok.extern.slf4j.Slf4j;
-import com.github.otymko.phoenixbsl.PhoenixCore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class GlobalKeyListenerThread extends Thread {
 
   private final EventManager eventManager;
-  private Map<KeyboardShortcut, Runnable> commands = new HashMap<>();
+  private final Map<KeyboardShortcut, Runnable> commands = new HashMap<>();
 
   public GlobalKeyListenerThread() {
 
@@ -49,7 +49,7 @@ public class GlobalKeyListenerThread extends Thread {
 
   private void runHook() {
 
-    GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(false);
+    var keyboardHook = new GlobalKeyboardHook(false);
     LOGGER.info("Глобальный слушатей нажатий клавиш запущен");
 
     keyboardHook.addKeyListener(new GlobalKeyAdapter() {
