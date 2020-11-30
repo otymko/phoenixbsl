@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeTableView?>
@@ -15,6 +16,23 @@
     <center>
         <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
             <children>
+            <HBox prefHeight="35.0" prefWidth="600.0">
+               <children>
+                  <Label prefHeight="41.0" prefWidth="61.0" text="Проект:">
+                     <font>
+                        <Font name="Calibri" size="15.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="project" minWidth="265.0" prefHeight="25.0" prefWidth="265.0">
+                     <HBox.margin>
+                        <Insets top="7.0" />
+                     </HBox.margin>
+                  </ComboBox>
+               </children>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+            </HBox>
                 <TextField fx:id="search" minHeight="27.0" prefHeight="20.0" prefWidth="64.0" promptText="Поиск">
                     <VBox.margin>
                         <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />

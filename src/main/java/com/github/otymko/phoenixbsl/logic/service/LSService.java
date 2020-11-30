@@ -129,7 +129,7 @@ public class LSService implements Service {
     binding.initialize();
 
     // откроем фейковый документ
-    core.updateContent(core.getProjectSetting().getFakePath(), "");
+    core.updateContent(core.getProject().getFakePath(), "");
     binding.textDocumentDidOpen(core.getFakeUri(), "");
 
   }

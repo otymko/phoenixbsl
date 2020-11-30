@@ -29,7 +29,7 @@ public class PhoenixCore implements EventListener {
   private LSService lsService;
   private DesignerTextEditor textEditor;
   private Configuration configuration;
-  private ProjectSetting projectSetting;
+  private ProjectSetting project;
   private final EventManager eventManager;
 
   private PhoenixCore() {
@@ -51,10 +51,10 @@ public class PhoenixCore implements EventListener {
   public void initialize() {
     initContext();
     initConfiguration(); // инициализируем настроек
+    initProjects();
     initToolbar(); // запустим трей
     initTextEditor();
     initGlobalKeyListener(); // подключаем слушаеть нажатий
-    initEmptyProject();
     initProcessBSL(); // запустим bsl ls
   }
 
@@ -140,7 +140,7 @@ public class PhoenixCore implements EventListener {
   }
 
   public URI getFakeUri() {
-    return projectSetting.getFakePath().toUri();
+    return project.getFakePath().toUri();
   }
 
   public Path getPathToLogs() {
@@ -151,6 +151,11 @@ public class PhoenixCore implements EventListener {
     textEditor.setPathToFile(path);
     textEditor.setContent(content);
     textEditor.saveContent();
+  }
+
+  public void updateProject(ProjectSetting project) {
+    this.project = project;
+    initProject();
   }
 
   private void initContext() {
@@ -166,21 +171,43 @@ public class PhoenixCore implements EventListener {
     lsService.start();
   }
 
-  private void initEmptyProject() {
-    final String projectName = "project";
-    projectSetting = new ProjectSetting();
-    projectSetting.setProjectKey(projectName);
-
+  private void initProjects() {
     // создаем каталог project
     var pathToProjects = Path.of(context.getBasePathApp().toString(), "projects");
-    pathToProjects.toFile().mkdir();
+    if (!pathToProjects.toFile().exists()){
+      pathToProjects.toFile().mkdir();
+    }
 
-    var emptyProject = Path.of(pathToProjects.toString(), projectName);
-    emptyProject.toFile().mkdir();
-    projectSetting.setBasePath(emptyProject);
+    if (!configuration.getProjects().isEmpty()) {
+      var projectName = context.getProjectName();
+      configuration.getProjects().stream()
+        .filter(item -> item.getName().equalsIgnoreCase(projectName))
+        .findAny()
+        .ifPresent(this::setProject);
+    }
 
-    var fakePath = Path.of(emptyProject.toString(), "Module.bsl");
-    projectSetting.setFakePath(fakePath);
+    if (project == null) {
+      initEmptyProject(pathToProjects);
+      configuration.getProjects().add(project);
+    }
+
+    initProject();
+  }
+
+  private void initEmptyProject(Path pathToProjects) {
+    final String projectKey = "project";
+    project = new ProjectSetting();
+    project.setName(PhoenixContext.DEFAULT_PROJECT_NAME);
+    project.setProjectKey(projectKey);
+
+    var emptyProject = Path.of(pathToProjects.toString(), projectKey);
+    project.setBasePath(emptyProject);
+  }
+
+  private void initProject() {
+    if (!project.getBasePath().toFile().exists()) {
+      project.getBasePath().toFile().mkdirs();
+    }
   }
 
   private void initTextEditor() {

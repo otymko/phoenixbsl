@@ -165,6 +165,9 @@ public class MainGUI implements EventListener {
     var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
     configuration.setUseGroupIssuesBySeverity(useGroupIssuesBySeverity.isSelected());
 
+    var project = controllerStages.getProject();
+    configuration.setProject(project.getText());
+
     PhoenixCore.getInstance().getContext().writeConfiguration(configuration);
   }
 
@@ -187,6 +190,9 @@ public class MainGUI implements EventListener {
 
     var useGroupIssuesBySeverity = controllerStages.getUseGroupIssuesBySeverity();
     useGroupIssuesBySeverity.setSelected(configuration.isUseGroupIssuesBySeverity());
+
+    var project = controllerStages.getProject();
+    project.setText(configuration.getProject());
 
   }
 

@@ -54,7 +54,7 @@ public class DesignerTextEditor implements EventListener {
     }
     updateFocusForm();
 
-    var path = core.getProjectSetting().getFakePath();
+    var path = core.getProject().getFakePath();
     var textForCheck = getTextFormDesigner();
     core.updateContent(path, textForCheck);
 
@@ -71,7 +71,7 @@ public class DesignerTextEditor implements EventListener {
     }
     updateFocusForm();
 
-    var path = core.getProjectSetting().getFakePath();
+    var path = core.getProject().getFakePath();
     var formattingText = getFormattingText();
     core.updateContent(path, formattingText.getContext());
 
@@ -91,7 +91,7 @@ public class DesignerTextEditor implements EventListener {
     }
     updateFocusForm();
 
-    var path = core.getProjectSetting().getFakePath();
+    var path = core.getProject().getFakePath();
     var text = PhoenixAPI.getTextAll();
     core.updateContent(path, text);
 

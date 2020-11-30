@@ -13,6 +13,7 @@ import java.nio.file.Path;
 @Slf4j
 public class PhoenixContext {
   public static final String BSL_CONFIGURATION_NAME = ".bsl-language-server.json";
+  public static final String DEFAULT_PROJECT_NAME = "Базовый проект";
   private final PhoenixCore core;
   @Getter
   private final Path basePathApp = Path.of(System.getProperty("user.home"), PhoenixCore.APPLICATION_NAME);
@@ -56,6 +57,14 @@ public class PhoenixContext {
     writeConfiguration(configuration, getPathToConfiguration().toFile());
   }
 
+  public String getProjectName() {
+    var projectName = core.getConfiguration().getProject();
+    if (projectName.isEmpty()) {
+      projectName = PhoenixContext.DEFAULT_PROJECT_NAME;
+    }
+    return projectName;
+  }
+
   private Path createPathToLog() {
     var path = Path.of(basePathApp.toString(), "logs").toAbsolutePath();
     path.toFile().mkdirs();
@@ -68,4 +77,5 @@ public class PhoenixContext {
     path.getParent().toFile().mkdirs();
     return path;
   }
+
 }

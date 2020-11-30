@@ -3,7 +3,9 @@ package com.github.otymko.phoenixbsl.gui.stage;
 import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.gui.controller.IssueStageController;
 import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
+import com.github.otymko.phoenixbsl.logic.PhoenixContext;
 import com.github.otymko.phoenixbsl.model.Issue;
+import com.github.otymko.phoenixbsl.model.ProjectSetting;
 import com.jfoenix.assets.JFoenixResources;
 import com.jfoenix.controls.JFXDecorator;
 import com.jfoenix.controls.JFXTreeTableColumn;
@@ -18,6 +20,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -53,6 +56,7 @@ public class IssuesStage extends Stage {
   private final JFXTreeTableView<Issue> tree;
   private RecursiveTreeItem<Issue> recursiveTreeItem;
 
+  private final ComboBox<ProjectSetting> project;
   private final TextField search;
 
   public int lineOffset = 0;
@@ -93,6 +97,14 @@ public class IssuesStage extends Stage {
     labelError = localController.getLabelError();
     labelWarning = localController.getLabelWarning();
     labelInfo = localController.getLabelInfo();
+
+    project = localController.getProject();
+    project.getItems().setAll(PhoenixCore.getInstance().getConfiguration().getProjects());
+    project.setPromptText("Выберите проект");
+    project.getSelectionModel().select(PhoenixCore.getInstance().getProject());
+    project.setOnAction(event -> {
+      PhoenixCore.getInstance().updateProject(project.getSelectionModel().getSelectedItem());
+    });
 
     search = localController.getSearch();
     search.textProperty().addListener((o, oldVal, newVal) -> filterIssuesTree(newVal));

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
 
@@ -27,6 +29,8 @@ public class Configuration {
   private boolean useCustomBSLLSConfiguration;
   private String pathToBSLLSConfiguration;
   private boolean useGroupIssuesBySeverity = DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY;
+  private String project;
+  private List<ProjectSetting> projects = new ArrayList<>();
 
   private Configuration() {
     setPathToBSLLS(DEFAULT_PATH_TO_BSL_LS);
@@ -35,6 +39,7 @@ public class Configuration {
     setUseCustomBSLLSConfiguration(DEFAULT_USE_CUSTOM_BSL_LS_CONFIGURATION);
     setPathToBSLLSConfiguration(PhoenixContext.BSL_CONFIGURATION_NAME);
     setUseGroupIssuesBySeverity(DEFAULT_USE_GROUP_ISSUES_BY_SEVERITY);
+    setProject(PhoenixContext.DEFAULT_PROJECT_NAME);
   }
 
   public static Configuration create() {
