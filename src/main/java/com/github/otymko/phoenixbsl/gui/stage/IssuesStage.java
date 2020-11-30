@@ -3,7 +3,6 @@ package com.github.otymko.phoenixbsl.gui.stage;
 import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.gui.controller.IssueStageController;
 import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
-import com.github.otymko.phoenixbsl.logic.PhoenixContext;
 import com.github.otymko.phoenixbsl.model.Issue;
 import com.github.otymko.phoenixbsl.model.ProjectSetting;
 import com.jfoenix.assets.JFoenixResources;
@@ -102,9 +101,8 @@ public class IssuesStage extends Stage {
     project.getItems().setAll(PhoenixCore.getInstance().getConfiguration().getProjects());
     project.setPromptText("Выберите проект");
     project.getSelectionModel().select(PhoenixCore.getInstance().getProject());
-    project.setOnAction(event -> {
-      PhoenixCore.getInstance().updateProject(project.getSelectionModel().getSelectedItem());
-    });
+    project.setOnAction(event ->
+      PhoenixCore.getInstance().updateProject(project.getSelectionModel().getSelectedItem()));
 
     search = localController.getSearch();
     search.textProperty().addListener((o, oldVal, newVal) -> filterIssuesTree(newVal));

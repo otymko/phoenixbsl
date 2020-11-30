@@ -103,10 +103,8 @@ public class PhoenixCore implements EventListener {
 
     // исключаем, если это запуск jar
     var optionalCommand = currentProcess.info().command();
-    if (optionalCommand.isPresent()) {
-      if (optionalCommand.get().equals("java.exe")) {
-        return false;
-      }
+    if (optionalCommand.isPresent() && optionalCommand.get().equals("java.exe")) {
+      return false;
     }
 
     var thisUser = currentProcess.info().user().orElse("");
@@ -174,7 +172,7 @@ public class PhoenixCore implements EventListener {
   private void initProjects() {
     // создаем каталог project
     var pathToProjects = Path.of(context.getBasePathApp().toString(), "projects");
-    if (!pathToProjects.toFile().exists()){
+    if (!pathToProjects.toFile().exists()) {
       pathToProjects.toFile().mkdir();
     }
 
