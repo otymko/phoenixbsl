@@ -55,7 +55,7 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.jar {
-    var mainClass = project.group.toString() + ".PhoenixMain"
+    var mainClass = project.group.toString() + ".PhoenixLauncher"
     manifest {
         attributes["Main-Class"] = mainClass
         attributes["Implementation-Version"] = project.version
