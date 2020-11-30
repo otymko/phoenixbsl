@@ -140,6 +140,19 @@ public class PhoenixCore implements EventListener {
     lsService.stop();
   }
 
+  public void stopSonarLint() {
+    if (lintService != null) {
+      lintService.stop();
+    }
+  }
+
+  public void restartSonarLint() {
+    if (lintService != null) {
+      lintService.stop();
+    }
+    initSonarLint();
+  }
+
   public URI getFakeUri() {
     return project.getFakePath().toUri();
   }
@@ -157,6 +170,18 @@ public class PhoenixCore implements EventListener {
   public void updateProject(ProjectSetting project) {
     this.project = project;
     initProject();
+
+    getTextEditor().getDiagnostics().clear();
+    restartBSLLS();
+
+    if (project.isUseSonarLint()) {
+      restartSonarLint();
+    } else {
+      stopSonarLint();
+    }
+
+    PhoenixCore.getInstance().getEventManager().notify(EventManager.EVENT_UPDATE_ISSUES,
+      getTextEditor().getDiagnostics());
   }
 
   private void initContext() {
@@ -177,7 +202,7 @@ public class PhoenixCore implements EventListener {
       return;
     }
     lintService = new SonarLintService();
-    lintService.updateParams(project.getServerUrl(), project.getToken(), project.getProjectKey());
+    lintService.setProject(project);
     lintService.start();
   }
 

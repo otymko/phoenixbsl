@@ -6,6 +6,8 @@ import com.github.otymko.phoenixbsl.logic.event.EventManager;
 import com.github.otymko.phoenixbsl.logic.sonarlint.CustomLogOutput;
 import com.github.otymko.phoenixbsl.logic.sonarlint.DefaultClientInputFile;
 import com.github.otymko.phoenixbsl.logic.sonarlint.StoreIssueListener;
+import com.github.otymko.phoenixbsl.model.ProjectSetting;
+import lombok.Setter;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
@@ -26,11 +28,11 @@ import java.util.stream.Collectors;
 
 public class SonarLintService implements Service {
   private static final String SERVER_ID = "BF41A1F2-AXXb5ffO74B20IfqK24x";
+  private static final String SOURCE = "sonarlint";
   private static final Map<String, DiagnosticSeverity> STRING_TO_SEVERITY_MAP = createStringToSeverityMap();
 
-  private String url = "";
-  private String token = "";
-  private String projectKey = "";
+  @Setter
+  private ProjectSetting project;
 
   private final ConnectedGlobalConfiguration configuration;
   private ConnectedSonarLintEngineImpl connection;
@@ -44,23 +46,17 @@ public class SonarLintService implements Service {
       .setServerId(SERVER_ID).build();
   }
 
-  public void updateParams(String url, String token, String projectKey) {
-    this.url = url;
-    this.token = token;
-    this.projectKey = projectKey;
-  }
-
   @Override
   public void start() {
     ServerConfiguration serverConfiguration = ServerConfiguration.builder()
-      .token(token)
-      .url(url)
+      .token(project.getToken())
+      .url(project.getServerUrl())
       .userAgent(PhoenixCore.APPLICATION_NAME)
       .build();
 
     connection = new ConnectedSonarLintEngineImpl(configuration);
     connection.update(serverConfiguration, null);
-    connection.updateProject(serverConfiguration, projectKey, null);
+    connection.updateProject(serverConfiguration, project.getProjectKey(), null);
     connection.start();
   }
 
@@ -85,18 +81,18 @@ public class SonarLintService implements Service {
     var analysisConfiguration = ConnectedAnalysisConfiguration.builder()
       .setBaseDir(PhoenixCore.getInstance().getProject().getBasePath())
       .addInputFile(inputFile)
-      .setProjectKey(projectKey)
+      .setProjectKey(project.getProjectKey())
       .build();
 
     StoreIssueListener issueListener = new StoreIssueListener(new ArrayList<>());
     connection.analyze(analysisConfiguration, issueListener, logOutput, null);
 
-    final String SOURCE = "sonarlint";
     var diagnostics = issueListener.getIssues()
       .stream()
       .filter(issue -> issue.getTextRange() != null)
       .map(issue -> {
-        var position = new Position(issue.getStartLine() - 1, 0);
+        var line = issue.getStartLine() == null ? 1 : issue.getStartLine();
+        var position = new Position(line - 1, 0);
         var diagnostic = new Diagnostic();
         diagnostic.setSource(SOURCE);
         diagnostic.setSeverity(STRING_TO_SEVERITY_MAP.getOrDefault(issue.getType(), DiagnosticSeverity.Information));
