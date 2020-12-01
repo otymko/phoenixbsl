@@ -65,8 +65,10 @@ public class SonarLintService implements Service {
 
   @Override
   public void stop() {
-    connection.stop(false);
-    connection = null;
+    if (connection != null) {
+      connection.stop(false);
+      connection = null;
+    }
   }
 
   @Override
