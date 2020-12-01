@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SonarLintService implements Service {
   public static final String SOURCE = "sonarlint";
-  private static final String SERVER_ID = "BF41A1F2-AXXb5ffO74B20IfqK24x";
+  private static final String SERVER_ID = SOURCE;
 
   @Setter
   private ProjectSetting project;
