@@ -8,6 +8,7 @@ import com.github.otymko.phoenixbsl.logic.designer.DesignerTextEditor;
 import com.github.otymko.phoenixbsl.logic.event.EventListener;
 import com.github.otymko.phoenixbsl.logic.event.EventManager;
 import com.github.otymko.phoenixbsl.logic.service.LSService;
+import com.github.otymko.phoenixbsl.logic.service.SonarLintService;
 import com.github.otymko.phoenixbsl.model.Configuration;
 import com.github.otymko.phoenixbsl.model.ProjectSetting;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class PhoenixCore implements EventListener {
   private static final PhoenixCore INSTANCE = new PhoenixCore();
   private PhoenixContext context;
   private LSService lsService;
+  private SonarLintService lintService;
   private DesignerTextEditor textEditor;
   private Configuration configuration;
   private ProjectSetting project;
@@ -56,6 +58,7 @@ public class PhoenixCore implements EventListener {
     initTextEditor();
     initGlobalKeyListener(); // подключаем слушаеть нажатий
     initProcessBSL(); // запустим bsl ls
+    initSonarLint();
   }
 
   @Override
@@ -137,6 +140,19 @@ public class PhoenixCore implements EventListener {
     lsService.stop();
   }
 
+  public void stopSonarLint() {
+    if (lintService != null) {
+      lintService.stop();
+    }
+  }
+
+  public void restartSonarLint() {
+    if (lintService != null) {
+      lintService.stop();
+    }
+    initSonarLint();
+  }
+
   public URI getFakeUri() {
     return project.getFakePath().toUri();
   }
@@ -154,6 +170,18 @@ public class PhoenixCore implements EventListener {
   public void updateProject(ProjectSetting project) {
     this.project = project;
     initProject();
+
+    getTextEditor().getDiagnostics().clear();
+    restartBSLLS();
+
+    if (project.isUseSonarLint()) {
+      restartSonarLint();
+    } else {
+      stopSonarLint();
+    }
+
+    PhoenixCore.getInstance().getEventManager().notify(EventManager.EVENT_UPDATE_ISSUES,
+      getTextEditor().getDiagnostics());
   }
 
   private void initContext() {
@@ -167,6 +195,15 @@ public class PhoenixCore implements EventListener {
   private void initProcessBSL() {
     lsService = new LSService(this);
     lsService.start();
+  }
+
+  private void initSonarLint() {
+    if (!project.isUseSonarLint()) {
+      return;
+    }
+    lintService = new SonarLintService();
+    lintService.setProject(project);
+    lintService.start();
   }
 
   private void initProjects() {

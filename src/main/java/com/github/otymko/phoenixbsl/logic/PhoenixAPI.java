@@ -6,12 +6,14 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Command;
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.lang.management.ManagementFactory;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @UtilityClass
@@ -118,7 +120,7 @@ public class PhoenixAPI {
     JOptionPane.showMessageDialog(new JFrame(), message);
   }
 
-  public static String applyFixForText(String textForQF, List<Either<Command, CodeAction>> codeActions) {
+  public String applyFixForText(String textForQF, List<Either<Command, CodeAction>> codeActions) {
     var strings = textForQF.split(DesignerTextEditor.SEPARATOR);
     try {
       applyAllQuickFixes(codeActions, strings);
@@ -127,6 +129,13 @@ public class PhoenixAPI {
       return null;
     }
     return String.join(DesignerTextEditor.SEPARATOR, strings);
+  }
+
+  public void clearListBySource(List<Diagnostic> diagnostics, String source) {
+    var exclude = diagnostics.stream()
+      .filter(diagnostic -> diagnostic != null && diagnostic.getSource().equals(source))
+      .collect(Collectors.toList());
+    diagnostics.removeAll(exclude);
   }
 
   private static void applyAllQuickFixes(List<Either<Command, CodeAction>> codeActions, String[] strings) {

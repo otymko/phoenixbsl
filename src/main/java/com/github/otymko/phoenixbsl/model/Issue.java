@@ -8,6 +8,7 @@ import org.eclipse.lsp4j.DiagnosticSeverity;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Issue extends RecursiveTreeObject<Issue> {
+  private String source = "";
   private String description = "";
   private String location = "";
   private int startLine = 0;

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -32,7 +33,7 @@ public class DesignerTextEditor implements EventListener {
   @Getter
   private WinDef.HWND focusForm;
   @Getter
-  private final List<Diagnostic> diagnostics = new ArrayList<>();
+  private final List<Diagnostic> diagnostics = Collections.synchronizedList(new ArrayList<>());
   @Getter
   @Setter
   private int currentOffset = 0;
@@ -61,6 +62,11 @@ public class DesignerTextEditor implements EventListener {
     if (core.getLsService().isAlive()) {
       core.getLsService().validate(path, content);
     }
+
+    if (core.getProject().isUseSonarLint() && core.getLintService().isAlive()) {
+      core.getLintService().validate(path, content);
+    }
+
   }
 
   @Override
