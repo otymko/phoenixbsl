@@ -53,12 +53,13 @@ public class SonarLintService implements Service {
     connection = new ConnectedSonarLintEngineImpl(configuration);
     try {
       connection.update(serverConfiguration, null);
+      connection.updateProject(serverConfiguration, project.getProjectKey(), null);
     } catch (Exception e) {
       LOGGER.error(e.getMessage(), e);
+      PhoenixAPI.showMessageDialog("Не удалось подключить SonarLint, по причине: " + e.getMessage());
       connection = null;
       return;
     }
-    connection.updateProject(serverConfiguration, project.getProjectKey(), null);
     connection.start();
   }
 
