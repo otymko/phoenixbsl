@@ -5,14 +5,11 @@ import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
 import com.github.otymko.phoenixbsl.logic.event.EventManager;
 import com.github.otymko.phoenixbsl.logic.sonarlint.CustomLogOutput;
 import com.github.otymko.phoenixbsl.logic.sonarlint.DefaultClientInputFile;
+import com.github.otymko.phoenixbsl.logic.sonarlint.SonarLintHelper;
 import com.github.otymko.phoenixbsl.logic.sonarlint.StoreIssueListener;
 import com.github.otymko.phoenixbsl.model.ProjectSetting;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 import org.sonarsource.sonarlint.core.ConnectedSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.client.api.common.Language;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
@@ -23,15 +20,12 @@ import org.sonarsource.sonarlint.core.client.api.connected.ServerConfiguration;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class SonarLintService implements Service {
+  public static final String SOURCE = "sonarlint";
   private static final String SERVER_ID = "BF41A1F2-AXXb5ffO74B20IfqK24x";
-  private static final String SOURCE = "sonarlint";
-  private static final Map<String, DiagnosticSeverity> STRING_TO_SEVERITY_MAP = createStringToSeverityMap();
 
   @Setter
   private ProjectSetting project;
@@ -98,17 +92,7 @@ public class SonarLintService implements Service {
     var diagnostics = issueListener.getIssues()
       .stream()
       .filter(issue -> issue.getTextRange() != null)
-      .map(issue -> {
-        var line = issue.getStartLine() == null ? 1 : issue.getStartLine();
-        var position = new Position(line - 1, 0);
-        var diagnostic = new Diagnostic();
-        diagnostic.setSource(SOURCE);
-        diagnostic.setSeverity(STRING_TO_SEVERITY_MAP.getOrDefault(issue.getType(), DiagnosticSeverity.Information));
-        diagnostic.setMessage(issue.getMessage());
-        diagnostic.setCode(issue.getRuleKey());
-        diagnostic.setRange(new Range(position, position));
-        return diagnostic;
-      })
+      .map(SonarLintHelper::newDiagnosticByIssue)
       .collect(Collectors.toList());
 
     var core = PhoenixCore.getInstance();
@@ -128,12 +112,5 @@ public class SonarLintService implements Service {
       Charset.defaultCharset(), path.toUri());
   }
 
-  private static Map<String, DiagnosticSeverity> createStringToSeverityMap() {
-    Map<String, DiagnosticSeverity> map = new HashMap<>();
-    map.put("BUG", DiagnosticSeverity.Error);
-    map.put("CODE_SMELL", DiagnosticSeverity.Information);
-    map.put("VULNERABILITY", DiagnosticSeverity.Error);
-    map.put("SECURITY_HOTSPOT", DiagnosticSeverity.Error);
-    return map;
-  }
+
 }
