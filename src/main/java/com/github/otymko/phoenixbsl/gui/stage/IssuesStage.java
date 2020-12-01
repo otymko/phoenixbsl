@@ -295,6 +295,7 @@ public class IssuesStage extends Stage {
           break;
         case COLUMN_SOURCE:
           result = issue.getSource();
+          break;
         default:
           LOGGER.warn("Колонка не поддерживается: " + column);
           break;
