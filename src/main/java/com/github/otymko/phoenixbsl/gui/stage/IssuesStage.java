@@ -214,7 +214,8 @@ public class IssuesStage extends Stage {
       var startLine = position.getLine() + 1 + lineOffset;
 
       Issue issue = new Issue();
-      issue.setSource(diagnostic.getSource());
+
+      issue.setSource(PhoenixAPI.getValueSourceByString(diagnostic.getSource()));
       issue.setDescription(diagnostic.getMessage());
       issue.setStartLine(startLine);
       issue.setLocation(String.valueOf(startLine));

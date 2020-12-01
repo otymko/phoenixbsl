@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class BSLLanguageClient implements LanguageClient {
-  private static final String SOURCE = "bsl-ls";
+  private static final String SOURCE = "bsl-language-server";
 
   public BSLLanguageClient() {
     // none
@@ -51,8 +51,6 @@ public class BSLLanguageClient implements LanguageClient {
 
     var diagnosticList = core.getTextEditor().getDiagnostics();
     PhoenixAPI.clearListBySource(diagnosticList, SOURCE);
-    publishDiagnosticsParams.getDiagnostics().parallelStream()
-      .forEach(diagnostic -> diagnostic.setSource(SOURCE));
     diagnosticList.addAll(publishDiagnosticsParams.getDiagnostics());
 
     PhoenixCore.getInstance().getEventManager().notify(

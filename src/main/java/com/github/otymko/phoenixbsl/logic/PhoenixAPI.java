@@ -1,6 +1,7 @@
 package com.github.otymko.phoenixbsl.logic;
 
 import com.github.otymko.phoenixbsl.logic.designer.DesignerTextEditor;
+import com.github.otymko.phoenixbsl.logic.service.SonarLintService;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -136,6 +137,16 @@ public class PhoenixAPI {
       .filter(diagnostic -> diagnostic != null && diagnostic.getSource().equals(source))
       .collect(Collectors.toList());
     diagnostics.removeAll(exclude);
+  }
+
+  public String getValueSourceByString(String value) {
+    String result;
+    if (value.equals(SonarLintService.SOURCE)) {
+      result = SonarLintService.SOURCE;
+    } else {
+      result = "bsl-ls";
+    }
+    return result;
   }
 
   private static void applyAllQuickFixes(List<Either<Command, CodeAction>> codeActions, String[] strings) {
