@@ -1,25 +1,18 @@
 package com.github.otymko.phoenixbsl.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@EqualsAndHashCode
+@Value
+@RequiredArgsConstructor
 public class KeyboardShortcut {
-  private final boolean controlPressed;
-  private final List<Integer> keyList;
-
-  public KeyboardShortcut(List<Integer> keyList, boolean controlPressed) {
-    this.controlPressed = controlPressed;
-    this.keyList = keyList;
-  }
+  List<Integer> keyList;
+  boolean controlPressed;
 
   public KeyboardShortcut(int key, boolean controlPressed) {
     this.controlPressed = controlPressed;
-    keyList = new ArrayList<>();
-    keyList.add(key);
+    this.keyList = List.of(key);
   }
 }
