@@ -3,13 +3,11 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=phoenixbsl&metric=alert_status)](https://sonarcloud.io/dashboard?id=phoenixbsl)
 # Phoenix BSL для 1С
 
-**В СТАДИИ РАЗРАБОТКИ, ИСПОЛЬЗУЙТЕ НА СВОЙ СТРАХ И РИСК =)**
-
 ## Описание
 
 Проект позволяет анализировать и форматировать код 1С в конфигураторе. Инструмент основан на проекте [BSL LS](https://github.com/1c-syntax/bsl-language-server).
 
-![Превью PhoenixBSL](docs/assets/images/preview.png)
+<img src="docs/assets/images/preview.png" alt="Превью PhoenixBSL" style="zoom:80%;" />
 
 ## Установка
 
@@ -60,6 +58,47 @@ java -jar phoenix-0.3.3.jar
 * `Свои настройки BSL LS` - признак использования своих настроек для BSL LS.
 * `Путь к настройкам BSL LS` - путь к настройкам BSL LS. По умолчанию `.bsl-language-server.json`. Для работы полного пакета проверок требуется указать в конфигурационном файле путь к выгруженным метаданным.  
 * `Группировать замечания` - при включенном флаге замечания группируются по их типу.
+
+#### Поддержка SonarLint
+
+Плагины поддержки 1С в SonarQube:
+* [1C (BSL) Community Plugin](https://github.com/1c-syntax/sonar-bsl-plugin-community) (пока не поддерживается)
+* [1C (BSL) Plugin от SilverBulleters ](https://silverbulleters.org/sonarqube) с версии 1.33
+
+Есть возможность, используя SonarLint, проанализировать код 1С с помощью плагина 1С на сервере SonarQube. Для этого нужно добавить в конфигурационный файл приложения (`%USER_NAME%\phoenixbsl\Configuration.json`) настройку проекта в `projects`:
+
+```json
+{
+    // ...
+    "projects": [
+        {
+            "name": "local",
+            "basePath": "C://Users//otymko//phoenixbsl//projects//context-collector//",
+            "useSonarLint": true,
+            "projectKey": "my-project1",
+            "serverUrl": "http://localhost:9000",
+            "serverId": "0000001",
+            "token": "58b7eaaa76be14d94e470ab28376f30f6cc95f55"
+        }
+    ]
+}
+```
+
+где свойства:
+
+* `name` - имя проекта внутри приложения
+* `basePath` - путь к рабочему каталогу проекта, в дальнейшем каталог должен содержать исходники конфигурации в формате **xml**. Есть каталог не существует, то приложение его создаст.
+* `useSonarLint` - опция для включения SonarLint. Работает при правильно заполненных свойствах: `projectKey`, `serverUrl`, `token`. Свойство `serverId` пока не используется.
+* `projectKey` - ключ проекта в SonarQube
+* `serverUrl` - адрес сервера SonarQube, например: [https://open.checkbsl.org/](https://open.checkbsl.org/)
+* `serverId` - идентификатор сервера SonarQube, пока не используется.
+* `token` - токен безопасности, для подключения к SonarQube. Генерируется из профиля пользователя.
+
+После заполнения проекта выше, в приложении будет доступен выбор проекта (в главном окне). Для удобства замечания разделены на:
+
+* bsl-ls - замечания, полученные с помощью [BSL LS](https://github.com/1c-syntax/bsl-language-server)
+* sonarlint - замечания, полученные с помощью плагинов 1С для SonarQube
+
 
 ## Быстрые исправления
 
