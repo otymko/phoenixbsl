@@ -47,6 +47,7 @@ public class IssuesStage extends Stage {
   private static final String COLUMN_DESCRIPTION = "DESCRIPTION";
   private static final String COLUMN_POSITION = "POSITION";
   private static final String COLUMN_TYPE = "TYPE";
+  private static final String COLUMN_SOURCE = "SOURCE";
   private static final Map<DiagnosticSeverity, String> severityToStringMap = createSeverityToStringMap();
   private static final Map<String, DiagnosticSeverity> stringToSeverityMap = createStringToSeverityMap();
 
@@ -113,6 +114,15 @@ public class IssuesStage extends Stage {
   private void initTreeTable() {
     tree.setPlaceholder(new Label("Замечаний нет"));
 
+    JFXTreeTableColumn<Issue, String> sourceColumn = new JFXTreeTableColumn<>("Источник");
+    sourceColumn.setPrefWidth(70);
+    sourceColumn.setMinWidth(70);
+    sourceColumn.setMaxWidth(70);
+    sourceColumn.setResizable(true);
+    sourceColumn.setContextMenu(null);
+    sourceColumn.setCellValueFactory(param -> new SimpleStringProperty(getValueCellSource(param).toString()));
+
+
     JFXTreeTableColumn<Issue, String> descriptionColumn = new JFXTreeTableColumn<>("Описание");
     descriptionColumn.setPrefWidth(450);
     descriptionColumn.setCellFactory(param -> {
@@ -131,9 +141,9 @@ public class IssuesStage extends Stage {
 
     JFXTreeTableColumn<Issue, Integer> positionColumn = new JFXTreeTableColumn<>("кол-во\n/\nстр.");
     positionColumn.setId("positionColumn");
-    positionColumn.setPrefWidth(90);
-    positionColumn.setMinWidth(90);
-    positionColumn.setMaxWidth(90);
+    positionColumn.setPrefWidth(80);
+    positionColumn.setMinWidth(80);
+    positionColumn.setMaxWidth(80);
     positionColumn.setContextMenu(null);
     positionColumn.setCellValueFactory(param -> new SimpleIntegerProperty((Integer) getValueCellPosition(param)).asObject());
     positionColumn.setResizable(true);
@@ -151,6 +161,7 @@ public class IssuesStage extends Stage {
     tree.setRoot(recursiveTreeItem);
     tree.setShowRoot(false);
     tree.setMaxWidth(9999);
+    tree.getColumns().add(sourceColumn);
     tree.getColumns().add(typeColumn);
     tree.getColumns().add(descriptionColumn);
     tree.getColumns().add(positionColumn);
@@ -176,6 +187,7 @@ public class IssuesStage extends Stage {
         final Issue issue = userProp.getValue();
         final String filterLowerCase = filter.toLowerCase();
         return issue.getDescription().toLowerCase().contains(filterLowerCase)
+          || issue.getSource().toLowerCase().contains(filterLowerCase)
           || severityToStringMap.get(issue.getSeverity()).toLowerCase().contains(filterLowerCase)
           || issue.getLocation().toLowerCase().contains(filterLowerCase);
       });
@@ -202,6 +214,7 @@ public class IssuesStage extends Stage {
       var startLine = position.getLine() + 1 + lineOffset;
 
       Issue issue = new Issue();
+      issue.setSource(diagnostic.getSource());
       issue.setDescription(diagnostic.getMessage());
       issue.setStartLine(startLine);
       issue.setLocation(String.valueOf(startLine));
@@ -280,6 +293,8 @@ public class IssuesStage extends Stage {
         case COLUMN_TYPE:
           result = severityToStringMap.get(issue.getSeverity());
           break;
+        case COLUMN_SOURCE:
+          result = issue.getSource();
         default:
           LOGGER.warn("Колонка не поддерживается: " + column);
           break;
@@ -315,6 +330,10 @@ public class IssuesStage extends Stage {
 
   private Object getValueCellType(TreeTableColumn.CellDataFeatures<Issue, String> param) {
     return getValueCell(param.getValue(), COLUMN_TYPE);
+  }
+
+  private Object getValueCellSource(TreeTableColumn.CellDataFeatures<Issue, String> param) {
+    return getValueCell(param.getValue(), COLUMN_SOURCE);
   }
 
 }

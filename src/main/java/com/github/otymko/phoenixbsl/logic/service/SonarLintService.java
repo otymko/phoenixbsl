@@ -104,7 +104,7 @@ public class SonarLintService implements Service {
         var diagnostic = new Diagnostic();
         diagnostic.setSource(SOURCE);
         diagnostic.setSeverity(STRING_TO_SEVERITY_MAP.getOrDefault(issue.getType(), DiagnosticSeverity.Information));
-        diagnostic.setMessage("[SonarLint]: " + issue.getMessage());
+        diagnostic.setMessage(issue.getMessage());
         diagnostic.setCode(issue.getRuleKey());
         diagnostic.setRange(new Range(position, position));
         return diagnostic;
