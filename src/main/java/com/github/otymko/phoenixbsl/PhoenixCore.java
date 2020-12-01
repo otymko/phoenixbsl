@@ -106,7 +106,7 @@ public class PhoenixCore implements EventListener {
 
     // исключаем, если это запуск jar
     var optionalCommand = currentProcess.info().command();
-    if (optionalCommand.isPresent() && optionalCommand.get().equals("java.exe")) {
+    if (optionalCommand.isPresent() && optionalCommand.get().contains("java.exe")) {
       return false;
     }
 
