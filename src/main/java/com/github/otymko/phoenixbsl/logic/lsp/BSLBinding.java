@@ -136,7 +136,9 @@ public class BSLBinding {
     server.getTextDocumentService().didSave(paramsSave);
   }
 
-  public List<Either<Command, CodeAction>> textDocumentCodeAction(URI uri, List<Diagnostic> listDiagnostic) throws ExecutionException, InterruptedException {
+  public List<Either<Command, CodeAction>> textDocumentCodeAction(URI uri, List<Diagnostic> listDiagnostic,
+                                                                  List<String> only) throws ExecutionException, InterruptedException {
+
     var params = new CodeActionParams();
 
     var textDocumentIdentifier = new TextDocumentIdentifier();
@@ -144,6 +146,9 @@ public class BSLBinding {
 
     var context = new CodeActionContext();
     context.setDiagnostics(listDiagnostic);
+    if (!only.isEmpty()) {
+      context.setOnly(only);
+    }
 
     params.setRange(new Range());
     params.setTextDocument(textDocumentIdentifier);

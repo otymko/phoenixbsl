@@ -22,6 +22,7 @@ import java.util.List;
 @Slf4j
 public class DesignerTextEditor implements EventListener {
   public static final List<String> DIAGNOSTIC_FOR_QF = createDiagnosticListForQuickFix();
+  public static final List<String> FILTER_ACTION_QUICKFIX = createListFilterActionQuickFix();
   public static final String SEPARATOR = "\n";
   private final PhoenixCore core;
   @Getter
@@ -155,6 +156,12 @@ public class DesignerTextEditor implements EventListener {
     list.add("SpaceAtStartComment");
     list.add("SemicolonPresence");
     return list;
+  }
+
+  private static List<String> createListFilterActionQuickFix() {
+    List<String> onlyKind = new ArrayList<>();
+    onlyKind.add("quickfix");
+    return onlyKind;
   }
 
 }
