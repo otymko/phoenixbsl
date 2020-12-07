@@ -82,4 +82,6 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: phoenixbsl.msi
-        path: ./phoenixbsl-0.3.7.msi
+        path: |
+          ./phoenixbsl-*.msi
+          ./build/libs/phoenix*.jar
