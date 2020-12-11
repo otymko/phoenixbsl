@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
     runs-on: windows-latest
-    name: Create app image
+    name: Build app image
 
     steps:
     - uses: actions/checkout@v1
@@ -15,10 +15,10 @@ jobs:
       with:
         java-version: 15
 
-    # - name: Build with Gradle
-    #   run: ./gradlew build
+    - name: Build with Gradle
+      run: ./gradlew build
 
-    - name: Install python lib requests
+    - name: Install python lib
       run: pip install requests  
     
     - name: Download BSL LS
@@ -58,3 +58,9 @@ jobs:
         name: phoenixbsl.msi
         path: |
           ./phoenixbsl-*.msi
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: phoenixbsl.jar
+        path: |
+          ./build/libs/phoenix*.jar
