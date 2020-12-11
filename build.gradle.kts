@@ -74,7 +74,7 @@ tasks.shadowJar {
 
 tasks.register<Exec>("jpackage") {
     dependsOn(tasks.shadowJar)
-    var jpackage = System.getenv("JPACKAGE_HOME") + "/jpackage.exe"
+    var jpackage = "jpackage"
     executable(jpackage)
     args(
             "--name", "phoenixbsl",
