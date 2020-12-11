@@ -4,49 +4,23 @@ on: [push]
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [windows-latest]
-        include:
-          - os: windows-latest
-            displayName: Windows
-            prefix: win
-            jpackageDownload: https://download.java.net/java/GA/jdk14/076bab302c7b4508975440c56f6cc26a/36/GPL/openjdk-14_windows-x64_bin.zip
-            jdk14Path: /jdk-14
-    runs-on: ${{ matrix.os }}
-    name: Create app image
+    runs-on: windows-latest
+    name: Build app image
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set up JDK 11
+
+    - name: Set up JDK 15
       uses: actions/setup-java@v1
       with:
-        java-version: 11
+        java-version: 15
+
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Install python lib requests
+
+    - name: Install python lib
       run: pip install requests  
-    - name: Download jpackage
-        # We need to download jpackage from https://jdk.java.net/jpackage/
-      run: |
-          import tarfile
-          import zipfile
-          import sys
-          if sys.version_info[0] >= 3:
-            from urllib.request import urlretrieve
-          else:
-            from urllib import urlretrieve
-          url = "${{ matrix.jpackageDownload }}"
-          tmpfile, headers = urlretrieve(url)
-          if (url.endswith("tar.gz")):
-            tar = tarfile.open(tmpfile)
-            tar.extractall()
-            tar.close()
-          elif (url.endswith("zip")):
-            zip = zipfile.ZipFile(tmpfile)
-            zip.extractall()
-            zip.close()
-      shell: python
+    
     - name: Download BSL LS
       run: |
         import requests
@@ -75,13 +49,18 @@ jobs:
         zip.extractall()
         shutil.move(os.path.join(os.getcwd(), bsl_name), os.path.join(dirName, bsl_name))
       shell: python
-    - name: Build jpackage msi
+
+    - name: Build msi
       run: ./gradlew jpackage
-      env:
-        JPACKAGE_HOME: "${{ github.workspace }}${{ matrix.jdk14Path }}/bin"
+
     - uses: actions/upload-artifact@master
       with:
         name: phoenixbsl.msi
         path: |
           ./phoenixbsl-*.msi
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: phoenixbsl.jar
+        path: |
           ./build/libs/phoenix*.jar
