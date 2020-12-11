@@ -64,6 +64,9 @@ gen/
 *.bak
 *.orig
 
+bsl-language-server*.zip
+/bsl-language-server
+
 app/
 
 # mkdocs
