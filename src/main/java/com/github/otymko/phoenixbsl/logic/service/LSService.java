@@ -19,6 +19,7 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -203,7 +204,7 @@ public class LSService implements Service {
 
     List<Either<Command, CodeAction>> codeActions = null;
     try {
-      codeActions = binding.textDocumentCodeAction(uri, listQF);
+      codeActions = binding.textDocumentCodeAction(uri, listQF, DesignerTextEditor.FILTER_ACTION_QUICKFIX);
     } catch (ExecutionException e) {
       LOGGER.error(e.getMessage(), e);
     } catch (InterruptedException e) {
