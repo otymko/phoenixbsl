@@ -23,7 +23,7 @@ repositories {
 
 group = "com.github.otymko.phoenixbsl"
 version = gitVersionCalculator.calculateVersion("v")
-var semver = calculateVersion("v", false)
+val semver = calculateVersion("v", false)
 
 dependencies {
     testImplementation("com.hynnet", "jacob", "1.18")
@@ -35,7 +35,6 @@ dependencies {
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
     implementation("lc.kra.system","system-hook", "3.8")
     implementation("com.github.silverbulleters:sonarlint-core:123a8b2")
-
 
     // ui
     implementation("com.jfoenix","jfoenix", "9.0.10")
@@ -57,7 +56,7 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.jar {
-    var mainClass = project.group.toString() + ".PhoenixLauncher"
+    val mainClass = project.group.toString() + ".PhoenixLauncher"
     manifest {
         attributes["Main-Class"] = mainClass
         attributes["Implementation-Version"] = project.version
@@ -74,7 +73,7 @@ tasks.shadowJar {
 
 tasks.register<Exec>("jpackage") {
     dependsOn(tasks.shadowJar)
-    var jpackage = "jpackage"
+    val jpackage = "jpackage"
     executable(jpackage)
     args(
             "--name", "phoenixbsl",
