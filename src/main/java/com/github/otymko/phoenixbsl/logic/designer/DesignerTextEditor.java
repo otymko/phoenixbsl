@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 public class DesignerTextEditor implements EventListener {
   public static final List<String> DIAGNOSTIC_FOR_QF = createDiagnosticListForQuickFix();
-  public static final List<String> FILTER_ACTION_QUICKFIX = createListFilterActionQuickFix();
+  public static final List<String> FILTER_ACTION_QUICKFIX = List.of("quickfix");
   private final PhoenixCore core;
   @Getter
   @Setter
@@ -93,7 +93,7 @@ public class DesignerTextEditor implements EventListener {
 
   @Override
   public void fixAll() {
-    LOGGER.debug("Событие: обработка квикфиксов");
+    LOGGER.debug("Событие: применение quickfix");
     if (!PhoenixAPI.isWindowsForm1S()) {
       return;
     }
@@ -153,17 +153,11 @@ public class DesignerTextEditor implements EventListener {
   }
 
   private static List<String> createDiagnosticListForQuickFix() {
-    var list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     list.add("CanonicalSpellingKeywords");
     list.add("SpaceAtStartComment");
     list.add("SemicolonPresence");
-    return list;
-  }
-
-  private static List<String> createListFilterActionQuickFix() {
-    List<String> onlyKind = new ArrayList<>();
-    onlyKind.add("quickfix");
-    return onlyKind;
+    return List.copyOf(list);
   }
 
 }
