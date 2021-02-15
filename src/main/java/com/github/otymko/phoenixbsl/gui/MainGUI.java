@@ -41,7 +41,6 @@ public class MainGUI implements EventListener {
 
   @Override
   public void updateIssues(List<Diagnostic> diagnostics) {
-    issuesStage.lineOffset = PhoenixCore.getInstance().getTextEditor().getCurrentOffset();
     showIssuesStageImpl();
     Platform.runLater(() -> issuesStage.updateIssues(diagnostics));
   }

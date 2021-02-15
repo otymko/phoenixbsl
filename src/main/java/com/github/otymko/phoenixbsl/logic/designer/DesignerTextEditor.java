@@ -5,6 +5,8 @@ import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
 import com.github.otymko.phoenixbsl.logic.PhoenixUser32;
 import com.github.otymko.phoenixbsl.logic.event.EventListener;
 import com.github.otymko.phoenixbsl.logic.event.EventManager;
+import com.github.otymko.phoenixbsl.logic.text.Location;
+import com.github.otymko.phoenixbsl.logic.utils.TextUtil;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +25,6 @@ import java.util.List;
 public class DesignerTextEditor implements EventListener {
   public static final List<String> DIAGNOSTIC_FOR_QF = createDiagnosticListForQuickFix();
   public static final List<String> FILTER_ACTION_QUICKFIX = createListFilterActionQuickFix();
-  public static final String SEPARATOR = "\n";
   private final PhoenixCore core;
   @Getter
   @Setter
@@ -37,7 +38,7 @@ public class DesignerTextEditor implements EventListener {
   private final List<Diagnostic> diagnostics = Collections.synchronizedList(new ArrayList<>());
   @Getter
   @Setter
-  private int currentOffset = 0;
+  private Location selection = Location.empty();
 
   public DesignerTextEditor(PhoenixCore core) {
     this.core = core;
@@ -124,16 +125,17 @@ public class DesignerTextEditor implements EventListener {
   }
 
   private String getTextFormDesigner() {
-    setCurrentOffset(0);
-    var textForCheck = "";
     var textModuleSelected = PhoenixAPI.getTextSelected();
+    var sourceText = PhoenixAPI.getSourceText();
+    var textForCheck = sourceText.getContent();
+
     if (textModuleSelected.length() > 0) {
-      // получем номер строки
-      textForCheck = textModuleSelected;
-      setCurrentOffset(PhoenixAPI.getCurrentLineNumber());
+      setSelection(new Location(sourceText.getOffset() + 1,
+        sourceText.getOffset() + TextUtil.numberOfLinesInText(textModuleSelected)));
     } else {
-      textForCheck = PhoenixAPI.getTextAll();
+      setSelection(Location.empty());
     }
+    textForCheck = TextUtil.pasteSelectionInText(textForCheck, textModuleSelected);
     return textForCheck;
   }
 

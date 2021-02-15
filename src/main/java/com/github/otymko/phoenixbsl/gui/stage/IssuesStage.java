@@ -3,6 +3,7 @@ package com.github.otymko.phoenixbsl.gui.stage;
 import com.github.otymko.phoenixbsl.PhoenixCore;
 import com.github.otymko.phoenixbsl.gui.controller.IssueStageController;
 import com.github.otymko.phoenixbsl.logic.PhoenixAPI;
+import com.github.otymko.phoenixbsl.logic.utils.IssueHelper;
 import com.github.otymko.phoenixbsl.model.Issue;
 import com.github.otymko.phoenixbsl.model.ProjectSetting;
 import com.jfoenix.assets.JFoenixResources;
@@ -58,8 +59,6 @@ public class IssuesStage extends Stage {
 
   private final ComboBox<ProjectSetting> project;
   private final TextField search;
-
-  public int lineOffset = 0;
 
   private int countError = 0;
   private int countWarning = 0;
@@ -203,33 +202,21 @@ public class IssuesStage extends Stage {
   }
 
   public void updateIssues(List<Diagnostic> diagnostics) {
+    var textEditor = PhoenixCore.getInstance().getTextEditor();
+    var selection = textEditor.getSelection();
+
     countError = 0;
     countWarning = 0;
     countInfo = 0;
-
     issues.clear();
-    diagnostics.forEach(diagnostic -> {
-      var range = diagnostic.getRange();
-      var position = range.getStart();
-      var startLine = position.getLine() + 1 + lineOffset;
 
-      Issue issue = new Issue();
-
-      issue.setSource(PhoenixAPI.getValueSourceByString(diagnostic.getSource()));
-      issue.setDescription(diagnostic.getMessage());
-      issue.setStartLine(startLine);
-      issue.setLocation(String.valueOf(startLine));
-      issue.setSeverity(diagnostic.getSeverity());
-      issues.add(issue);
-
-      if (diagnostic.getSeverity() == DiagnosticSeverity.Error) {
-        countError++;
-      } else if (diagnostic.getSeverity() == DiagnosticSeverity.Warning) {
-        countWarning++;
-      } else {
-        countInfo++;
-      }
-    });
+    diagnostics.stream()
+      .filter(diagnostic -> IssueHelper.checkDiagnosticBySelection(diagnostic, selection))
+      .forEach(diagnostic -> {
+        var issue = IssueHelper.createIssue(diagnostic);
+        issues.add(issue);
+        calcCounters(diagnostic);
+      });
 
     FXCollections.sort(issues, Comparator.comparingInt(Issue::getStartLine));
     updateIndicators();
@@ -253,6 +240,16 @@ public class IssuesStage extends Stage {
     labelError.setText("Ошибки: " + countError);
     labelWarning.setText("Предупреждения: " + countWarning);
     labelInfo.setText("Инфо: " + countInfo);
+  }
+
+  private void calcCounters(Diagnostic diagnostic) {
+    if (diagnostic.getSeverity() == DiagnosticSeverity.Error) {
+      countError++;
+    } else if (diagnostic.getSeverity() == DiagnosticSeverity.Warning) {
+      countWarning++;
+    } else {
+      countInfo++;
+    }
   }
 
   private static Map<DiagnosticSeverity, String> createSeverityToStringMap() {
