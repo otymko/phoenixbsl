@@ -1,7 +1,9 @@
 package com.github.otymko.phoenixbsl.logic;
 
+import com.github.otymko.phoenixbsl.logic.text.SourceText;
 import com.github.otymko.phoenixbsl.logic.designer.DesignerTextEditor;
 import com.github.otymko.phoenixbsl.logic.service.SonarLintService;
+import com.github.otymko.phoenixbsl.logic.text.Constant;
 import com.sun.jna.platform.win32.WinDef;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @UtilityClass
 public class PhoenixAPI {
-  private final String FUN_SYMBOL = "☻"; // 9787
   private final CustomRobot robot = new CustomRobot();
   private final CustomTextTransfer textTransfer = new CustomTextTransfer();
 
@@ -66,23 +67,22 @@ public class PhoenixAPI {
     robot.pressKey(KeyEvent.VK_ENTER);
   }
 
-  public int getCurrentLineNumber() {
-
+  public SourceText getSourceText() {
     var line = 0;
     robot.Alt(KeyEvent.VK_NUMPAD2);
     var textAll = getTextAll();
     robot.Ctrl(KeyEvent.VK_Z);
-    String[] arrStr = textAll.split("\n");
+    String[] arrStr = textAll.split(Constant.SEPARATOR);
     var count = 0;
     for (var element : arrStr) {
       count++;
-      if (element.contains(FUN_SYMBOL)) {
+      if (element.contains(Constant.FUN_SYMBOL)) {
         line = count - 1;
         break;
       }
     }
     LOGGER.debug("Current line offset: " + line);
-    return line;
+    return new SourceText(textAll, line);
   }
 
   public String getTextAll() {
@@ -122,14 +122,14 @@ public class PhoenixAPI {
   }
 
   public String applyFixForText(String textForQF, List<Either<Command, CodeAction>> codeActions) {
-    var strings = textForQF.split(DesignerTextEditor.SEPARATOR);
+    var strings = textForQF.split(Constant.SEPARATOR);
     try {
       applyAllQuickFixes(codeActions, strings);
     } catch (ArrayIndexOutOfBoundsException e) {
       LOGGER.error("При применении fix all к тексту модуля возникли ошибки", e);
       return null;
     }
-    return String.join(DesignerTextEditor.SEPARATOR, strings);
+    return String.join(Constant.SEPARATOR, strings);
   }
 
   public void clearListBySource(List<Diagnostic> diagnostics, String source) {
