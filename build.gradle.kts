@@ -7,7 +7,6 @@ import com.github.gradle_git_version_calculator.GitVersionCalculator;
 
 plugins {
     java
-    maven
     jacoco
     id("org.openjfx.javafxplugin") version "0.0.9"
     id("com.github.johnrengelman.shadow") version "6.1.0"
@@ -26,9 +25,6 @@ version = gitVersionCalculator.calculateVersion("v")
 val semver = calculateVersion("v", false)
 
 dependencies {
-    testImplementation("com.hynnet", "jacob", "1.18")
-    testImplementation("junit", "junit", "4.12")
-    testImplementation("org.assertj", "assertj-core", "3.18.1")
 
     implementation("net.java.dev.jna:jna-platform:5.6.0")
     implementation("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.9.0")
@@ -42,6 +38,10 @@ dependencies {
     implementation("com.fasterxml.jackson.core", "jackson-databind", "2.11.3")
 
     compileOnly("org.projectlombok", "lombok", lombok.version)
+
+    testImplementation("com.hynnet", "jacob", "1.18")
+    testImplementation("junit", "junit", "4.12")
+    testImplementation("org.assertj", "assertj-core", "3.18.1")
 }
 
 configure<JavaPluginConvention> {
