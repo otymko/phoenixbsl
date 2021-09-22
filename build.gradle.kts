@@ -8,9 +8,9 @@ import com.github.gradle_git_version_calculator.GitVersionCalculator;
 plugins {
     java
     jacoco
-    id("org.openjfx.javafxplugin") version "0.0.9"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("org.sonarqube") version "3.0"
+    id("org.openjfx.javafxplugin") version "0.0.10"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("org.sonarqube") version "3.3"
     id("io.franzbecker.gradle-lombok") version "4.0.0"
     id("com.github.gradle-git-version-calculator") version "1.1.0"
 }
@@ -26,27 +26,27 @@ val semver = calculateVersion("v", false)
 
 dependencies {
 
-    implementation("net.java.dev.jna:jna-platform:5.6.0")
-    implementation("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.9.0")
-    implementation("ch.qos.logback", "logback-classic", "1.2.3")
-    implementation("lc.kra.system","system-hook", "3.8")
+    implementation("net.java.dev.jna:jna-platform:5.9.0")
+    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.12.0")
+    implementation("ch.qos.logback:logback-classic:1.2.6")
+    implementation("lc.kra.system:system-hook:3.8")
     implementation("com.github.silverbulleters:sonarlint-core:123a8b2")
 
     // ui
-    implementation("com.jfoenix","jfoenix", "9.0.10")
+    implementation("com.jfoenix:jfoenix:9.0.10")
 
-    implementation("com.fasterxml.jackson.core", "jackson-databind", "2.11.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
 
     compileOnly("org.projectlombok", "lombok", lombok.version)
 
-    testImplementation("com.hynnet", "jacob", "1.18")
-    testImplementation("junit", "junit", "4.12")
-    testImplementation("org.assertj", "assertj-core", "3.18.1")
+    testImplementation("com.hynnet:jacob:1.18")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.assertj:assertj-core:3.20.2")
 }
 
-configure<JavaPluginConvention> {
-    targetCompatibility = JavaVersion.VERSION_11
-    sourceCompatibility = JavaVersion.VERSION_11
+java {
+    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.withType<JavaCompile> {
@@ -56,7 +56,7 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.jar {
-    val mainClass = project.group.toString() + ".PhoenixLauncher"
+    val mainClass = "com.github.otymko.phoenixbsl.PhoenixLauncher"
     manifest {
         attributes["Main-Class"] = mainClass
         attributes["Implementation-Version"] = project.version
@@ -100,12 +100,12 @@ sonarqube {
 }
 
 javafx {
-    version = "13"
+    version = "17"
     modules("javafx.controls", "javafx.fxml")
 }
 
 lombok {
-    version = "1.18.16"
+    version = "1.18.20"
 }
 
 /* Получить версия проекта без дополнительной информации
