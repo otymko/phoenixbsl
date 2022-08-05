@@ -108,10 +108,10 @@ public class LSService implements Service {
       core.sleepCurrentThread(500);
       if (!process.isAlive()) {
         process = null;
-        LOGGER.error("Не удалалось запустить процесс с BSL LS. Процесс был аварийно завершен.");
+        LOGGER.error("Не удалось запустить процесс с BSL LS. Процесс был аварийно завершен.");
       }
     } catch (IOException e) {
-      LOGGER.error("Не удалалось запустить процесс с BSL LS", e);
+      LOGGER.error("Не удалось запустить процесс с BSL LS", e);
     }
   }
 
