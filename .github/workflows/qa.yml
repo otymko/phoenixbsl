@@ -22,7 +22,7 @@ jobs:
         with:
           java-version: 17
       - name: SonarCloud Scan
-        run: ./gradlew check sonarqube
+        run: ./gradlew check sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
