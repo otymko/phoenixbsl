@@ -22,7 +22,12 @@ repositories {
 
 group = "com.github.otymko.phoenixbsl"
 version = gitVersionCalculator.calculateVersion("v")
+
 val semver = calculateVersion("v", false)
+val javaOptionsForJavaFx = "--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED " +
+        "--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED " +
+        "--add-opens javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED " +
+        "--add-opens javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED"
 
 dependencies {
 
@@ -60,9 +65,15 @@ tasks.jar {
     manifest {
         attributes["Main-Class"] = mainClass
         attributes["Implementation-Version"] = project.version
+        attributes["Arguments"] = javaOptionsForJavaFx
     }
+
     enabled = false
     dependsOn(tasks.shadowJar)
+}
+
+tasks.withType<JavaExec> {
+    jvmArgs = javaOptionsForJavaFx.split(" ")
 }
 
 tasks.shadowJar {
@@ -80,11 +91,12 @@ tasks.register<Exec>("jpackage") {
             "--type", "msi",
             "--input", "build/libs",
             "--main-jar", "phoenix-$version.jar",
+            "--java-options", javaOptionsForJavaFx,
             "--win-dir-chooser",
             "--win-shortcut",
             "--win-menu",
             "--app-version", semver,
-            "--vendor", "otymko"
+            "--vendor", "otymko",
     )
 }
 

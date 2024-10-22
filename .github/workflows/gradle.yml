@@ -18,37 +18,16 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Install python lib
-      run: pip install requests  
-    
     - name: Download BSL LS
-      run: |
-        import requests
-        import os
-        import zipfile
-        import shutil
-        from urllib.request import urlretrieve
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: '1c-syntax/bsl-language-server'
+        tag: 'v0.23.1'
+        fileName: 'bsl-language-server_win.zip'
+        extract: true
+        out-file-path: 'build/libs'
 
-        def getUrlDownloadBSL():
-            url = ""
-            r = requests.get(
-                "https://api.github.com/repos/1c-syntax/bsl-language-server/releases/latest")
-            json = r.json()
-            for asset in json["assets"]:
-                if asset["name"] == "bsl-language-server_win.zip":
-                    url = asset["browser_download_url"]
-                    break
-            return url
-
-        bsl_name = "bsl-language-server"
-        dirName = os.path.join(os.getcwd(), "build", "libs")
-
-        url = getUrlDownloadBSL()
-        tmpfile, headers = urlretrieve(url)
-        zip = zipfile.ZipFile(tmpfile)
-        zip.extractall()
-        shutil.move(os.path.join(os.getcwd(), bsl_name), os.path.join(dirName, bsl_name))
-      shell: python
+    - run: del ./build/libs/bsl-language-server_win.zip
 
     - name: Build msi
       run: ./gradlew jpackage
