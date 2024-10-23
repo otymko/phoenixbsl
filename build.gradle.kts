@@ -10,7 +10,7 @@ plugins {
     jacoco
     id("org.openjfx.javafxplugin") version "0.0.10"
     id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("org.sonarqube") version "3.3"
+    id("org.sonarqube") version "5.1.0.4882"
     id("io.franzbecker.gradle-lombok") version "4.0.0"
     id("com.github.gradle-git-version-calculator") version "1.1.0"
 }
@@ -22,7 +22,12 @@ repositories {
 
 group = "com.github.otymko.phoenixbsl"
 version = gitVersionCalculator.calculateVersion("v")
+
 val semver = calculateVersion("v", false)
+val javaOptionsForJavaFx = "--add-exports javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED " +
+        "--add-exports javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED " +
+        "--add-opens javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED " +
+        "--add-opens javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED"
 
 dependencies {
 
@@ -60,9 +65,15 @@ tasks.jar {
     manifest {
         attributes["Main-Class"] = mainClass
         attributes["Implementation-Version"] = project.version
+        attributes["Arguments"] = javaOptionsForJavaFx
     }
+
     enabled = false
     dependsOn(tasks.shadowJar)
+}
+
+tasks.withType<JavaExec> {
+    jvmArgs = javaOptionsForJavaFx.split(" ")
 }
 
 tasks.shadowJar {
@@ -80,19 +91,20 @@ tasks.register<Exec>("jpackage") {
             "--type", "msi",
             "--input", "build/libs",
             "--main-jar", "phoenix-$version.jar",
+            "--java-options", javaOptionsForJavaFx,
             "--win-dir-chooser",
             "--win-shortcut",
             "--win-menu",
             "--app-version", semver,
-            "--vendor", "otymko"
+            "--vendor", "otymko",
     )
 }
 
-sonarqube {
+sonar {
     properties {
         property("sonar.sourceEncoding", "UTF-8")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.organization", "phoenixbsl")
+        property("sonar.organization", "otymko ")
         property("sonar.projectKey", "phoenixbsl")
         property("sonar.projectName", "Phoenix BSL")
         property("sonar.exclusions", "**/gen/**/*.*")
